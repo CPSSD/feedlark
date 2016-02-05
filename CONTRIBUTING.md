@@ -8,14 +8,7 @@ Branches
 
 Branches are named like so:
 
-    category/assignee/name#issue_number
-
-
-#### Categories:
-
-- `feature/...` -- for code related items
-- `doc/...` -- for documentation items
-- `bugfix/...` -- for bug fixes
+    assignee/name#issue_number
 
 
 
