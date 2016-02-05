@@ -1,2 +1,3 @@
-# feedlark
-CA110 feed lark project
+# feedlark.com
+
+Simple and Sharp RSS Reader
