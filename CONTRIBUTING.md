@@ -10,6 +10,7 @@ Branches are named like so:
 
     category/assignee/name#issue_number
 
+
 #### Categories:
 
 - `feature/...` -- for code related items
