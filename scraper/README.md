@@ -1,4 +1,4 @@
-Feedlark.tm Scraper
+Feedlark:tm: Scraper
 ================
 
 Dependencies
