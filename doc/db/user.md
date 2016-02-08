@@ -14,9 +14,9 @@ Example Document
 {
 	_id: ObjectId("5099803df3f4948bd2f98391")
 	username: "iandioch"
+	email: "noah@feedlark.com"
 	hashed_password: "IjZAgcfl7p92ldGxad68LJZdL17lhWy"
 	password_salt: "N9qo8uLOickgx2ZMRZoMye"
-	subscribed_feeds: ["news.ycombinator.com/rss", "pssd.computing.dcu.ie/rss.xml"]
-	
+	subscribed_feeds: ["news.ycombinator.com/rss", "pssd.computing.dcu.ie/rss.xml"]	
 }
 ```
