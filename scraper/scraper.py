@@ -3,10 +3,14 @@ import requests
 import feedparser
 from bs4 import BeautifulSoup
 
+
+#Ensure the class is used with Python 3 or greater.
+assert sys.version_info >= (3,0)
+
+
 class Scraper:
     def __init__(self):
-        #Ensure the class is used with 3.5 or greater.
-        assert sys.version_info >= (3,5)
+        pass
 
     def get_feed_data(self, rss_url):
         feed = feedparser.parse(rss_url)
