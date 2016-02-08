@@ -8,7 +8,11 @@ Branches
 
 Branches are named like so:
 
-    assignee/name#issue_number
+    assignee_first_initial/name#issue_number
+
+For example:
+	
+	c/atom_support#43
 
 
 
