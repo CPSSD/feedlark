@@ -15,7 +15,7 @@ For multiple assignees the initals can be hyphenated.
 For example:
 	
 	c/atom_support#43
-	c_r/atom_support#43
+	c-r/atom_support#43
 
 
 
