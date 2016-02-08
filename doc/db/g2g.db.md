@@ -12,7 +12,7 @@ individual feeds is stored.
 Example Document
 ----------------
 
-```json
+```js
 {
     _id: "devoxel"
     feeds: [ 
