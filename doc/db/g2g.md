@@ -14,19 +14,19 @@ Example Document
 
 ```js
 {
-    _id: "devoxel"
+    username: "devoxel"
     feeds: [
         {
             feed = "https://news.ycombinator.com/rss",
             name = "Bare Bones Back end",
             link = "https://webkit.org/docs/b3/",
-            pub = Date("Mon, 8 Feb 2016 11:10:30 +0000")
+            pub_date = ISODate()
         },
         {
             feed = "https://news.ycombinator.com/rss",
             name = "India bans discriminatory pricing based on source/destination/app/content",
             link = "http://blog.savetheinternet.in/statement-on-trai-order-on-diff-pricing/",
-            pub_date = Date("Mon, 8 Feb 2016 11:44:22 +0000")
+            pub_date = ISODate()
         }
     ]
 }
