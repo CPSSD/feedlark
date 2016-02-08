@@ -5,6 +5,7 @@ The user database is the database that holds data individual to each user, inclu
 
 It interfaces with the secretary, and is used in combination with the Feed Database to create entries in the finished G2G database.
 
+The user password will not be stored, instead, a salt and the hashed password and salt will be stored. We will be using bcrypt for hashing.
 
 Example Document
 ----------------
