@@ -11,7 +11,9 @@ File Summaries
       <th>Summary</th>
     </tr>
     <tr>
-      <td>`db/g2g.md`</td>
+      <td>
+        <code>db/g2g.md</code>
+      </td>
       <td>This file describes the sorted database that each user will be served</td>
     </tr>
   </tbody>
