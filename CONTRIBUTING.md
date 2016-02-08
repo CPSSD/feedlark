@@ -9,10 +9,13 @@ Branches
 Branches are named like so:
 
     assignee_first_initial/name#issue_number
+	
+For multiple assignees the initals can be hyphenated.
 
 For example:
 	
 	c/atom_support#43
+	c_r/atom_support#43
 
 
 
