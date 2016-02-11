@@ -12,15 +12,13 @@ It will interface with the Scraper, Catagoriser, Secretary and the feed aggregat
       {
           name: "How Feedlark made the first nullion",
           pub_date: ISODate(),
-          link: "https://www.rte.ie/feedlark",
-          description: "The truly terrifying story of the people behind the lark.",
+          link: "https://www.rte.ie/feedlark"
           arictle_text: "Lotta compliments to founders."
       },
       {
           name: "How Lua ruined the world",
           pub_date: ISODate(),
           link: "https://www.doomsdayclock.com/lua",
-          description: "Why tables are no longer acceptable as the only data type.",
           article_text: "Good old fashioned Lua bashing."
         }
     ]
