@@ -6,7 +6,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "ubuntu/wily32"
+  config.vm.box = "ubuntu/wily64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -31,8 +31,6 @@ Vagrant.configure(2) do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  config.vm.synced_folder "python", "/home/python", create:true
-  config.vm.synced_folder "html", "/var/www/html", create:true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -56,22 +54,31 @@ Vagrant.configure(2) do |config|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
 
+  # Add mongodb config
+  config.vm.provision "file", source: "mongodb.conf", destination: "/tmp/mongodb.conf"
+
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
-    sudo apt-get install -y nginx mongodb python3 python3-pip gearman-job-server git golang
+    sudo apt-get install -y mongodb python3 python3-pip gearman-job-server git golang nodejs npm build-essential
     sudo apt-get autoremove
     sudo apt-get clean
     sudo pip3 install feedparser
-	sudo pip3 install beautifulsoup4
-	sudo pip3 install requests
-    sudo systemctl enable nginx
-    sudo systemctl start nginx
+    sudo pip3 install beautifulsoup4
+    sudo pip3 install requests
+    sudo pip3 install virtualenv
+    mkdir /home/vagrant/.go
+    mkdir /home/vagrant/.mongodb
+    echo "export GOPATH=/home/vagrant/.go" >> home/vagrant/.profile
+    chown -R vagrant:vagrant /home/vagrant
+    sudo mv /etc/mongodb.conf /etc/mongodb.conf.orig
+    sudo mv /tmp/mongodb.conf /etc/mongodb.conf
     sudo systemctl enable mongodb
     sudo systemctl start mongodb
     sudo systemctl enable gearman-job-server
     sudo systemctl start gearman-job-server
   SHELL
+
 end
