@@ -8,7 +8,7 @@ It will interface with the Scraper, Catagoriser, Secretary and the feed aggregat
 ```js
 {
   url: "https://news.ycombinator.com/rss",
-  feeds: [
+  items: [
       {
           name: "How Feedlark made the first nullion",
           pub_date: ISODate(),
