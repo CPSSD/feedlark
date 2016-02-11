@@ -17,13 +17,15 @@ Included Packages
 	Nginx
 	MongoDB
 	Gearman Job Server
-	Go Compiler
-	Python 2, 3 + 3.5
+	Go Compiler (& GOPATH)
+	Python 2 + 3
 	Pip 3
 	Python 3 package "feeparser"
 	Python 3 package "beautifulsoup4"
 	Python 3 package "requests"
 	Python 3 package "Django"
+	Python 3 package "gearman"
+	Python 3 package "virtualenv"
 
 Something missing? Open an issue with the following content:
 
@@ -63,3 +65,5 @@ To stop the box:
 All other services (Nginx, mongoDB) should be exposed on the IP `192.168.2.2`
 
 Use the `html` folder to store any web hosted files
+
+Use `python3` and `pip3` commands instead of their normal versions (which are 2.X based)

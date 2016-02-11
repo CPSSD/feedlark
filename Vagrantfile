@@ -61,17 +61,21 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
+    sudo curl -sL https://deb.nodesource.com/setup_4.x
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+    sudo echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
     sudo apt-get update
-    sudo apt-get install -y mongodb python3 python3-pip gearman-job-server git golang nodejs npm build-essential
+    sudo apt-get install -y mongodb-org python3 python3-pip gearman-job-server git golang nodejs npm build-essential
     sudo apt-get autoremove
     sudo apt-get clean
     sudo pip3 install feedparser
     sudo pip3 install beautifulsoup4
     sudo pip3 install requests
     sudo pip3 install virtualenv
+    sudo pip3 install gearman
     mkdir /home/vagrant/.go
     mkdir /home/vagrant/.mongodb
-    echo "export GOPATH=/home/vagrant/.go" >> home/vagrant/.profile
+    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.profile
     chown -R vagrant:vagrant /home/vagrant
     sudo mv /etc/mongodb.conf /etc/mongodb.conf.orig
     sudo mv /tmp/mongodb.conf /etc/mongodb.conf
