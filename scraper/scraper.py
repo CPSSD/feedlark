@@ -13,18 +13,35 @@ class Scraper:
         pass
 
     def get_feed_data(self, rss_url):
+        '''
+        Returns a list of dictionaries.
+        Each dictionary corresponds to a item in the feed.
+
+        The item contains a title, link, date published, and article text.
+        '''
         feed = feedparser.parse(rss_url)
-        all_rss = feed["entries"][0]
-        name = all_rss['title']
-        link = all_rss["link"]
-        pub_date = all_rss["published"]
-        link_text_content = self._parse_from_web(link)
-        return link_text_content
+        
+        items_list = []
+        for item in feed['entries']:
+            items_list.append({
+                'title':item['title'],
+                'link':item['link'],
+                'pub_date':item['published_parsed'],
+                'article_text':self._parse_from_web(item['link']),
+                })
+
+        return items_list
 
     def _parse_from_web(self, article_url):
-        r = requests.get(article_url)
-        soup = BeautifulSoup(r.content,"html.parser")
-        return soup.get_text(strip=True).encode('utf-8')
+        html = requests.get(article_url).content
+        soup = BeautifulSoup(html,'html.parser')
+        
+        for s in soup(['style', 'script', '[document]', 'head', 'title']):
+            s.extract()
+        
+        return soup.getText()
 
-scr = Scraper()
-print(scr.get_feed_data("https://news.ycombinator.com/rss"))
+##scr = Scraper()
+##for item in scr.get_feed_data("http://spritesmods.com/rss.php"):
+##    print(item['article_text'])
+##    print()
