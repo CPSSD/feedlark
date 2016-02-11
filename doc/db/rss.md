@@ -14,7 +14,6 @@ It will interface with the Scraper, Catagoriser, Secretary and the feed aggregat
           pub_date: ISODate(),
           link: "https://www.rte.ie/feedlark",
           description: "The truly terrifying story of the people behind the lark.",
-          category: "Sucess_Stories",
           arictle_text: "Lotta compliments to founders."
       },
       {
@@ -22,7 +21,6 @@ It will interface with the Scraper, Catagoriser, Secretary and the feed aggregat
           pub_date: ISODate(),
           link: "https://www.doomsdayclock.com/lua",
           description: "Why tables are no longer acceptable as the only data type.",
-          category: "Programming",
           article_text: "Good old fashioned Lua bashing."
         }
     ]
