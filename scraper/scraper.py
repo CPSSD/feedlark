@@ -14,14 +14,17 @@ class Scraper:
 
     def get_feed_data(self, rss_url):
         feed = feedparser.parse(rss_url)
-        link_text = self._parse_from_web(feed["entries"][0]["links"][0]["href"])
-        return link_text
+        all_rss = feed["entries"][0]
+        name = all_rss['title']
+        link = all_rss["link"]
+        pub_date = all_rss["published"]
+        link_text_content = self._parse_from_web(link)
+        return link_text_content
 
     def _parse_from_web(self, article_url):
         r = requests.get(article_url)
         soup = BeautifulSoup(r.content,"html.parser")
-        return soup.get_text().encode('utf-8')
+        return soup.get_text(strip=True).encode('utf-8')
 
-#scr = Scraper()
-#print(scr.get_feed_data("http://matt.might.net/articles/feed.rss"))
-
+scr = Scraper()
+print(scr.get_feed_data("https://news.ycombinator.com/rss"))
