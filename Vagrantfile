@@ -55,7 +55,7 @@ Vagrant.configure(2) do |config|
   # end
 
   # Add mongodb config
-  config.vm.provision "file", source: "mongodb.conf", destination: "/tmp/mongodb.conf"
+  config.vm.provision "file", source: "script/mongodb.conf", destination: "/tmp/mongodb.conf"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
@@ -63,7 +63,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: <<-SHELL
     sudo curl -sL https://deb.nodesource.com/setup_4.x
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-    sudo echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+    sudo echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
     sudo apt-get update
     sudo apt-get install -y mongodb-org python3 python3-pip gearman-job-server git golang nodejs npm build-essential
     sudo apt-get autoremove
@@ -79,8 +79,8 @@ Vagrant.configure(2) do |config|
     chown -R vagrant:vagrant /home/vagrant
     sudo mv /etc/mongodb.conf /etc/mongodb.conf.orig
     sudo mv /tmp/mongodb.conf /etc/mongodb.conf
-    sudo systemctl enable mongodb
-    sudo systemctl start mongodb
+    sudo systemctl enable mongod
+    sudo systemctl start mongod
     sudo systemctl enable gearman-job-server
     sudo systemctl start gearman-job-server
   SHELL
