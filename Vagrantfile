@@ -73,6 +73,8 @@ Vagrant.configure(2) do |config|
     sudo pip3 install requests
     sudo pip3 install virtualenv
     sudo pip3 install gearman
+    sudo npm install -g mocha
+    sudo npm install -g sails
     mkdir /home/vagrant/.go
     mkdir /home/vagrant/.mongodb
     echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.profile
