@@ -73,6 +73,7 @@ Vagrant.configure(2) do |config|
     sudo pip3 install requests
     sudo pip3 install virtualenv
     sudo pip3 install gearman
+    sudo pip3 install pymongo
     sudo npm install -g mocha
     sudo npm install -g sails
     mkdir /home/vagrant/.go

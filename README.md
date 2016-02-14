@@ -25,6 +25,7 @@ Included Packages
 	Python 3 package "requests"
 	Python 3 package "gearman"
 	Python 3 package "virtualenv"
+	Python 3 package "pymongo"
 	NodeJS
 	NPM
 	NodeJS package "mocha"
