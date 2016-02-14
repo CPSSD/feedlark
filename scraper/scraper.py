@@ -19,6 +19,9 @@ class Scraper:
 
         The item contains a title, link, date published, and article text.
         '''
+        if type(rss_url) != str:
+            raise TypeError('URL must be a string')
+        
         feed = feedparser.parse(rss_url)
         
         items_list = []
