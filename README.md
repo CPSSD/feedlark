@@ -14,7 +14,7 @@ Dependencies
 Included Packages
 ------------
 
-	Nginx
+	Git
 	MongoDB
 	Gearman Job Server
 	Go Compiler (& GOPATH)
@@ -23,9 +23,13 @@ Included Packages
 	Python 3 package "feeparser"
 	Python 3 package "beautifulsoup4"
 	Python 3 package "requests"
-	Python 3 package "Django"
 	Python 3 package "gearman"
 	Python 3 package "virtualenv"
+	NodeJS
+	NPM
+	NodeJS package "mocha"
+	NodeJS package "sails"
+	
 
 Something missing? Open an issue with the following content:
 
@@ -62,8 +66,9 @@ To stop the box:
 
 	$ vagrant halt
 
-All other services (Nginx, mongoDB) should be exposed on the IP `192.168.2.2`
+MongoDB is forwarded/exposed on port `27017`
 
-Use the `html` folder to store any web hosted files
+All other services (Nginx, MongoDB) should be exposed on the IP `192.168.2.2`
 
 Use `python3` and `pip3` commands instead of their normal versions (which are 2.X based)
+
