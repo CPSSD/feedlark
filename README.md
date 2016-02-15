@@ -28,9 +28,7 @@ Included Packages
 	Python 3 package "pymongo"
 	NodeJS
 	NPM
-	NodeJS package "mocha"
-	NodeJS package "sails"
-	
+	NodeJS packages from "server" directory
 
 Something missing? Open an issue with the following content:
 
@@ -58,6 +56,10 @@ Usage
 To start the box:
 
 	$ vagrant up
+
+To update an existing box (after starting):
+
+	$ vagrant provision
 
 To gain SSH access:
 

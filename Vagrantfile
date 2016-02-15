@@ -61,11 +61,12 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
     sudo echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
     sudo apt-get update
-    sudo apt-get install -y mongodb-org python3 python3-pip gearman-job-server nodejs git golang build-essential
+    sudo apt-get install -y mongodb-org python3 python3-pip gearman-job-server git golang nodejs npm build-essential
+    sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
     sudo pip3 install feedparser
@@ -74,18 +75,19 @@ Vagrant.configure(2) do |config|
     sudo pip3 install virtualenv
     sudo pip3 install gearman
     sudo pip3 install pymongo
+    cd /vagrant/server && npm install -y
     mkdir /home/vagrant/.go
     mkdir /home/vagrant/.mongodb
     chmod 777 /home/vagrant/.mongodb
-    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.profile
     chown -R vagrant:vagrant /home/vagrant
     sudo mv /etc/mongod.conf /etc/mongod.conf.orig
     sudo mv /tmp/mongod.conf /etc/mongod.conf
+    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.bashrc
+    echo "alias npm-exec='PATH=$(npm bin):$PATH'" >> /home/vagrant/.bashrc
     sudo systemctl enable mongod
     sudo systemctl start mongod
     sudo systemctl enable gearman-job-server
     sudo systemctl start gearman-job-server
-
   SHELL
 
 end
