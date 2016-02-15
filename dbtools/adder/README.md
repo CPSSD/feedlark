@@ -17,3 +17,28 @@ Running `go get` in the dir the file is in supposedly adds the required librarie
 How to do tests
 ---------------
 Move to this directory, and run `go test`
+
+
+How to use
+----------
+
+The `db-add` tool expects you to give it gearman data formatted like this:
+```js
+    "database":"feeds",
+    "collection":"rss",
+    "data":{
+        "dank":"memes"   
+    }
+```
+
+The `db-update` tool expects you to give it gearman data formatted like this:
+```js
+    "database":"feeds",
+    "collection":"rss",
+    "data":{
+        "updates":{
+            "dank":"cave"
+        },
+        "id":ObjectId(000000000000)
+    }
+```
