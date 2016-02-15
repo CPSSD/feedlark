@@ -8,7 +8,7 @@ import (
 )
 
 func Create() error {
-	fmt.Println("Creating Gearman worker 'db-add'")
+	fmt.Println("Creating Gearman worker 'db-add' & 'db-update'")
 	w := worker.New(worker.OneByOne)
 	w.ErrorHandler = func(e error) {
 		fmt.Println(e)
