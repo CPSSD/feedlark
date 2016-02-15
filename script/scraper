@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd scraper
+python3 -m unittest
+cd ..

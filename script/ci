@@ -4,6 +4,4 @@
 ls -AlhtR
 
 #Test scraper
-cd scraper
-python3 -m unittest
-cd ..
+/bin/sh -xe scraper
