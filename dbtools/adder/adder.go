@@ -1,4 +1,4 @@
-package main
+package adder
 
 import (
 	"fmt"
@@ -6,20 +6,22 @@ import (
 	//	"gopkg.in/mgo.v2"
 )
 
-func main() {
+func Create() error {
+	fmt.Println("Creating Gearman worker 'db-add'")
 	w := worker.New(worker.OneByOne)
-	defer w.Close()
 	w.ErrorHandler = func(e error) {
 		fmt.Println(e)
 	}
 	w.AddServer("tcp4", "127.0.0.1:4730")
 	w.AddFunc("db-add", DbAdd, worker.Unlimited)
+
 	if err := w.Ready(); err != nil {
 		fmt.Println("Fatal error")
 		fmt.Println(err)
-		return
+		return err
 	}
 	go w.Work()
+	return nil
 }
 
 func DbAdd(job worker.Job) ([]byte, error) {
