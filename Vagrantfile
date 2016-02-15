@@ -65,7 +65,17 @@ Vagrant.configure(2) do |config|
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
     sudo echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
     sudo apt-get update
-    sudo apt-get install -y mongodb-org python3 python3-pip gearman-job-server git golang nodejs npm build-essential openjdk-7-jdk
+    sudo apt-get install -y mongodb-org
+    sudo apt-get install -y python3
+    sudo apt-get install -y python3-pip
+    sudo apt-get install -y gearman-job-server
+    sudo apt-get install -y git
+    sudo apt-get install -y golang
+    sudo apt-get install -y nodejs
+    sudo apt-get install -y npm
+    sudo apt-get install -y build-essential
+    sudo apt-get install -y openjdk-7-jdk
+    sudo apt-get install -y scala
     sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
@@ -76,14 +86,15 @@ Vagrant.configure(2) do |config|
     sudo pip3 install gearman
     sudo pip3 install pymongo
     cd /vagrant/server && npm install -y
+    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.bashrc
+    echo "alias npm-exec='PATH=$(npm bin):$PATH'" >> /home/vagrant/.bashrc
     mkdir /home/vagrant/.go
     mkdir /home/vagrant/.mongodb
     chmod 777 /home/vagrant/.mongodb
     chown -R vagrant:vagrant /home/vagrant
     sudo mv /etc/mongod.conf /etc/mongod.conf.orig
+    sudo rm -f /etc/mongod.conf
     sudo mv /tmp/mongod.conf /etc/mongod.conf
-    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.bashrc
-    echo "alias npm-exec='PATH=$(npm bin):$PATH'" >> /home/vagrant/.bashrc
     sudo systemctl enable mongod
     sudo systemctl start mongod
     sudo systemctl enable gearman-job-server

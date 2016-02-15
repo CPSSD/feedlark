@@ -15,10 +15,10 @@ Included Packages
 ------------
 
 	Git
-	MongoDB
+	MongoDB v3.2+
 	Gearman Job Server
 	Go Compiler (& GOPATH)
-	Python 2 + 3
+	Python 2.7.10 + 3.4+
 	Pip 3
 	Python 3 package "feeparser"
 	Python 3 package "beautifulsoup4"
@@ -26,9 +26,11 @@ Included Packages
 	Python 3 package "gearman"
 	Python 3 package "virtualenv"
 	Python 3 package "pymongo"
-	NodeJS
+	NodeJS 4.3
 	NPM
 	NodeJS packages from "server" directory
+	OpenJDK 7
+	Scala 2.11
 
 Something missing? Open an issue with the following content:
 
