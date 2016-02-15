@@ -74,8 +74,6 @@ Vagrant.configure(2) do |config|
     sudo pip3 install virtualenv
     sudo pip3 install gearman
     sudo pip3 install pymongo
-    sudo npm install -g mocha
-    sudo npm install -g sails
     mkdir /home/vagrant/.go
     mkdir /home/vagrant/.mongodb
     chmod 777 /home/vagrant/.mongodb
@@ -87,6 +85,7 @@ Vagrant.configure(2) do |config|
     sudo systemctl start mongod
     sudo systemctl enable gearman-job-server
     sudo systemctl start gearman-job-server
+
   SHELL
 
 end
