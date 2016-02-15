@@ -2,3 +2,8 @@
 
 # This is the entry script for Jenkins
 ls -AlhtR
+
+#Test scraper
+cd scraper
+python3 -m unittest
+cd ..
