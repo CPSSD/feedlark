@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -xe
 
 cd scraper
 python3 -m unittest
