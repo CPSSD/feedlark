@@ -72,7 +72,6 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y git
     sudo apt-get install -y golang
     sudo apt-get install -y nodejs
-    sudo apt-get install -y npm
     sudo apt-get install -y build-essential
     sudo apt-get install -y openjdk-7-jdk
     sudo apt-get install -y scala
@@ -90,8 +89,9 @@ Vagrant.configure(2) do |config|
     echo "alias npm-exec='PATH=$(npm bin):$PATH'" >> /home/vagrant/.bashrc
     mkdir /home/vagrant/.go
     mkdir /home/vagrant/.mongodb
-    chmod 777 /home/vagrant/.mongodb
+    chmod 755 /home/vagrant/.mongodb
     chown -R vagrant:vagrant /home/vagrant
+    chown -R mongodb:mongodb /home/vagrant/.mongodb
     sudo mv /etc/mongod.conf /etc/mongod.conf.orig
     sudo rm -f /etc/mongod.conf
     sudo mv /tmp/mongod.conf /etc/mongod.conf
