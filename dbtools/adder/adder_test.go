@@ -12,14 +12,14 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDocumentAdd(t *testing.T) {
-	err := AddDocument("127.0.0.1:27017", "testing", "adder", "{\"data\":\"nothing worth saying\"}")
+	err := AddDocument("127.0.0.1:27017", "testing", "adder", "{\"data\":{\"info\":\"nothing worth saying\"}}")
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestDocumentUpdate(t *testing.T) {
-	err := AddDocument("127.0.0.1:27017", "testing", "updater", "{\"_id\":ObjectId(000000000000),\"dank\":\"memes\"}")
+	err := AddDocument("127.0.0.1:27017", "testing", "updater", "{\"_id\":ObjectId(000000000000),\"data\":{\"dank\":\"memes\"}}")
 	if err != nil {
 		t.Error(err)
 	}
