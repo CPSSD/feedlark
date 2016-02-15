@@ -16,3 +16,4 @@ Running `go get` in the dir the file is in supposedly adds the required librarie
 
 How to do tests
 ---------------
+Move to this directory, and run `go test`
