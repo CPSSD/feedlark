@@ -10,7 +10,6 @@ class TestScraping(unittest.TestCase):
         test_feed = scr.get_feed_data('http://u.m1cr0man.com/l/feed.txt')
 
         title = 'Why it is NOT WISE to discuss personal information in front of smart TVs'
-        title = 'abcdefg' #Test that CI is working properly
         self.assertEqual(test_feed[0]['title'],title)
 
         link = 'http://www.hackernews.org/2016/02/14/why-it-is-not-wise-to-discuss-personal-information-in-front-of-smart-tvs/'
