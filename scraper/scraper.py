@@ -21,15 +21,15 @@ class Scraper:
         '''
         if type(rss_url) != str:
             raise TypeError('URL must be a string')
-        
+
         feed = feedparser.parse(rss_url)
-        
-        items_list = []
+
+        items_list = {"id" : rss_url,"database":"feeds","collection":"rss", "data": []}
         for item in feed['entries']:
-            items_list.append({
+            items_list["data"].append( {
                 'title':item['title'],
                 'link':item['link'],
-                'pub_date':item['published_parsed'],
+                'pub_date':item['published'],
                 'article_text':self._parse_from_web(item['link']),
                 })
 
@@ -38,13 +38,13 @@ class Scraper:
     def _parse_from_web(self, article_url):
         html = requests.get(article_url).content
         soup = BeautifulSoup(html,'html.parser')
-        
+
         for s in soup(['style', 'script', '[document]', 'head', 'title']):
             s.extract()
-        
+
         return soup.getText()
 
 ##scr = Scraper()
-##for item in scr.get_feed_data("http://spritesmods.com/rss.php"):
-##    print(item['article_text'])
+##for item in scr.get_feed_data("http://spritesmods.com/rss.php")["data"]:
+##    print(item)
 ##    print()
