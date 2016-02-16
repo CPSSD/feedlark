@@ -29,7 +29,7 @@ class Scraper:
             items_list.append({
                 'title':item['title'],
                 'link':item['link'],
-                'pub_date':item['published_parsed'],
+                'pub_date':item['published'],
                 'article_text':self._parse_from_web(item['link']),
                 })
 
@@ -45,6 +45,6 @@ class Scraper:
         return soup.getText()
 
 ##scr = Scraper()
-##for item in scr.get_feed_data("http://spritesmods.com/rss.php")["data"]:
+##for item in scr.get_feed_data("http://spritesmods.com/rss.php"):
 ##    print item
 ##    print
