@@ -18,7 +18,7 @@ def get_users(gm_client):
     request = json.dumps({
         'database':'feedlark',
         'collection':'users',
-        'query':''
+        'query':'',
         'projection':{
             'username':1,
             'subscribed_feeds':1,
@@ -32,7 +32,7 @@ def get_users(gm_client):
 def put_g2g(data):
     pass
 
-def aggregate():
+def aggregate(gearman_worker, gearman_job):
     gm_client = gearman.GearmanClient(['localhost:4730'])
     user_data = get_users(gm_client)['results']
 
@@ -54,6 +54,10 @@ def aggregate():
 
     put_g2g(g2g_data)
 
-        
-    
+
+gm_worker = gearman.GearmanWorker(['localhost:4730'])
+gm_worker.set_client_id('aggregator')
+gm_worker.register_task('aggregate', aggregate)
+
+gm_worker.work()
     
