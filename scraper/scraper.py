@@ -29,7 +29,7 @@ class Scraper:
             items_list["data"].append( {
                 'title':item['title'],
                 'link':item['link'],
-                'pub_date':item['published'],
+                'pub_date':item['published_parsed'],
                 'article_text':self._parse_from_web(item['link']),
                 })
 
