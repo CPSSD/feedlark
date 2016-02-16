@@ -21,3 +21,11 @@ Move to this directory, and run `go test`
 
 How to use
 ----------
+for `db-get` worker:
+```js
+    "database": "feedlark",
+    "collection": "users",
+    "query": {
+        "email":"cian.ruane9@mail.dcu.ie"
+    }
+```
