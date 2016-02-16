@@ -4,8 +4,8 @@ import feedparser
 from bs4 import BeautifulSoup
 
 
-#Ensure the class is used with Python 3 or greater.
-assert sys.version_info >= (3,0)
+#Ensure the class is used with a recent Python 2.
+assert (2,5) <= sys.version_info <= (3,0)
 
 
 class Scraper:
@@ -21,9 +21,9 @@ class Scraper:
         '''
         if type(rss_url) != str:
             raise TypeError('URL must be a string')
-        
+
         feed = feedparser.parse(rss_url)
-        
+
         items_list = []
         for item in feed['entries']:
             items_list.append({
@@ -38,13 +38,13 @@ class Scraper:
     def _parse_from_web(self, article_url):
         html = requests.get(article_url).content
         soup = BeautifulSoup(html,'html.parser')
-        
+
         for s in soup(['style', 'script', '[document]', 'head', 'title']):
             s.extract()
-        
+
         return soup.getText()
 
 ##scr = Scraper()
-##for item in scr.get_feed_data("http://spritesmods.com/rss.php"):
-##    print(item['article_text'])
-##    print()
+##for item in scr.get_feed_data("http://spritesmods.com/rss.php")["data"]:
+##    print item
+##    print
