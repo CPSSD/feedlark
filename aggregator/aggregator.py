@@ -1,11 +1,13 @@
 import gearman
 import json
 
-def get_feeds(gm_client):
+def get_feeds(gm_client, feed_url):
     request = json.dumps({
         'database':'feedlark',
         'collection':'feeds',
-        'query':'',
+        'query':{
+            'url':feed_url,
+            },
         })
 
     #submit_job as below is blocking
@@ -20,7 +22,7 @@ def get_users(gm_client):
         'projection':{
             'username':1,
             'subscribed_feeds':1,
-            }
+            },
         })
 
     #submit_job as below is blocking
@@ -33,22 +35,20 @@ def put_g2g(data):
 def aggregate():
     gm_client = gearman.GearmanClient(['localhost:4730'])
     user_data = get_users(gm_client)['results']
-    feed_data = get_feeds(gm_client)['results']
 
     g2g_data = []
     for user in user_data:
         user_g2g = {'username':user['username'],'feeds':[]}
 
-        for feed in feed_data:
-            if feed['url'] in user['subscribed_feeds']:
-                user_g2g['feeds'].extend([
-                    {
-                        'feed':feed['url'],
-                        'name':item['name'],
-                        'link':item['link'],
-                        'pub_date':item['pub_date'],
-                    } for item in feed['items']]
-                                         )
+        for feed_url in user['subscribed_feeds']:
+            user_g2g['feeds'].extend([
+                {
+                    'feed':feed['url'],
+                    'name':item['name'],
+                    'link':item['link'],
+                    'pub_date':item['pub_date'],
+                } for item in get_feeds(gm_client, feed_url)['items']]
+                                     )
         user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'])
         g2g_data.append(user_g2g)
 
