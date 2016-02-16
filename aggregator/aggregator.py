@@ -12,7 +12,7 @@ def get_feeds(gm_client, feed_url):
 
     #submit_job as below is blocking
     gm_job = gm_client.submit_job('db-get',request)
-    return json.loads(gm_job.result)
+    return json.loads(gm_job.result)['results']
 
 def get_users(gm_client):
     request = json.dumps({
@@ -53,6 +53,7 @@ def aggregate(gearman_worker, gearman_job):
         g2g_data.append(user_g2g)
 
     put_g2g(g2g_data)
+    return "SUCCESS"
 
 
 gm_worker = gearman.GearmanWorker(['localhost:4730'])
