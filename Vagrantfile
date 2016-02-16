@@ -36,13 +36,9 @@ Vagrant.configure(2) do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
+  config.vm.provider "virtualbox" do |vb|
+     vb.memory = "1024"
+  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
@@ -50,28 +46,35 @@ Vagrant.configure(2) do |config|
   # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
   # such as FTP and Heroku are also available. See the documentation at
   # https://docs.vagrantup.com/v2/push/atlas.html for more information.
+  # ^^^ We should look at this for our eventual deploy --devoxel
+
   # config.push.define "atlas" do |push|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
 
   # Add mongodb config
-  config.vm.provision "file", source: "script/mongod.conf", destination: "/tmp/mongod.conf"
+  config.vm.provision "file", source: "script/vagrant/mongod.conf", destination: "/tmp/mongod.conf"
+
+  # Make sure the swap is up before installs
+  config.vm.provision "shell", path: "script/vagrant/create_swap.sh"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
+
+  # Should we move and seperate all this stuff to script/vagrant? -- devoxel
   config.vm.provision "shell", inline: <<-SHELL
-    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     sudo echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
     sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-    sudo apt-get update -y
+    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     sudo apt-get install -y gcc-4.8 g++-4.8
     sudo apt-get install -y python-software-properties
     sudo apt-get install -y mongodb-org
     sudo apt-get install -y python3
-    sudo apt-get install -y python3-pip
+    sudo apt-get install -y python-pip
+    sudo apt-get install -y python-dev
     sudo apt-get install -y gearman-job-server
     sudo apt-get install -y git
     sudo apt-get install -y golang
@@ -82,17 +85,17 @@ Vagrant.configure(2) do |config|
     sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
-    sudo pip3 install feedparser
-    sudo pip3 install beautifulsoup4
-    sudo pip3 install requests
-    sudo pip3 install virtualenv
-    sudo pip3 install gearman
-    sudo pip3 install pymongo
-    cd /vagrant/server && npm install -y
-    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.bashrc
-    echo "alias npm-exec='PATH=$(npm bin):$PATH'" >> /home/vagrant/.bashrc
-    mkdir /home/vagrant/.go
-    mkdir /home/vagrant/.mongodb
+    sudo pip install feedparser
+    sudo pip install beautifulsoup4
+    sudo pip install requests
+    sudo pip install virtualenv
+    sudo pip install gearman
+    sudo pip install pymongo
+    npm cache clean
+    cd /vagrant/server && npm install -y --no-bin-links
+    echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
+    mkdir -p /home/vagrant/.go
+    mkdir -p /home/vagrant/.mongodb
     chmod 755 /home/vagrant/.mongodb
     chown -R vagrant:vagrant /home/vagrant
     chown -R mongodb:mongodb /home/vagrant/.mongodb
