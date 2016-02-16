@@ -14,18 +14,23 @@ Dependencies
 Included Packages
 ------------
 
-	Nginx
-	MongoDB
+	Git
+	MongoDB v3.2+
 	Gearman Job Server
 	Go Compiler (& GOPATH)
-	Python 2 + 3
+	Python 2.7.10 + 3.4+
 	Pip 3
 	Python 3 package "feeparser"
 	Python 3 package "beautifulsoup4"
 	Python 3 package "requests"
-	Python 3 package "Django"
 	Python 3 package "gearman"
 	Python 3 package "virtualenv"
+	Python 3 package "pymongo"
+	NodeJS 4.3
+	NPM
+	NodeJS packages from "server" directory
+	OpenJDK 7
+	Scala 2.11
 
 Something missing? Open an issue with the following content:
 
@@ -54,6 +59,10 @@ To start the box:
 
 	$ vagrant up
 
+To update an existing box (after starting):
+
+	$ vagrant provision
+
 To gain SSH access:
 
 	$ vagrant ssh
@@ -62,8 +71,9 @@ To stop the box:
 
 	$ vagrant halt
 
-All other services (Nginx, mongoDB) should be exposed on the IP `192.168.2.2`
+MongoDB is forwarded/exposed on port `27017`
 
-Use the `html` folder to store any web hosted files
+All other services (Nginx, MongoDB) should be exposed on the IP `192.168.2.2`
 
 Use `python3` and `pip3` commands instead of their normal versions (which are 2.X based)
+

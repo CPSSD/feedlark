@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 27017, host: 27017
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -55,17 +55,31 @@ Vagrant.configure(2) do |config|
   # end
 
   # Add mongodb config
-  config.vm.provision "file", source: "script/mongodb.conf", destination: "/tmp/mongodb.conf"
+  config.vm.provision "file", source: "script/mongod.conf", destination: "/tmp/mongod.conf"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    sudo curl -sL https://deb.nodesource.com/setup_4.x
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     sudo echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-    sudo apt-get update
-    sudo apt-get install -y mongodb-org python3 python3-pip gearman-job-server git golang nodejs npm build-essential
+    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+    sudo apt-get update -y
+    sudo apt-get install -y gcc-4.8 g++-4.8
+    sudo apt-get install -y python-software-properties
+    sudo apt-get install -y mongodb-org
+    sudo apt-get install -y python3
+    sudo apt-get install -y python3-pip
+    sudo apt-get install -y gearman-job-server
+    sudo apt-get install -y git
+    sudo apt-get install -y golang
+    sudo apt-get install -y nodejs
+    sudo apt-get install -y build-essential
+    sudo apt-get install -y openjdk-7-jdk
+    sudo apt-get install -y scala
+    sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
     sudo pip3 install feedparser
@@ -73,14 +87,18 @@ Vagrant.configure(2) do |config|
     sudo pip3 install requests
     sudo pip3 install virtualenv
     sudo pip3 install gearman
-    sudo npm install -g mocha
-    sudo npm install -g sails
+    sudo pip3 install pymongo
+    cd /vagrant/server && npm install -y
+    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.bashrc
+    echo "alias npm-exec='PATH=$(npm bin):$PATH'" >> /home/vagrant/.bashrc
     mkdir /home/vagrant/.go
     mkdir /home/vagrant/.mongodb
-    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.profile
+    chmod 755 /home/vagrant/.mongodb
     chown -R vagrant:vagrant /home/vagrant
-    sudo mv /etc/mongodb.conf /etc/mongodb.conf.orig
-    sudo mv /tmp/mongodb.conf /etc/mongodb.conf
+    chown -R mongodb:mongodb /home/vagrant/.mongodb
+    sudo mv /etc/mongod.conf /etc/mongod.conf.orig
+    sudo rm -f /etc/mongod.conf
+    sudo mv /tmp/mongod.conf /etc/mongod.conf
     sudo systemctl enable mongod
     sudo systemctl start mongod
     sudo systemctl enable gearman-job-server
