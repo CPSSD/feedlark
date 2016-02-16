@@ -27,7 +27,7 @@ class Scraper:
         items_list = []
         for item in feed['entries']:
             items_list.append({
-                'title':item['title'],
+                'name':item['title'],
                 'link':item['link'],
                 'pub_date':item['published'],
                 'article_text':self._parse_from_web(item['link']),
