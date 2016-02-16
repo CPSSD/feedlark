@@ -64,17 +64,17 @@ Vagrant.configure(2) do |config|
 
   # Should we move and seperate all this stuff to script/vagrant? -- devoxel
   config.vm.provision "shell", inline: <<-SHELL
-    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     sudo echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
     sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-    sudo apt-get update -y
+    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     sudo apt-get install -y gcc-4.8 g++-4.8
     sudo apt-get install -y python-software-properties
     sudo apt-get install -y mongodb-org
     sudo apt-get install -y python3
-    sudo apt-get install -y python3-pip
+    sudo apt-get install -y python-pip
+    sudo apt-get install -y python-dev
     sudo apt-get install -y gearman-job-server
     sudo apt-get install -y git
     sudo apt-get install -y golang
@@ -85,18 +85,17 @@ Vagrant.configure(2) do |config|
     sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
-    sudo pip3 install feedparser
-    sudo pip3 install beautifulsoup4
-    sudo pip3 install requests
-    sudo pip3 install virtualenv
-    sudo pip3 install gearman
-    sudo pip3 install pymongo
+    sudo pip install feedparser
+    sudo pip install beautifulsoup4
+    sudo pip install requests
+    sudo pip install virtualenv
+    sudo pip install gearman
+    sudo pip install pymongo
     npm cache clean
     cd /vagrant/server && npm install -y --no-bin-links
-    echo "export GOPATH=/home/vagrant/.go" >> /home/vagrant/.bashrc
+    echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
     mkdir -p /home/vagrant/.go
     mkdir -p /home/vagrant/.mongodb
-    # Are the next few lines unsafe?
     chmod 755 /home/vagrant/.mongodb
     chown -R vagrant:vagrant /home/vagrant
     chown -R mongodb:mongodb /home/vagrant/.mongodb
