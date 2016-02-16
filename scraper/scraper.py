@@ -4,8 +4,8 @@ import feedparser
 from bs4 import BeautifulSoup
 
 
-#Ensure the class is used with Python 3 or greater.
-assert sys.version_info >= (3,0)
+#Ensure the class is used with a recent Python 2.
+assert (2,5) <= sys.version_info <= (3,0)
 
 
 class Scraper:
@@ -24,9 +24,9 @@ class Scraper:
 
         feed = feedparser.parse(rss_url)
 
-        items_list = {"id" : rss_url,"database":"feeds","collection":"rss", "data": []}
+        items_list = []
         for item in feed['entries']:
-            items_list["data"].append( {
+            items_list.append({
                 'title':item['title'],
                 'link':item['link'],
                 'pub_date':item['published_parsed'],
@@ -46,5 +46,5 @@ class Scraper:
 
 ##scr = Scraper()
 ##for item in scr.get_feed_data("http://spritesmods.com/rss.php")["data"]:
-##    print(item)
-##    print()
+##    print item
+##    print
