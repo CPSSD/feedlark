@@ -43,8 +43,3 @@ class Scraper:
             s.extract()
 
         return soup.getText()
-
-##scr = Scraper()
-##for item in scr.get_feed_data("http://spritesmods.com/rss.php"):
-##    print item
-##    print
