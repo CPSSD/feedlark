@@ -36,14 +36,55 @@ def get_users(gm_client):
     gm_job = gm_client.submit_job('db-get',request)
     return json.loads(gm_job.result)['docs']
 
-def put_g2g(data):
-    pass
+def get_g2g_id(gm_client, username):
+    request = json.dumps({
+        'database':'feedlark',
+        'collection':'g2g',
+        'query':{
+            'username':username,
+            },
+        'projection':{
+            '_id':1,
+            },
+        })
+
+    #submit_job as below is blocking
+    gm_job = gm_client.submit_job('db-get',request)
+
+    #Pull out the first result's _id
+    return_doc = json.loads(gm_job.result)['docs']
+    if return_doc == []:
+        return -1
+    else:
+        return return_doc[0]['_id']
+
+def put_g2g(gm_client, object_id, data):
+    if object_id == -1:
+        request = json.dumps({
+            'database':'feedlark',
+            'collection':'g2g',
+            'data':data,
+            })
+
+        gm_job = gm_client.submit_job('db-add',request)        
+
+    else:
+        request = json.dumps({
+            'database':'feedlark',
+            'collection':'g2g',
+            'data':{
+                'updates':data,
+                'id':object_id,
+                },
+            })
+
+        gm_job = gm_client.submit_job('db-add',request)
+
 
 def aggregate(gearman_worker, gearman_job):
     gm_client = gearman.GearmanClient(['localhost:4730'])
     user_data = get_users(gm_client)
 
-    g2g_data = []
     for user in user_data:
         user_g2g = {'username':user['username'],'feeds':[]}
 
@@ -57,9 +98,10 @@ def aggregate(gearman_worker, gearman_job):
                 } for item in get_feed_items(gm_client, feed_url)]
                                      )
         user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'])
-        g2g_data.append(user_g2g)
 
-    put_g2g(g2g_data)
+        user_obj_id = get_g2g_id(gm_client, user['username'])
+        put_g2g(gm_client, user_obj_id, user_g2g)
+
     return "SUCCESS"
 
 
@@ -68,4 +110,3 @@ gm_worker.set_client_id('aggregator')
 gm_worker.register_task('aggregate', aggregate)
 
 gm_worker.work()
-    
