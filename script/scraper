@@ -2,5 +2,5 @@
 set -xe
 
 cd scraper
-python3 -m unittest
+python testing.py
 cd ..
