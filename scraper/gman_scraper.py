@@ -3,8 +3,8 @@ import json
 import gearman
 
 # Parses data to json to allow for db update
-def parse_to_json(id, url , allData):
-	items_list = {"database":"feedlark","collection":"feeds", "data": {updates : {"items":allData}, "id": id } }
+def parse_updates_to_json(item_id, url , allData):
+	items_list = {"database":"feedlark","collection":"feeds", "data": {"updates" : {"items":allData}, "id": item_id } }
 	return json.dumps(items_list)
 
 # parses data to json to allow for adding to db
@@ -14,34 +14,56 @@ def parse_to_json(url , allData):
 
 # submits a job to getter gearman worker to get all ids and urls (references) of the feeds
 def get_all_feed_ids_url():
-	to_get = {"database":"feedlark","collection":"feeds", "query": {}}
-	fields_gotten = gm_client.submit_job("db-get", json.dumps(json_to_get))
-	return fields_gotten
+	# fotmat the requests from the db
+	to_get_urls = {"database":"feedlark","collection":"feeds", "query": {},"projection":{"_id":0,}}
+	to_get_ids = {"database":"feedlark","collection":"feeds", "query": {},"projection":{}}
+
+	# submit the jobs to get the ids and urls from the db.
+	url_fields_gotten = gm_client.submit_job("db-get", json.dumps(to_get_urls))
+	id_fields_gotten = gm_client.submit_job("db-get", json.dumps(to_get_ids))
+
+	#extract the url strings
+	urls = []
+	for item in url_fields_gotten.result[9:-2].split(","):
+		urls.append(item[11:-2])
+
+	#extract the id strings
+	ids = []
+	for item in id_fields_gotten.result[9:-2].split(","):
+		ids.append(item[9:-1])
+
+	return urls, ids
+
 
 # updates all of the item fields for all the unique feeds in the feeds db
-def update_all_feeds():
-	feed_references = get_all_feed_ids_url()
-	for i in range(len(feed_references)):
-		json_data = parse_to_json(feed_references["id"], feed_references["url"], scr.get_feed_data(url))
-		print json_data
-		gm_client.submit_job("db-update", json_data)
+def update_all_feeds(worker,job):
+	print "Update feeds Worker initiated"
+	item_urls, item_ids = get_all_feed_ids_url()
+
+	test_holder = []
+	for i in range(len(item_urls)):
+		json_data = parse_updates_to_json(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
+		test_holder.append(json_data)
+		#gm_client.submit_job("db-update", json_data)
+	return json.dumps(test_holder)
 
 # Adds a new feed to the feeds db
 def add_feed(url):
 	json_data = parse_to_json(url, scr.get_feed_data(url))
 	print json_data
-	completed_job_request = gm_client.submit_job("db-add", json_data)
-	check_request_status(completed_job_request)
+	#gm_client.submit_job("db-add", json_data)
 
-def check_request_status(job_request):
-    if job_request.complete:
-        print "Job %s finished!  Result: %s - %s" % (job_request.job.unique, job_request.state, job_request.result)
-    elif job_request.timed_out:
-        print "Job %s timed out!" % job_request.unique
-    elif job_request.state == JOB_UNKNOWN:
-        print "Job %s connection failed!" % job_request.unique
 
 scr = Scraper()
+
+# make the gearman worker to update feeds or add a new feed(adding not done yet). Make the client to allow adder and getter job calls.
+print "Initiating gearman worker"
+gm_worker = gearman.GearmanWorker(['localhost:4730'])
+print "Initiating Client"
 gm_client = gearman.GearmanClient(["localhost:4730"])
 
-#add_feed("http://spritesmods.com/rss.php")
+# register the tasks -> update all the feeds, add new feeds.
+print "Registering task 'update-all-feeds'"
+gm_worker.register_task('update-all-feeds', update_all_feeds)
+#gm_worker.register_task('add-new-feed', feed_url_to_add)
+gm_worker.work()
