@@ -17,7 +17,7 @@ module.exports.models = {
   * connections (see `config/connections.js`)                                *
   *                                                                          *
   ***************************************************************************/
-  connection: 'g2gMongoDb',
+  connection: 'g2gMongodb',
 
   /***************************************************************************
   *                                                                          *
