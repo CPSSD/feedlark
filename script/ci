@@ -1,3 +1,4 @@
 # This is the entry for ci. Make sure your scripts are executable.
 
 ./script/scraper
+./script/server
