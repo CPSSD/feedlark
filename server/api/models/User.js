@@ -22,7 +22,7 @@ module.exports = {
       type: 'string'
     },
     subscribed_feeds: {
-      collection: 'array'
+      type: 'array'
     }
   }
 };
