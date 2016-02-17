@@ -15,22 +15,19 @@ def parse_to_json(url , allData):
 # submits a job to getter gearman worker to get all ids and urls (references) of the feeds
 def get_all_feed_ids_url():
 	# fotmat the requests from the db
-	to_get_urls = {"database":"feedlark","collection":"feeds", "query": {},"projection":{"_id":0,}}
-	to_get_ids = {"database":"feedlark","collection":"feeds", "query": {},"projection":{}}
+	to_get_urls_ids = {"database":"feedlark","collection":"feeds", "query": {},"projection":{"_id":1, "url":1}}
 
 	# submit the jobs to get the ids and urls from the db.
-	url_fields_gotten = gm_client.submit_job("db-get", json.dumps(to_get_urls))
-	id_fields_gotten = gm_client.submit_job("db-get", json.dumps(to_get_ids))
+	url_fields_gotten = gm_client.submit_job("db-get", json.dumps(to_get_urls_ids))
 
-	#extract the url strings
+	#extract the url and id strings
 	urls = []
-	for item in url_fields_gotten.result[9:-2].split(","):
-		urls.append(item[11:-2])
-
-	#extract the id strings
 	ids = []
-	for item in id_fields_gotten.result[9:-2].split(","):
-		ids.append(item[9:-1])
+	for item in url_fields_gotten.result[9:-2].split(","):
+		if "url" in item:
+			urls.append(item[11:-1])
+		else:
+			ids.append(item[9:-1])
 
 	return urls, ids
 
@@ -55,6 +52,7 @@ def add_feed(url):
 
 
 scr = Scraper()
+
 
 # make the gearman worker to update feeds or add a new feed(adding not done yet). Make the client to allow adder and getter job calls.
 print "Initiating gearman worker"
