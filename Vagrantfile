@@ -106,6 +106,7 @@ Vagrant.configure(2) do |config|
     sudo systemctl start mongod
     sudo systemctl enable gearman-job-server
     sudo systemctl start gearman-job-server
+    mongo ../../vagrant/script/vagrant/create_feed_user_db.js
   SHELL
 
 end
