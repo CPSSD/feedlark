@@ -5,7 +5,7 @@ before(function(done) {
 
   sails.lift({
     log: {
-      level: "verbose"
+      level: "silent"
     },
     models: {
       connection: 'test',

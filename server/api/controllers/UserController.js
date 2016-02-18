@@ -25,7 +25,7 @@ module.exports = {
         if (req.wantsJSON) {
           return res.badRequest('Invalid username/password combination.');
         }
-        return res.redirect("/login");
+        return res.view("login", {});
       };
 
       if (!user) {
@@ -74,16 +74,17 @@ module.exports = {
         subscribed_feeds: [],
         password: hash
       })
-      .then(function (user) {
+      .exec(function (err, user) {
+        if (err) {
+          console.log(err);
+          // Redirect to signup page
+          return res.view('signup', {});
+        }
         req.session.authenticated = user.email;
         if (req.wantsJSON) {
           return res.ok('Signup successful! Horray!');
         }
-        return res.redirect('/welcome');
-      })
-      .catch(function (err) {
-        console.log(err);
-        return res.negotiate(err);
+        return res.view('profile', {});
       });
     });
   },

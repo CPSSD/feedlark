@@ -24,12 +24,12 @@ module.exports.connections = {
     adapter: 'sails-memory'
   },
 
-  g2gMongodb: {
+  mongo: {
     adapter: 'sails-mongo',
     host: 'localhost',
     port: 27017,
     user: '',
     password: '',
-    database: 'test'
+    database: 'feedlark'
   }
 };
