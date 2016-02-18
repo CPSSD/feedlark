@@ -1,0 +1,12 @@
+#!/bin/bash
+set -xe
+
+cd server
+
+if [ ! -d "node_modules" ]; then
+  npm install -y --no-bin-links
+else
+  npm update
+fi
+
+npm run test
