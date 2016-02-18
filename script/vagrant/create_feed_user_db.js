@@ -1,8 +1,10 @@
 conn = new Mongo("localhost:27017");
 db = conn.getDB("feedlark");
 print("all dbs", db.adminCommand('listDatabases'));
-
-
+print("removing old feed,user and g2g dbs and replacing with sample data.")
+db.feed.drop()
+db.user.drop()
+db.g2g.drop()
 
 db.feed.insert([{ "url": "https://news.ycombinator.com/rss",
                     "items": [
@@ -39,7 +41,7 @@ db.feed.insert([{ "url": "https://news.ycombinator.com/rss",
             	          "pub_date": "time.struct_time(tm_year=2016, tm_mon=2, tm_mday=14, tm_hour=21, tm_min=20, tm_sec=2, tm_wday=6, tm_yday=45, tm_isdst=0)",
             	          "link": "http://spritesmods.com/?art=dekatron&amp;f=rss",
             	          "article_text": "ntro. As most electronic engineers and hobbyists do, I have a great respect for the earlier ways of controlling electrons, before it was found out that silicon could be used to miniaturize everything a thousandfold. It is amazing that things like a vacuum, a glow wire and a bunch of strange-looking metal bits can actually do useful stuff. The amazing-ness of it all gets even better if there are vistime.struct_time(tm_year=2016, tm_mon=2, tm_mday=14, tm_hour=21, tm_min=10, tm_sec=2, tm_wday=6, tm_yday=45, tm_isdst=0)uals involved: while vacuum tubes only have the faint glow of the heater, tubes filled with neon are more interesting because they can be used to display stuff. Nixie tubes are a prime example of those."
-            		  }]}   ])
+            		  }]}   ]);
 db.user.insert([
 {
 	username: "iandioch",
@@ -62,7 +64,7 @@ db.user.insert([
 	password_salt: "N9qo8uLOickgx2ZMRZoMye",
 	subscribed_feeds: ["news.ycombinator.com/rss", "http://spritesmods.com/rss.php"]
 },
-])
+]);
 db.g2g.insert([
     {"username": "iandioch",
         "feeds": [
@@ -124,6 +126,6 @@ db.g2g.insert([
     			  "link": "http://spritesmods.com/?art=dekatron&amp;f=rss"}
         ]
     }
-])
+]);
 
 print("all collections", db.getCollectionNames());
