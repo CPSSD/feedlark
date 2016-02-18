@@ -8,6 +8,8 @@ import (
 )
 
 func Create() error {
+	// Create the worker and connect it to Gearman
+
 	fmt.Println("Creating Gearman worker 'db-add' & 'db-update'")
 	w := worker.New(worker.OneByOne)
 	w.ErrorHandler = func(e error) {
@@ -33,6 +35,7 @@ func CreateSession(url string, database string, collection string) *mgo.Collecti
 }
 
 func AddDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte, error) {
+	// Add a document to the specified db & collection with the given data
 	fmt.Println("Adding document to db " + database + " collection " + collection)
 	id, alreadyHasId := jsonData["_id"]
 	if !alreadyHasId {
@@ -50,6 +53,7 @@ func AddDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte, e
 }
 
 func UpdateDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte, error) {
+	// Update a single document that matches the data in the selector{} with the updates given in updates{} (selector & updates taken from jsonData)
 	fmt.Println("Updating document in db " + database + " collection " + collection)
 	coll := CreateSession(dbUrl, database, collection)
 	err := coll.Update(jsonData["selector"], jsonData["updates"])
@@ -62,17 +66,14 @@ func UpdateDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte
 }
 
 type DbData struct {
+	// the layout of a supplied document
 	Database   string `bson:"database"`
 	Collection string `bson:"collection"`
 	Data       bson.M `bson:"data"`
 }
 
-type UpdateData struct {
-	Updates string `bson:"updates"`
-	Id      string `bson:"_id"`
-}
-
 func DbAdd(job worker.Job) ([]byte, error) {
+	// a gearman wrapper for AddDocument
 	fmt.Println("database adder called!")
 	fmt.Println(string(job.Data()))
 	var data DbData
@@ -93,6 +94,7 @@ func DbAdd(job worker.Job) ([]byte, error) {
 }
 
 func DbUpdate(job worker.Job) ([]byte, error) {
+	// a gearman wrapper for UpdateDocument
 	fmt.Println("database updater called!")
 	var data DbData
 	if err := bson.Unmarshal(job.Data(), &data); err != nil {
