@@ -1,11 +1,11 @@
 import gearman
-import json
+import bson
 
 def get_feed_items(gm_client, feed_url):
     '''
     This takes a url and returns the matching document in the feeds database.
     '''
-    request = json.dumps({
+    request = bson.BSON.encode({
         'database':'feedlark',
         'collection':'feeds',
         'query':{
@@ -15,14 +15,14 @@ def get_feed_items(gm_client, feed_url):
 
     #submit_job as below is blocking
     gm_job = gm_client.submit_job('db-get',request)
-    return json.loads(gm_job.result)['docs']['items']
+    return bson.BSON.decode(gm_job.result)['docs']['items']
 
 def get_users(gm_client):
     '''
     Returns a list of all the user documents in the user database.
     The documents returned contain only the username and subscribed_feeds.
     '''
-    request = json.dumps({
+    request = bson.BSON.encode({
         'database':'feedlark',
         'collection':'users',
         'query':'',
@@ -34,10 +34,10 @@ def get_users(gm_client):
 
     #submit_job as below is blocking
     gm_job = gm_client.submit_job('db-get',request)
-    return json.loads(gm_job.result)['docs']
+    return bson.BSON.decode(gm_job.result)['docs']
 
 def get_g2g_id(gm_client, username):
-    request = json.dumps({
+    request = bson.BSON.encode({
         'database':'feedlark',
         'collection':'g2g',
         'query':{
@@ -52,7 +52,7 @@ def get_g2g_id(gm_client, username):
     gm_job = gm_client.submit_job('db-get',request)
 
     #Pull out the first result's _id
-    return_doc = json.loads(gm_job.result)['docs']
+    return_doc = bson.BSON.decode(gm_job.result)['docs']
     if return_doc == []:
         return -1
     else:
@@ -60,7 +60,7 @@ def get_g2g_id(gm_client, username):
 
 def put_g2g(gm_client, object_id, data):
     if object_id == -1:
-        request = json.dumps({
+        request = bson.BSON.encode({
             'database':'feedlark',
             'collection':'g2g',
             'data':data,
@@ -69,7 +69,7 @@ def put_g2g(gm_client, object_id, data):
         gm_job = gm_client.submit_job('db-add',request)        
 
     else:
-        request = json.dumps({
+        request = bson.BSON.encode({
             'database':'feedlark',
             'collection':'g2g',
             'data':{
