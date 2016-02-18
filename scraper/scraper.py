@@ -23,16 +23,14 @@ class Scraper:
             raise TypeError('URL must be a string')
 
         feed = feedparser.parse(rss_url)
-
         items_list = []
         for item in feed['entries']:
             items_list.append({
                 'name':item['title'],
                 'link':item['link'],
-                'pub_date':item['published'],
+                'pub_date':str(item['published_parsed']),
                 'article_text':self._parse_from_web(item['link']),
                 })
-
         return items_list
 
     def _parse_from_web(self, article_url):
