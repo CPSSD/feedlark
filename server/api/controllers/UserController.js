@@ -77,7 +77,9 @@ module.exports = {
       .exec(function (err, user) {
         if (err) {
           console.log(err);
-          // Redirect to signup page
+          if (req.wantsJSON) {
+            return res.badRequest('Oops, look like that email or password is already taken.');
+          }
           return res.view('signup', {});
         }
         req.session.authenticated = user.email;
