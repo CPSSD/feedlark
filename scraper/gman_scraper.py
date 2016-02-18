@@ -28,7 +28,7 @@ def get_all_feed_ids_url():
 			urls.append(item[11:-1])
 		else:
 			ids.append(item[9:-1])
-
+	print urls,ids
 	return urls, ids
 
 
@@ -42,6 +42,7 @@ def update_all_feeds(worker,job):
 		json_data = parse_updates_to_json(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
 		test_holder.append(json_data)
 		#gm_client.submit_job("db-update", json_data)
+	print "Worker Done"
 	return json.dumps(test_holder)
 
 # Adds a new feed to the feeds db
