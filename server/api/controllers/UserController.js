@@ -7,8 +7,6 @@
 
 module.exports = {
 
-
-
   /**
    * `UserController.login()`
    */
@@ -25,6 +23,8 @@ module.exports = {
 
   /**
    * `UserController.logout()`
+   *
+   * @description :: Logout, don't bother checking if they're logged in
    */
   logout: function (req, res) {
     req.session.me = null;
@@ -48,7 +48,7 @@ module.exports = {
 
       req.session.me = user.id;
       if (req.wantsJSON) {
-        return res.ok('Signup successful! Horray!');
+        return res.ok('Signup successful! Horray :)');
       }
       return res.redirect('/welcome');
     });

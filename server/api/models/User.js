@@ -18,14 +18,27 @@ module.exports = {
       required: true,
       unique: true
     },
-    hashed_password: {
-      type: 'string'
-    },
-    password_salt: {
+    password: {
       type: 'string'
     },
     subscribed_feeds: {
       type: 'array'
+    },
+
+    toJSON: function() {
+      var obj = this.toObject();
+      delete obj.password;
+      delete obj.entry_password;
+      delete obj._csrf;
+      return obj;
+    },
+
+    beforeCreate: function(values, next) {
+      require('bcrypt').hash(values.entry_password, 8, function(err, hash) {
+          if (err) return next(err);
+          values.password = hash
+          next();
+      });
     },
 
     signup: function (inputs, cb) {
@@ -33,20 +46,19 @@ module.exports = {
       User.create({
         name: inputs.name,
         email: inputs.email,
-        // TODO: But encrypt the password first
         password: inputs.password
       })
-        .exec(cb);
+      .exec(cb);
+      }
     },
+
     attemptLogin: function (inputs, cb) {
-      // Create a user
+      // note that the login response will encrypt the password
       User.findOne({
-        email: inputs.email,
-        // TODO: But encrypt the password first
+        email: inputs.email
         password: inputs.password
       })
       .exec(cb);
     }
-
   }
 };
