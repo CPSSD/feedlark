@@ -11,12 +11,37 @@ module.exports = {
    * `UserController.login()`
    */
   login: function (req, res) {
-		return res.login({
-			username: req.param('username'),
-      email: req.param('email'),
-      password: req.param('password'),
-      successRedirect: '/',
-      invalidRedirect: '/login'
+    var bcrypt = require('bcrypt-nodejs');
+    var email = req.param('email');
+    var password = req.param('entry_password');
+    User.findOne({
+      email: email
+    })
+    .exec(function (err, user) {
+      if (err) return res.negotiate(err);
+
+      // define a function so we don't repeat ourselves
+      var invalid = function(req, res) {
+        if (req.wantsJSON) {
+          return res.badRequest('Invalid username/password combination.');
+        }
+        return res.redirect("/login");
+      };
+
+      if (!user) {
+        return invalid(req, res);
+      }
+      bcrypt.compare(password, user.password, function(err, valid) {
+        if (valid) {
+          req.session.authenticated = user.email;
+          if (req.wantsJSON) {
+            return res.ok("Login successful");
+          }
+          return res.redirect("/");
+        } else {
+          return invalid(req, res);
+        }
+      });
     });
   },
 
@@ -27,7 +52,7 @@ module.exports = {
    * @description :: Logout, don't bother checking if they're logged in
    */
   logout: function (req, res) {
-    req.session.me = null;
+    req.session.authenticated = null;
 		if (req.wantsJSON) {
       return res.ok('Logged out! See you next time :)');
     }
@@ -39,20 +64,53 @@ module.exports = {
    * `UserController.signup()`
    */
   signup: function (req, res) {
-    User.create({
-      username: req.param('username'),
-      email: req.param('email')
+    var password = req.param('entry_password');
+    var bcrypt = require('bcrypt-nodejs');
+    bcrypt.hash(password, null, null, function(err, hash) {
+      if (err) return res.negotiate(err);
+      User.create({
+        username: req.param('username'),
+        email: req.param('email'),
+        subscribed_feeds: [],
+        password: hash
+      })
+      .then(function (user) {
+        req.session.authenticated = user.email;
+        if (req.wantsJSON) {
+          return res.ok('Signup successful! Horray!');
+        }
+        return res.redirect('/welcome');
+      })
+      .catch(function (err) {
+        console.log(err);
+        return res.negotiate(err);
+      });
+    });
+  },
+
+  /**
+   * `UserController.addfeed()`
+   */
+  addfeed: function (req, res) {
+    var feeds_to_add = req.param('feeds');
+    User.findOne({
+     'email': req.session.authenticated
     })
-    .then(function (user) {
-      req.session.me = user.id;
+    .exec( function (err, user) {
+       if (err) return res.negotiate(err);
+       if (user) {
+        for (var feed in feeds_to_add){
+         user.subscribed_feeds.push(feeds_to_add[feed]);
+        }
+        user.save( function(err, s){
+          if (err) return res.negotiate(err);
+        });
+       }
+
       if (req.wantsJSON) {
-        return res.ok('Signup successful! Horray!');
+        return res.ok('Feeds added successfully');
       }
-      return res.redirect('/welcome');
-    })
-    .catch(function (err) {
-      console.log(err);
-      res.negotiate(err);
+      return res.redirect('/');
     });
   }
 };

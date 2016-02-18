@@ -19,10 +19,12 @@ module.exports = {
       unique: true
     },
     password: {
-      type: 'string'
+      type: 'string',
+      required: true
     },
     subscribed_feeds: {
-      type: 'array'
+      type: 'array',
+      defaultsTo: []
     },
 
     toJSON: function() {
@@ -31,26 +33,6 @@ module.exports = {
       delete obj.entry_password;
       delete obj._csrf;
       return obj;
-    },
-
-    beforeCreate: function(values, next) {
-      require('bcrypt').hash(values.entry_password, 8, function(err, hash) {
-          if (err) {
-            console.log(err);
-            next(err);
-          }
-          values.password = hash;
-          next(values);
-      });
-    },
-
-    attemptLogin: function (inputs, cb) {
-      // note that the login response will encrypt the password
-      User.findOne({
-        email: inputs.email,
-        password: inputs.password
-      })
-      .exec(cb);
     }
 
   }

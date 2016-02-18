@@ -8,6 +8,7 @@ describe('UserModel', function() {
     email: "rms@gnu.org",
     entry_password: "gnuisnotlinux"
   };
+  var cookie;
   describe('#signup()', function() {
     it('should check signup functionality', function (done) {
       request(sails.hooks.http.app)
@@ -15,28 +16,39 @@ describe('UserModel', function() {
         .type('form')
         .send(user_details)
         .expect(200)
-        .expect("Signup successful! Horray!");
-      done();
+        .expect("Signup successful! Horray!", done);
     });
-  });
-  describe('#signup()', function() {
     it('should check users cant signup twice', function (done) {
       request(sails.hooks.http.app)
         .post('/user/signup')
-        .type('form')
+        .type('json')
         .send(user_details)
-        .expect(400);
-      done();
+        .expect(400, done);
     });
   });
   describe('#login()', function() {
-    it('should check login in UserController', function (done) {
+    it('should check login functionality', function (done) {
       request(sails.hooks.http.app)
         .post('/user/login')
-        .type('form')
+        .type('json')
         .send(user_details)
-        .expect(200);
-      done();
+        .expect(200)
+        .expect("Login successful")
+        .end(function (err, res) {
+          if (err) done(err);
+          cookie = res.headers['set-cookie'];
+          done();
+        });
+    });
+  });
+  describe('#addfeed()', function() {
+    it('should check user can add feed', function (done) {
+      request(sails.hooks.http.app)
+        .post('/user/addfeed')
+        .type('json')
+        .set('cookie', cookie)
+        .send('{"feeds": ["https://www.reddit.com/r/linux/.rss"]}')
+        .expect(200, done);
     });
   });
 });
