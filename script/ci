@@ -1,4 +1,4 @@
-#!/bin/sh
+# This is the entry for ci. Make sure your scripts are executable.
 
-# This is the entry script for Jenkins
-ls -AlhtR
+./script/scraper
+./script/server

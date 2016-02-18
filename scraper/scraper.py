@@ -4,8 +4,8 @@ import feedparser
 from bs4 import BeautifulSoup
 
 
-#Ensure the class is used with Python 3 or greater.
-assert sys.version_info >= (3,0)
+#Ensure the class is used with a recent Python 2.
+assert (2,5) <= sys.version_info <= (3,0)
 
 
 class Scraper:
@@ -13,15 +13,38 @@ class Scraper:
         pass
 
     def get_feed_data(self, rss_url):
+        '''
+        Returns a list of dictionaries.
+        Each dictionary corresponds to a item in the feed.
+
+        The item contains a title, link, date published, and article text.
+        '''
+        if type(rss_url) != str:
+            raise TypeError('URL must be a string')
+
         feed = feedparser.parse(rss_url)
-        link_text = self._parse_from_web(feed["entries"][0]["links"][0]["href"])
-        return link_text
+
+        items_list = []
+        for item in feed['entries']:
+            items_list.append({
+                'title':item['title'],
+                'link':item['link'],
+                'pub_date':item['published_parsed'],
+                'article_text':self._parse_from_web(item['link']),
+                })
+
+        return items_list
 
     def _parse_from_web(self, article_url):
-        r = requests.get(article_url)
-        soup = BeautifulSoup(r.content,"html.parser")
-        return soup.get_text().encode('utf-8')
+        html = requests.get(article_url).content
+        soup = BeautifulSoup(html,'html.parser')
 
-#scr = Scraper()
-#print(scr.get_feed_data("http://matt.might.net/articles/feed.rss"))
+        for s in soup(['style', 'script', '[document]', 'head', 'title']):
+            s.extract()
 
+        return soup.getText()
+
+##scr = Scraper()
+##for item in scr.get_feed_data("http://spritesmods.com/rss.php")["data"]:
+##    print item
+##    print

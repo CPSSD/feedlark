@@ -39,4 +39,12 @@ virtualenv)
 How to do tests
 ------------
 
-Coming soon to a repo near you!
+The tests are written with the unittest module in python.
+
+To run them make sure you are in the virtualenv (so you have all the dependencies) and run:
+
+	$ python -m unittest
+
+
+To add unit tests modify the testing.py file.
+Check out the unittest docs for examples and general help.
