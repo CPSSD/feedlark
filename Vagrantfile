@@ -38,6 +38,7 @@ Vagrant.configure(2) do |config|
   #
   config.vm.provider "virtualbox" do |vb|
      vb.memory = "1024"
+     vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   end
   #
   # View the documentation for the provider you are using for more
@@ -82,6 +83,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y build-essential
     sudo apt-get install -y openjdk-7-jdk
     sudo apt-get install -y scala
+    sudo apt-get install -y ruby
     sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
@@ -91,9 +93,11 @@ Vagrant.configure(2) do |config|
     sudo pip install virtualenv
     sudo pip install gearman
     sudo pip install pymongo
+    sudo su -c "gem install sass"
     npm cache clean
-    cd /vagrant/server && npm install -y --no-bin-links
+    cd /vagrant/server && npm install -y
     echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
+    echo "export PATH=/vagrant/server/node_modules/.bin:$PATH:" >> /home/vagrant/.profile
     mkdir -p /home/vagrant/.go
     mkdir -p /home/vagrant/.mongodb
     chmod 755 /home/vagrant/.mongodb
