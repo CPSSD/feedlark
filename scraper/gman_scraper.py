@@ -18,7 +18,7 @@ def get_all_feed_ids_url():
 	to_get_urls_ids = {"database":"feedlark","collection":"feed", "query": {},"projection":{"_id":1, "url":1}}
 	# submit the jobs to get the ids and urls from the db.
 	url_fields_gotten = gm_client.submit_job("db-get", json.dumps(to_get_urls_ids))
-	print url_fields_gotten.result
+	
 	#extract the url and id strings
 	urls = []
 	ids = []

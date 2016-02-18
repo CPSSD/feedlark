@@ -28,7 +28,7 @@ class Scraper:
             items_list.append({
                 'name':item['title'],
                 'link':item['link'],
-                'pub_date':str(item['published_parsed']),
+                'pub_date':item['published_parsed'],
                 'article_text':self._parse_from_web(item['link']),
                 })
         return items_list
