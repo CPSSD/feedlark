@@ -29,7 +29,7 @@
     "debug": "node debug app.js",
     "start": "node app.js",
     "test": "node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/*.test.js",
-    "hint": "./node_modules/.bin/jshint $(find api/ tasks/ config/ -name \"*.js\") || true"
+    "hint": "./node_modules/.bin/jshint $(find api/ tasks/ config/ test/ -name \"*.js\") || true"
   },
   "main": "app.js",
   "repository": {
