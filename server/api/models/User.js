@@ -36,7 +36,7 @@ module.exports = {
     beforeCreate: function(values, next) {
       require('bcrypt').hash(values.entry_password, 8, function(err, hash) {
           if (err) return next(err);
-          values.password = hash
+          values.password = hash;
           next();
       });
     },
@@ -55,10 +55,10 @@ module.exports = {
     attemptLogin: function (inputs, cb) {
       // note that the login response will encrypt the password
       User.findOne({
-        email: inputs.email
+        email: inputs.email,
         password: inputs.password
       })
       .exec(cb);
     }
-  }
+  
 };
