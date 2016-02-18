@@ -4,7 +4,7 @@ import bson # the pymongo bson lib
 
 print "Starting python worker 'db-get'"
 print "Initiating gearman worker"
-gearman_worker = gearman.GearmanWorker(["localhost:4731"])
+gearman_worker = gearman.GearmanWorker(["localhost:4730"])
 print "Initiating mongo client"
 mongo_client = pymongo.MongoClient('localhost', 27017)
 
@@ -19,8 +19,8 @@ def task_listener_db_getter(worker, job):
         #data = bson.BSON.decode(bsonObj)
         data = bsonObj.decode()
         print data
-        if not ("query" in data and "database" in data and "collection" in data):
-            print "Missing a field in the query document."
+        if not (("query" in data) and ("database" in data) and ("collection" in data)):
+            print "Missing a field in the query document: " + str(data)
             return str(bson.BSON.encode({"status":"error", "error":"Missing field in query document; one of 'query', 'database' or 'collection'."}))
         db = data["database"]
         coll = data["collection"]
