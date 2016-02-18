@@ -42,7 +42,7 @@ module.exports = {
 		User.signup({
       name: req.param('username'),
       email: req.param('email'),
-      password: req.param('password')
+      password: req.param('entry_password')
     }, function (err, user) {
       if (err) return res.negotiate(err);
 
