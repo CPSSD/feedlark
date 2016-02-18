@@ -1,7 +1,7 @@
 {
   "name": "feedlark",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Simple and Sharp RSS Reader",
   "keywords": [],
   "dependencies": {
@@ -36,7 +36,7 @@
     "type": "git",
     "url": "git://github.com/adelaney/feedlark.git"
   },
-  "author": "adelaney",
+  "author": "feedlark",
   "license": "",
   "devDependencies": {
     "jshint": "^2.9.1",

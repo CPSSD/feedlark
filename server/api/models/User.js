@@ -35,21 +35,13 @@ module.exports = {
 
     beforeCreate: function(values, next) {
       require('bcrypt').hash(values.entry_password, 8, function(err, hash) {
-          if (err) return next(err);
+          if (err) {
+            console.log(err);
+            next(err);
+          }
           values.password = hash;
-          next();
+          next(values);
       });
-    },
-
-    signup: function (inputs, cb) {
-      // Create a user
-      User.create({
-        name: inputs.name,
-        email: inputs.email,
-        password: inputs.password
-      })
-      .exec(cb);
-      }
     },
 
     attemptLogin: function (inputs, cb) {
@@ -60,5 +52,7 @@ module.exports = {
       })
       .exec(cb);
     }
-  
+
+  }
+
 };

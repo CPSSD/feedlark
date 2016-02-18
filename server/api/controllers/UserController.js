@@ -36,21 +36,23 @@ module.exports = {
 
 
   /**
-   * `UserController.singup()`
+   * `UserController.signup()`
    */
-  singup: function (req, res) {
-		User.signup({
-      name: req.param('username'),
-      email: req.param('email'),
-      password: req.param('entry_password')
-    }, function (err, user) {
-      if (err) return res.negotiate(err);
-
+  signup: function (req, res) {
+    User.create({
+      username: req.param('username'),
+      email: req.param('email')
+    })
+    .then(function (user) {
       req.session.me = user.id;
       if (req.wantsJSON) {
-        return res.ok('Signup successful! Horray :)');
+        return res.ok('Signup successful! Horray!');
       }
       return res.redirect('/welcome');
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.negotiate(err);
     });
   }
 };
