@@ -4,8 +4,8 @@ import gearman
 
 # convert given data to bson in valid format for db-update
 def bsonify_update_data(item_id, url , allData):
-	items_list = {"database":"feedlark","collection":"feeds", "data": {"updates" : {"items":allData}, "id": item_id } }
-	return str(bson.BSON.encode(items_list))
+    items_list = {"database":"feedlark","collection":"feeds", "data": {"updates" : {"items":allData}, "selector": {"_id": item_id } } }
+    return (bson.BSON.encode(items_list))
 
 # submits a job to getter gearman worker to get all ids and urls (references) of the feeds
 def get_all_feed_ids_url():
@@ -36,12 +36,16 @@ def update_all_feeds(worker,job):
 	test_holder = []
 	for i in range(len(item_urls)):
 		print item_urls[i]
-		bson_data = bsonify_update_data(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
-                print bson_data
-		test_holder.append(bson_data)
+                result = scr.get_feed_data(item_urls[i])
+                print result
+		#bson_data = bsonify_update_data(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
+                #print bson_data
+                test_holder.append(result)
+		#test_holder.append(bson_data)
 		#gm_client.submit_job("db-update", bson_data)
 	print "Worker Done"
-	return str(test_holder)
+        print test_holder
+        return str(bson.BSON.encode({"results":test_holder}))
 
 
 scr = Scraper()
