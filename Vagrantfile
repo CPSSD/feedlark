@@ -95,6 +95,9 @@ Vagrant.configure(2) do |config|
     cd /vagrant/server && npm install -y --no-bin-links
     echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
     mkdir -p /home/vagrant/.go
+    go get github.com/mikespook/gearman-go/worker 
+    go get gopkg.in/mgo.v2
+    go get gopkg.in/mgo.v2/bson
     mkdir -p /home/vagrant/.mongodb
     chmod 755 /home/vagrant/.mongodb
     chown -R vagrant:vagrant /home/vagrant

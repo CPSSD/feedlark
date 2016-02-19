@@ -1,29 +1,24 @@
 package adder
 
 import (
+	"gopkg.in/mgo.v2/bson"
 	"testing"
 )
 
-func TestCreate(t *testing.T) {
-	err := Create()
-	if err != nil {
-		t.Error(err)
-	}
-}
-
 func TestDocumentAdd(t *testing.T) {
-	err := AddDocument("127.0.0.1:27017", "testing", "adder", "{\"data\":{\"info\":\"nothing worth saying\"}}")
+	_, err := AddDocument("127.0.0.1:27017", "testing", "adder", bson.M{"info": "nothing worth saying"})
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestDocumentUpdate(t *testing.T) {
-	err := AddDocument("127.0.0.1:27017", "testing", "updater", "{\"_id\":ObjectId(000000000000),\"data\":{\"dank\":\"memes\"}}")
+	id := bson.NewObjectId()
+	_, err := AddDocument("127.0.0.1:27017", "testing", "updater", bson.M{"_id": id, "memes": "are great"})
 	if err != nil {
 		t.Error(err)
 	}
-	err = UpdateDocument("127.0.0.1:27017", "testing", "updater", "{\"id\":ObjectId(000000000000), \"updates\":{\"dank\":\"fruits\"}}")
+	_, err = UpdateDocument("127.0.0.1:27017", "testing", "updater", bson.M{"selector": bson.M{"_id": id}, "updates": bson.M{"memes": "are ok"}})
 	if err != nil {
 		t.Error(err)
 	}
