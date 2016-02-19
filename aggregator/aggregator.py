@@ -18,7 +18,7 @@ def get_feed_items(gm_client, feed_url):
 
     #submit_job as below is blocking
     gm_job = gm_client.submit_job('db-get',str(request))
-    return bson.BSON.decode(gm_job.result)['docs']['items']
+    return bson.BSON(gm_job.result).decode()['docs']['items']
 
 def get_users(gm_client):
     '''
@@ -37,7 +37,7 @@ def get_users(gm_client):
 
     #submit_job as below is blocking
     gm_job = gm_client.submit_job('db-get',str(request))
-    return bson.BSON.decode(gm_job.result)['docs']
+    return bson.BSON(gm_job.result).decode()['docs']
 
 def get_g2g_id(gm_client, username):
     request = bson.BSON.encode({
@@ -55,7 +55,7 @@ def get_g2g_id(gm_client, username):
     gm_job = gm_client.submit_job('db-get',str(request))
 
     #Pull out the first result's _id
-    return_doc = bson.BSON.decode(gm_job.result)['docs']
+    return_doc = bson.BSON(gm_job.result).decode()['docs']
     if return_doc == []:
         return -1
     else:
