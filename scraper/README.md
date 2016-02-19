@@ -4,7 +4,7 @@ Feedlark:tm: Scraper
 Dependencies
 ------------
 
-- Python 3.5
+- Python 2.7
 - pip
 - virtual environment
 - requests
@@ -18,7 +18,7 @@ I recommend you setup a virtual env before you download the dependencies.
 
     $ pip install virtualenv
     $ cd ./scraper/
-    $ virtualenv -p "~path of your python3 executable~" venv
+    $ virtualenv venv
     $ # On Posix Systems
     $ . venv/bin/activate
     $ # Windows Activation
