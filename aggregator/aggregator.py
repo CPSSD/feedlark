@@ -89,14 +89,15 @@ def aggregate(gearman_worker, gearman_job):
         user_g2g = {'username':user['username'],'feeds':[]}
 
         for feed_url in user['subscribed_feeds']:
-            user_g2g['feeds'].extend([
-                {
-                    'feed':feed['url'],
-                    'name':item['name'],
-                    'link':item['link'],
-                    'pub_date':item['pub_date'],
-                } for item in get_feed_items(gm_client, feed_url)]
-                                     )
+            for item in get_feed_items(gm_client, feed_url):
+                user_g2g['feeds'].append(
+                    {
+                        'feed':feed_url,
+                        'name':item['name'],
+                        'link':item['link'],
+                        'pub_date':item['pub_date'],
+                    })
+        
         user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'])
 
         user_obj_id = get_g2g_id(gm_client, user['username'])
