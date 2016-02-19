@@ -85,13 +85,17 @@ def put_g2g(gm_client, object_id, data):
 
 
 def aggregate(gearman_worker, gearman_job):
+    print "Job recieved"
     gm_client = gearman.GearmanClient(['localhost:4730'])
+    print "Loading users from 'user' database"
     user_data = get_users(gm_client)
 
     for user in user_data:
+        print "\nLoading feeds for: ", user['username']
         user_g2g = {'username':user['username'],'feeds':[]}
 
         for feed_url in user['subscribed_feeds']:
+            print "--> ", feed_url
             for item in get_feed_items(gm_client, feed_url):
                 user_g2g['feeds'].append(
                     {
@@ -100,11 +104,14 @@ def aggregate(gearman_worker, gearman_job):
                         'link':item['link'],
                         'pub_date':item['pub_date'],
                     })
-        
+                
+        print "Sorting items"
         user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'])
 
         user_obj_id = get_g2g_id(gm_client, user['username'])
+        print "Putting items in 'g2g' database"
         put_g2g(gm_client, user_obj_id, user_g2g)
+        print "Completed"
 
     return "SUCCESS"
 
@@ -112,5 +119,6 @@ def aggregate(gearman_worker, gearman_job):
 gm_worker = gearman.GearmanWorker(['localhost:4730'])
 gm_worker.set_client_id('aggregator')
 gm_worker.register_task('aggregate', aggregate)
+print "Reistered 'aggregate' task"
 
 gm_worker.work()
