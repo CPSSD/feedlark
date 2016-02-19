@@ -40,21 +40,29 @@
 				<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
 
 				 <ul id="nav-mobile" class="right hide-on-med-and-down">
-						<% if (typeof data == "undefined" || typeof data.username == "undefined") { %>
-						 <li><a href="/user/login">Login</a></li>
-						<% } else { %>
-							<li>Hello, <%= data.username %></li>
+					<% if (typeof data != "undefined" && typeof data.username != "undefined") { %>
+					<li>
+						<a class="dropdown-button" href="#!" data-activates="dropdown1"><%= data.username %><i class="material-icons right">arrow_drop_down</i></a>
+						<ul id="dropdown1" class="dropdown-content">
 							<li><a href="/user/profile">Profile</a></li>
+							<li><a href="/feed/manage">My Feeds</a></li>
+							<li class="divider"></li>
 							<li><a href="/user/logout">Logout</a></li>
-						<% } %>
+						</ul>
+					</li>
+					<% } else { %>
+					<li><a href="/user/profile">Login</a></li>
+					<% } %>
 				 </ul>
 				 <ul class="side-nav" id="mobile-demo">
-					<% if (typeof data == "undefined" || typeof data.username == "undefined") { %>
-					 <li><a href="/user/login">Login</a></li>
+					<% if (typeof data != "undefined" && typeof data.username != "undefined") { %>
+					<li style="color: black;">Hello <%= data.username %></li>
+					<li><a href="/user/profile">Profile</a></li>
+					<li><a href="/feed/manage">My Feeds</a></li>
+					<li class="divider"></li>
+					<li><a href="/user/logout">Logout</a></li>
 					<% } else { %>
-						<li>Hello, <%= data.username %></li>
-						<li><a href="/user/profile">Profile</a></li>
-						<li><a href="/user/logout">Logout</a></li>
+					<li><a href="/user/profile">Login</a></li>
 					<% } %>
 				</ul>
 
