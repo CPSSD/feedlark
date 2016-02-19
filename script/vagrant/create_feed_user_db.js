@@ -48,21 +48,21 @@ db.user.insert([
 	email: "noah@feedlark.com",
 	hashed_password: "IjZAgcfl7p92ldGxad68LJZdL17lhWy",
 	password_salt: "N9qo8uLOickgx2ZMRZoMye",
-	subscribed_feeds: ["news.ycombinator.com/rss", "pssd.computing.dcu.ie/rss.xml"]
+	subscribed_feeds: ["https://news.ycombinator.com/rss"]
 },
 {
 	username: "sully",
 	email: "ross@feedlark.com",
 	hashed_password: "IjZAgcfl7p92ldGxad68LJZdL17lhWy",
 	password_salt: "N9qo8uLOickgx2ZMRZoMye",
-	subscribed_feeds: ["news.ycombinator.com/rss", "http://spritesmods.com/rss.php","http://dave.cheney.net/feed"]
+	subscribed_feeds: ["https://news.ycombinator.com/rss", "http://spritesmods.com/rss.php","http://dave.cheney.net/feed"]
 },
 {
 	username: "theotherguys",
 	email: "nondb@feedlark.com",
 	hashed_password: "IjZAgcfl7p92ldGxad68LJZdL17lhWy",
 	password_salt: "N9qo8uLOickgx2ZMRZoMye",
-	subscribed_feeds: ["news.ycombinator.com/rss", "http://spritesmods.com/rss.php"]
+	subscribed_feeds: ["https://news.ycombinator.com/rss", "http://spritesmods.com/rss.php"]
 },
 ]);
 db.g2g.insert([
