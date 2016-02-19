@@ -1,54 +1,55 @@
 from scraper import Scraper
-import json
+import bson
 import gearman
 
-# Parses data to json to allow for db update
-def parse_updates_to_json(item_id, url , allData):
+# Parses data to bson to allow for db update
+def parse_updates_to_bson(item_id, url , allData):
 	items_list = {"database":"feedlark","collection":"feeds", "data": {"updates" : {"items":allData}, "id": item_id } }
-	return json.dumps(items_list)
+	return str(bson.BSON.encode(items_list))
 
-# parses data to json to allow for adding to db
-def parse_to_json(url , allData):
+# parses data to bson to allow for adding to db
+def parse_to_bson(url , allData):
 	items_list = {"database":"feedlark","collection":"feeds", "data": {"url":url, "items":allData}}
-	return json.dumps(items_list)
+	return str(bson.BSON.encode(items_list))
 
 # submits a job to getter gearman worker to get all ids and urls (references) of the feeds
 def get_all_feed_ids_url():
 	# fotmat the requests from the db
-	to_get_urls_ids = {"database":"feedlark","collection":"feed", "query": {},"projection":{"_id":1, "url":1}}
+	to_get_urls_ids = str(bson.BSON.encode({"database":"feedlark","collection":"feed", "query": {},"projection":{"_id":1, "url":1}}))
 	# submit the jobs to get the ids and urls from the db.
-	url_fields_gotten = gm_client.submit_job("db-get", json.dumps(to_get_urls_ids))
-	print url_fields_gotten.result
+
+	url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
+	bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
+
 	#extract the url and id strings
 	urls = []
 	ids = []
-	for item in url_fields_gotten.result[9:-2].split(","):
-		if "url" in item:
-			urls.append(item[11:-1])
-		else:
-			ids.append(item[9:-1])
-	print urls,ids
+	for item in bson_object["docs"]:
+		urls.append(str(item['url']))
+		ids.append(item['_id'])
+
 	return urls, ids
 
 
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_feeds(worker,job):
-	print "Update feeds Worker initiated"
+	print "Update feed Worker initiated"
 	item_urls, item_ids = get_all_feed_ids_url()
-
+	print "Retrieving data from feed db"
 	test_holder = []
 	for i in range(len(item_urls)):
-		json_data = parse_updates_to_json(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
-		test_holder.append(json_data)
-		#gm_client.submit_job("db-update", json_data)
+		print item_urls[i]
+		bson_data = parse_updates_to_bson(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
+		test_holder.append(bson_data)
+		#gm_client.submit_job("db-update", bson_data)
 	print "Worker Done"
-	return json.dumps(test_holder)
+	return str(test_holder)
 
 # Adds a new feed to the feeds db
 def add_feed(url):
-	json_data = parse_to_json(url, scr.get_feed_data(url))
-	print json_data
-	#gm_client.submit_job("db-add", json_data)
+	bson_data = parse_to_bson(url, scr.get_feed_data(url))
+	print bson_data
+	#gm_client.submit_job("db-add", bson_data)
 
 
 scr = Scraper()
