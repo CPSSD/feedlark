@@ -2,14 +2,9 @@ from scraper import Scraper
 import bson
 import gearman
 
-# Parses data to bson to allow for db update
-def parse_updates_to_bson(item_id, url , allData):
+# convert given data to bson in valid format for db-update
+def bsonify_update_data(item_id, url , allData):
 	items_list = {"database":"feedlark","collection":"feeds", "data": {"updates" : {"items":allData}, "id": item_id } }
-	return str(bson.BSON.encode(items_list))
-
-# parses data to bson to allow for adding to db
-def parse_to_bson(url , allData):
-	items_list = {"database":"feedlark","collection":"feeds", "data": {"url":url, "items":allData}}
 	return str(bson.BSON.encode(items_list))
 
 # submits a job to getter gearman worker to get all ids and urls (references) of the feeds
@@ -18,9 +13,11 @@ def get_all_feed_ids_url():
 	to_get_urls_ids = str(bson.BSON.encode({"database":"feedlark","collection":"feed", "query": {},"projection":{"_id":1, "url":1}}))
 	# submit the jobs to get the ids and urls from the db.
 
+        print "db-get data: " + to_get_urls_ids
+
 	url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
 	bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
-
+        print "response: " + str(bson_object)
 	#extract the url and id strings
 	urls = []
 	ids = []
@@ -39,17 +36,12 @@ def update_all_feeds(worker,job):
 	test_holder = []
 	for i in range(len(item_urls)):
 		print item_urls[i]
-		bson_data = parse_updates_to_bson(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
+		bson_data = bsonify_update_data(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
+                print bson_data
 		test_holder.append(bson_data)
 		#gm_client.submit_job("db-update", bson_data)
 	print "Worker Done"
 	return str(test_holder)
-
-# Adds a new feed to the feeds db
-def add_feed(url):
-	bson_data = parse_to_bson(url, scr.get_feed_data(url))
-	print bson_data
-	#gm_client.submit_job("db-add", bson_data)
 
 
 scr = Scraper()
