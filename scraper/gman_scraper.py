@@ -42,18 +42,18 @@ def update_all_feeds(worker,job):
                     bson_data = bsonify_update_data(feed_ids[i], feed_urls[i], result)
                 except Exception as e:
                     print e
-                    raise
+                    return str(bson.BSON.encode({"status":"error", "error-description":str(e)}))
                 print "ready to db-update"
                 update_response = None
                 try:
                     update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
                 except Exception as e:
                     print e
-                    raise
+                    return str(bson.BSON.encode({"status":"error", "error-description":str(e)}))
                 print "update response: " + str(update_response)
 
 	print "'update-all-feeds' finished"
-        return str(bson.BSON.encode({"updated_feeds":feed_ids}))
+        return str(bson.BSON.encode({"updated_feeds":feed_ids, "status":"ok"}))
 
 
 scr = Scraper()

@@ -1,5 +1,7 @@
 import unittest
 from scraper import Scraper
+import gearman
+import bson
 
 class TestScraping(unittest.TestCase):
 
@@ -20,6 +22,14 @@ class TestScraping(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             scr.get_feed_data(666)
+
+    """def test_update_all(self):
+        # takes too long to do every build
+        gearman_client = gearman.GearmanClient(['localhost:4730'])
+        raw_result = gearman_client.submit_job('update-all-feeds', '')
+        result = bson.BSON.decode(bson.BSON(raw_result))
+        self.assertTrue("status" in result)
+        self.assertEqual(result["status"], "ok")"""
 
 if __name__ == '__main__':
     unittest.main()
