@@ -73,6 +73,8 @@ To stop the box:
 
 MongoDB is forwarded/exposed on port `27017`
 
+The Gearman job server will run on port `4730`
+
 All other services (Nginx, MongoDB) should be exposed on the IP `192.168.2.2`
 
 Use `python3` and `pip3` commands instead of their normal versions (which are 2.X based)
