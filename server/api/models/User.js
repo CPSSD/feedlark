@@ -18,7 +18,7 @@ function encrypt(vals, cb) {
 }
 
 module.exports = {
-  tableName: 'users',
+  tableName: 'user',
 
   attributes: {
 
@@ -39,14 +39,6 @@ module.exports = {
     subscribed_feeds: {
       type: 'array',
       defaultsTo: []
-    },
-
-    toJSON: function() {
-      var obj = this.toObject();
-      delete obj.password;
-      delete obj.entry_password;
-      delete obj._csrf;
-      return obj;
     },
 
     // Lifecycle Callbacks

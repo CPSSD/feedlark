@@ -6,7 +6,7 @@ describe('UserModel', function() {
   var user_details = {
     username: "rms",
     email: "rms@gnu.org",
-    entry_password: "gnuisnotlinux"
+    password: "gnuisnotlinux"
   };
   var cookie;
   describe('#signup()', function() {

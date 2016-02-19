@@ -22,5 +22,8 @@ module.exports.policies = {
 		'*': 'isLoggedIn',
 		signup: true,
 		login: true
-  }
+	},
+	FeedController: {
+		'*': 'isLoggedIn'
+	}
 };

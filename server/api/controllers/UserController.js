@@ -30,16 +30,15 @@ module.exports = {
 			// Catch actual db errors
 			// res.negotiate does all the wantsJSON and view selecting itself
 			// If a view is provided, "data" (the error) is passed onto it
-			if (err) return res.negotiate(err, "login");
+			if (err) return res.serverError({err: err}, "login");
 
 			// Is the user name valid? (DB query returns nothing if not)
-			if (!user) return res.badRequest("Invalid username/password combination.", "login");
+			if (typeof user == "undefined") return res.badRequest({err: "Invalid username/password combination."}, "login");
 
 			// Check thier password
 			bcrypt.compare(password, user.password, function(err, valid) {
-				if (!valid) return res.badRequest("Invalid username/password combination.", "login");
+				if (!valid) return res.badRequest({err: "Invalid username/password combination."}, "login");
 
-				// Again, responses check if req.wantsJSON themselves
 				req.session.authenticated = user.email;
 				res.redirect("/user/profile");
 			});
@@ -51,7 +50,7 @@ module.exports = {
 	 */
 	logout: function (req, res) {
 		req.session.authenticated = null;
-		res.ok("Logged out! See you next time :)", "homepage");
+		res.ok({msg: "Logged out! See you next time :)"}, "homepage");
 	},
 
 	/**
@@ -68,7 +67,7 @@ module.exports = {
 
 		// Generate the password hash
 		bcrypt.hash(password, null, null, function(err, hash) {
-			if (err) return res.negotiate(err, "signup");
+			if (err) return res.serverError({err: err}, "signup");
 
 			// Add new user to the database
 			User.create({
@@ -82,7 +81,7 @@ module.exports = {
 			.exec(function (err, user) {
 
 				// Catch errors
-				if (err) return res.badRequest("Oops, look like that email or username is already taken.", "signup");
+				if (err) return res.badRequest({err: "Oops, look like that email or username is already taken."}, "signup");
 
 				// Log the user in
 				req.session.authenticated = email;
@@ -98,36 +97,14 @@ module.exports = {
 		// Get the user data
 		// TODO: Make sure the email address is safe for use here
 		User.findByEmail(req.session.authenticated).exec(function (err, user) {
+			if (err) return res.serverError({err: err}, "login");
+
 			user = user[0];
-			if (err) return res.negotiate(err);
-			if (!user) return res.redirect("/user/login");
+			if (typeof user == "undefined") return res.redirect("/user/login");
 
 			// Load values needed for page display
-			return res.view("profile", {username: user.username});
+			return res.ok({username: user.username}, "profile");
 		});
 	},
 
-	/**
-	 * `UserController.addfeed()`
-	 */
-	addfeed: function (req, res) {
-		var feeds_to_add = req.param("feeds");
-		User.findByEmail(req.session.authenticated).exec( function (err, user) {
-			user = user[0];
-			if (err) return res.negotiate(err);
-			if (!user) return res.redirect("/user/login");
-
-			for (var feed in feeds_to_add){
-			 user.subscribed_feeds.push(feeds_to_add[feed]);
-			}
-			user.save( function(err, s){
-				if (err) return res.negotiate(err);
-			});
-
-			if (req.wantsJSON) {
-				return res.ok("Feeds added successfully");
-			}
-			return res.redirect("/");
-		});
-	}
 };
