@@ -20,6 +20,7 @@ def get_feed_items(gm_client, feed_url):
     gm_job = gm_client.submit_job('db-get',str(request))
     return bson.BSON(gm_job.result).decode()['docs']['items']
 
+
 def get_users(gm_client):
     '''
     Returns a list of all the user documents in the user database.
@@ -39,49 +40,28 @@ def get_users(gm_client):
     gm_job = gm_client.submit_job('db-get',str(request))
     return bson.BSON(gm_job.result).decode()['docs']
 
-def get_g2g_id(gm_client, username):
+
+def put_g2g(gm_client, username, data):
+    '''
+    Adds sorted items to g2g database for a given user.
+    '''
     request = bson.BSON.encode({
         'database':'feedlark',
         'collection':'g2g',
-        'query':{
-            'username':username,
-            },
-        'projection':{
-            '_id':1,
+        'data':{
+            'updates':data,
+            'selector':{
+                'username':username,
+                },
             },
         })
 
-    #submit_job as below is blocking
-    gm_job = gm_client.submit_job('db-get',str(request))
+    gm_job = gm_client.submit_job('db-update',str(request))
+    if bson.BSON(gm_job.result).decode()['status'] != 'ok':
+        print "Adding to g2g failed"
+        print "Status: " + bson.BSON(gm_job.result).decode()['status']
 
-    #Pull out the first result's _id
-    return_doc = bson.BSON(gm_job.result).decode()['docs']
-    if return_doc == []:
-        return -1
-    else:
-        return return_doc[0]['_id']
-
-def put_g2g(gm_client, object_id, data):
-    if object_id == -1:
-        request = bson.BSON.encode({
-            'database':'feedlark',
-            'collection':'g2g',
-            'data':data,
-            })
-
-        gm_job = gm_client.submit_job('db-add',str(request))        
-
-    else:
-        request = bson.BSON.encode({
-            'database':'feedlark',
-            'collection':'g2g',
-            'data':{
-                'updates':data,
-                'id':object_id,
-                },
-            })
-
-        gm_job = gm_client.submit_job('db-add',str(request))
+    return
 
 
 def aggregate(gearman_worker, gearman_job):
@@ -107,10 +87,8 @@ def aggregate(gearman_worker, gearman_job):
                 
         print "Sorting items"
         user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'])
-
-        user_obj_id = get_g2g_id(gm_client, user['username'])
         print "Putting items in 'g2g' database"
-        put_g2g(gm_client, user_obj_id, user_g2g)
+        put_g2g(gm_client, user['username'], user_g2g)
         print "Completed"
 
     return "SUCCESS"
