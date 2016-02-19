@@ -32,38 +32,28 @@ def get_all_feed_ids_url():
 
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_feeds(worker,job):
-	print "\nUpdate feed Worker initiated"
+	print "'update-all-feeds' initiated"
 	feed_urls, feed_ids = get_all_feed_ids_url()
         print feed_urls
 	print "Retrieving data from feed db"
 	test_holder = []
 	for i in range(len(feed_urls)):
-		print feed_urls[i]
+		print "Loading items in feed " + str(feed_urls[i])
                 result = scr.get_feed_data(feed_urls[i]) # returns a list of dictionaries, a dict for each item in the feed
-                print feed_urls[i] + " get!"
-                #print result 
                 bson_data = None
                 try:
                     bson_data = bsonify_update_data(feed_ids[i], feed_urls[i], result)
                 except Exception as e:
                     print e
-                #print "db-update arg: " + str(bson_data)
                 print "ready to db-update"
-                print bson_data
                 update_response = None
                 try:
-                    update_response = gm_client.submit_job('db-update', str(bson_data))
+                    update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
                 except Exception as e:
                     print e
                 print "update response: " + str(update_response)
-                #print result
-		#bson_data = bsonify_update_data(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
-                #print bson_data
                 test_holder.append(result)
-		#test_holder.append(bson_data)
-		#gm_client.submit_job("db-update", bson_data)
-	print "Worker Done"
-        #print test_holder
+	print "'update-all-feeds' finished"
         return str(bson.BSON.encode({"results":test_holder}))
 
 
