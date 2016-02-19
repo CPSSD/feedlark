@@ -1,9 +1,21 @@
 /**
  * User.js
  *
- * @description :: TODO: You might write a short summary of how this model works and what it represents here.
- * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
+ * @description :: Generic model for all users on the site
+ * @docs        :: https://github.com/CPSSD/feedlark/blob/master/doc/db/user.md
  */
+
+function encrypt(vals, cb) {
+      var bcrypt = require("bcrypt-nodejs");
+
+      bcrypt.hash(vals.password, null, null, function(err, res) {
+        // Passing an arg/error to cb is the proper way. I'm not sure what it does though
+        if (err) return cb(err);
+
+        vals.password = password;
+        cb();
+      });
+}
 
 module.exports = {
   tableName: 'users',
@@ -12,7 +24,8 @@ module.exports = {
 
     username: {
       type: 'string',
-      required: true
+      required: true,
+      unique: true
     },
     email: {
       type: 'string',
@@ -34,8 +47,12 @@ module.exports = {
       delete obj.entry_password;
       delete obj._csrf;
       return obj;
-    }
+    },
 
+    // Lifecycle Callbacks
+    // Encrypts the password when necessary
+    beforeCreate: encrypt,
+    beforeUpdate: encrypt
   }
 
 };

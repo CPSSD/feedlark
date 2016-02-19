@@ -34,9 +34,47 @@
   </head>
 
   <body>
+    <nav>
+      <div class="nav-wrapper light-blue">
+        <a href="/" class="brand-logo">Feedlark</a>
+        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+
+         <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <% if (typeof username == "undefined") { %>
+             <li><a href="/user/login">Login</a></li>
+            <% } else { %>
+              <li>Hello, <%= username %></li>
+              <li><a href="/user/profile">Profile</a></li>
+              <li><a href="/user/logout">Logout</a></li>
+            <% } %>
+         </ul>
+         <ul class="side-nav" id="mobile-demo">
+          <% if (typeof username == "undefined") { %>
+           <li><a href="/user/login">Login</a></li>
+          <% } else { %>
+            <li>Hello, <%= username %></li>
+            <li><a href="/user/profile">Profile</a></li>
+            <li><a href="/user/logout">Logout</a></li>
+          <% } %>
+        </ul>
+
+      </div>
+    </nav>
+    <!-- Error message display -->
+    <% if (typeof data != "undefined") { %>
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card red darken-1">
+          <div class="card-content white-text">
+            <span class="card-title">Warning</span>
+            <p><%= data %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
     <%- body %>
-
-
 
     <!--
         Client-side Templates
