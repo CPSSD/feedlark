@@ -12,13 +12,13 @@ def get_feed_items(gm_client, feed_url):
             'url':feed_url,
             },
         'projection':{
-            '_id':1,
+            '_id':0,
             },
         })
 
     #submit_job as below is blocking
     gm_job = gm_client.submit_job('db-get',str(request))
-    return bson.BSON(gm_job.result).decode()['docs']['items']
+    return bson.BSON(gm_job.result).decode()['docs'][0]['items']
 
 
 def get_users(gm_client):
@@ -86,7 +86,7 @@ def aggregate(gearman_worker, gearman_job):
                     })
                 
         print "Sorting items"
-        user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'])
+        user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'],reverse=True)
         print "Putting items in 'g2g' database"
         put_g2g(gm_client, user['username'], user_g2g)
         print "Completed"
