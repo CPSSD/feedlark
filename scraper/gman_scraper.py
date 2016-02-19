@@ -4,7 +4,7 @@ import gearman
 
 # convert given data to bson in valid format for db-update
 def bsonify_update_data(item_id, url , allData):
-    items_list = {"database":"feedlark","collection":"feed", "data": {"updates" : {"items":allData}, "selector": {"_id": item_id } } }
+    items_list = {"database":"feedlark","collection":"feed", "data": {"updates" : {"items":allData, "url":url}, "selector": {"_id": item_id } } }
     return (bson.BSON.encode(items_list))
 
 # submits a job to getter gearman worker to get all ids and urls (references) of the feeds
@@ -22,6 +22,8 @@ def get_all_feed_ids_url():
 	urls = []
 	ids = []
 	for item in bson_object["docs"]:
+                if "url" not in item or "_id" not in item:
+                    continue
 		urls.append(str(item['url']))
 		ids.append(item['_id'])
 
@@ -30,8 +32,9 @@ def get_all_feed_ids_url():
 
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_feeds(worker,job):
-	print "Update feed Worker initiated"
+	print "\nUpdate feed Worker initiated"
 	feed_urls, feed_ids = get_all_feed_ids_url()
+        print feed_urls
 	print "Retrieving data from feed db"
 	test_holder = []
 	for i in range(len(feed_urls)):
@@ -41,17 +44,18 @@ def update_all_feeds(worker,job):
                 #print result 
                 bson_data = None
                 try:
-                    bson_data = bsonify_update_data(feed_ids[i], None, result)
+                    bson_data = bsonify_update_data(feed_ids[i], feed_urls[i], result)
                 except Exception as e:
                     print e
                 #print "db-update arg: " + str(bson_data)
                 print "ready to db-update"
+                print bson_data
                 update_response = None
                 try:
                     update_response = gm_client.submit_job('db-update', str(bson_data))
                 except Exception as e:
                     print e
-                print "update response: " + update_response
+                print "update response: " + str(update_response)
                 #print result
 		#bson_data = bsonify_update_data(item_ids[i], item_urls[i], scr.get_feed_data(item_urls[i]))
                 #print bson_data
