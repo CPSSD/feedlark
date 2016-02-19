@@ -89,6 +89,7 @@ Vagrant.configure(2) do |config|
     sudo pip install beautifulsoup4
     sudo pip install requests
     sudo pip install virtualenv
+    sudo pip install bson
     sudo pip install gearman
     sudo pip install pymongo
     npm cache clean
