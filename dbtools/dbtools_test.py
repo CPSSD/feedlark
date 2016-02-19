@@ -41,14 +41,14 @@ class TestDbTools(unittest.TestCase):
         resp = bson.BSON.decode(bson.BSON(raw_response.result))
         self.assertTrue("status" in resp)
         self.assertEquals(resp["status"], "ok")
-        self.assertTrue(len(resp["docs"]) == 1)
+        self.assertEquals(len(resp["docs"]),  1)
         self.assertEquals(resp["docs"][0]["inserttime"], req["data"]["inserttime"])
         
 
 
 if __name__ == '__main__':
-    # set the gearman workers running
-   # call("pwd")
+    #set the gearman workers running
+    #call("pwd")
     #call("python getter/getter.py &")
     #call("go run start_workers.go &")
 
