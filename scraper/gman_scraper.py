@@ -7,17 +7,14 @@ def bsonify_update_data(item_id, url , allData):
     items_list = {"database":"feedlark","collection":"feed", "data": {"updates" : {"items":allData, "url":url}, "selector": {"_id": item_id } } }
     return (bson.BSON.encode(items_list))
 
-# submits a job to getter gearman worker to get all ids and urls (references) of the feeds
+# submits a job to 'db-get' to get all ids and urls of the feeds
 def get_all_feed_ids_url():
-	# fotmat the requests from the db
+	# format the request
 	to_get_urls_ids = str(bson.BSON.encode({"database":"feedlark","collection":"feed", "query": {},"projection":{"_id":1, "url":1}}))
-	# submit the jobs to get the ids and urls from the db.
-
-        print "db-get data: " + to_get_urls_ids
-
 	url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
 	bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
         print "response: " + str(bson_object)
+
 	#extract the url and id strings
 	urls = []
 	ids = []
@@ -36,7 +33,7 @@ def update_all_feeds(worker,job):
 	feed_urls, feed_ids = get_all_feed_ids_url()
         print feed_urls
 	print "Retrieving data from feed db"
-	test_holder = []
+
 	for i in range(len(feed_urls)):
 		print "Loading items in feed " + str(feed_urls[i])
                 result = scr.get_feed_data(feed_urls[i]) # returns a list of dictionaries, a dict for each item in the feed
@@ -54,7 +51,7 @@ def update_all_feeds(worker,job):
                     print e
                     raise
                 print "update response: " + str(update_response)
-                test_holder.append(result)
+
 	print "'update-all-feeds' finished"
         return str(bson.BSON.encode({"updated_feeds":feed_ids}))
 
