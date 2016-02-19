@@ -16,29 +16,56 @@ Running `go get` in the dir the file is in supposedly adds the required librarie
 
 How to do tests
 ---------------
-Move to this directory, and run `go test`
 
+`cd` to this directory, and run `go test`
 
 How to use
 ----------
 
+All communications are in BSON.
+
 The `db-add` tool expects you to give it gearman data formatted like this:
+
 ```js
+{
     "database":"feeds",
     "collection":"rss",
     "data":{
         "dank":"memes"   
     }
+}
+```
+
+It will return some BSON like this, containing the id of the newly added file:
+
+```js
+{
+    "status": "ok",
+    "_id": ObjectId(000000000000)
+}
 ```
 
 The `db-update` tool expects you to give it gearman data formatted like this:
+
 ```js
+{
     "database":"feeds",
     "collection":"rss",
     "data":{
         "updates":{
             "dank":"cave"
         },
-        "id":ObjectId(000000000000)
+        "selector":{
+            "_id":ObjectId(000000000000)
+        }
     }
+}
+```
+
+It will update a single document that matches the data you give it in `selector`, with the given data in `updates`, and return the following:
+
+```js
+{
+    "status":"ok"
+}
 ```

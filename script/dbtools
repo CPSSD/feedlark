@@ -1,0 +1,11 @@
+#!/bin/bash
+set -xe
+
+cd dbtools
+go run start_workers.go &
+cd adder
+go test
+cd ../
+python getter/getter.py &
+python dbtools_test.py
+cd ..

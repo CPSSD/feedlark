@@ -4,28 +4,59 @@ Feedlark Database Getter
 Dependencies
 ------------
 
-- Go v1.5
-- https://github.com/mikespook/gearman-go
-- http://labix.org/mgo
-
+- Python 2.7
+- [Pymongo 3.2.1](https://github.com/mongodb/mongo-python-driver)
+- [Python-Gearman 2.0.2](https://pypi.python.org/pypi/gearman)
 
 How to set up your environment
 ------------------------------
 
-Running `go get` in the dir the file is in supposedly adds the required libraries to the environment, but it gives errors for me about the $GOPATH. However, `go run adder.go` still works; I need to investigate this further, but it may be easier to trace the problem on a fresh go install.
+```python
+pip install gearman
+
+git clone https://github.com/mongodb/mongo-python-driver
+python setup.py install
+```
+
+Don't install another BSON lib, pymongo comes with its own one.
 
 How to do tests
 ---------------
-Move to this directory, and run `go test`
 
+`¯\_(ツ)_/¯`
 
 How to use
 ----------
-for `db-get` worker:
+
+All communications are done in BSON. It expects data formatted like this:
+
 ```js
+{
     "database": "feedlark",
     "collection": "users",
     "query": {
         "email":"cian.ruane9@mail.dcu.ie"
+    }, 
+    "projection": {
+        "_id": 1,
+        "email": 0
     }
+}
+```
+
+And returns, in BSON, a list of documents that match; it may be an empty list.
+It also has a "status" field, which will be set to "error" in the case that something goes wrong.
+
+```js
+{
+    "docs": [
+        {
+            "_id": ObjectId(123456789012)
+        },
+        {
+            "_id": ObjectId(133790014242)
+        }
+    ],
+    "status":"ok"
+}
 ```
