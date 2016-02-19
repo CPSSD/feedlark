@@ -7,14 +7,17 @@ def get_feed_items(gm_client, feed_url):
     '''
     request = bson.BSON.encode({
         'database':'feedlark',
-        'collection':'feeds',
+        'collection':'feed',
         'query':{
             'url':feed_url,
+            },
+        'projection':{
+            '_id':1,
             },
         })
 
     #submit_job as below is blocking
-    gm_job = gm_client.submit_job('db-get',request)
+    gm_job = gm_client.submit_job('db-get',str(request))
     return bson.BSON.decode(gm_job.result)['docs']['items']
 
 def get_users(gm_client):
@@ -24,8 +27,8 @@ def get_users(gm_client):
     '''
     request = bson.BSON.encode({
         'database':'feedlark',
-        'collection':'users',
-        'query':'',
+        'collection':'user',
+        'query':{},
         'projection':{
             'username':1,
             'subscribed_feeds':1,
@@ -33,7 +36,7 @@ def get_users(gm_client):
         })
 
     #submit_job as below is blocking
-    gm_job = gm_client.submit_job('db-get',request)
+    gm_job = gm_client.submit_job('db-get',str(request))
     return bson.BSON.decode(gm_job.result)['docs']
 
 def get_g2g_id(gm_client, username):
@@ -49,7 +52,7 @@ def get_g2g_id(gm_client, username):
         })
 
     #submit_job as below is blocking
-    gm_job = gm_client.submit_job('db-get',request)
+    gm_job = gm_client.submit_job('db-get',str(request))
 
     #Pull out the first result's _id
     return_doc = bson.BSON.decode(gm_job.result)['docs']
@@ -66,7 +69,7 @@ def put_g2g(gm_client, object_id, data):
             'data':data,
             })
 
-        gm_job = gm_client.submit_job('db-add',request)        
+        gm_job = gm_client.submit_job('db-add',str(request))        
 
     else:
         request = bson.BSON.encode({
@@ -78,7 +81,7 @@ def put_g2g(gm_client, object_id, data):
                 },
             })
 
-        gm_job = gm_client.submit_job('db-add',request)
+        gm_job = gm_client.submit_job('db-add',str(request))
 
 
 def aggregate(gearman_worker, gearman_job):
