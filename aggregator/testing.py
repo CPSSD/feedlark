@@ -10,13 +10,15 @@ class TestAggregation(unittest.TestCase):
         agg = Aggregator(gm_client)
         
         user_data = agg.get_users()
+        for i in range(len(user_data)):
+            del user_data[i]['_id']
+        
         expected_response = [
             {
                 u'username': u'iandioch',
                 u'subscribed_feeds': [
                     u'https://news.ycombinator.com/rss'
                     ],
-                u'_id': bson.objectid.ObjectId('56c78d5a36f379aecc477bbd')
             },
             {
                 u'username': u'sully',
@@ -25,7 +27,6 @@ class TestAggregation(unittest.TestCase):
                     u'http://spritesmods.com/rss.php',
                     u'http://dave.cheney.net/feed'
                     ],
-                u'_id': bson.objectid.ObjectId('56c78d5a36f379aecc477bbe')
             },
             {
                 u'username': u'theotherguys',
@@ -33,7 +34,6 @@ class TestAggregation(unittest.TestCase):
                     u'https://news.ycombinator.com/rss',
                     u'http://spritesmods.com/rss.php'
                     ],
-                u'_id': bson.objectid.ObjectId('56c78d5a36f379aecc477bbf')
             }]
 
         self.assertEqual(user_data, expected_response)
