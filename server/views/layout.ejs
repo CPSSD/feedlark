@@ -40,7 +40,7 @@
 				<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
 
 				 <ul id="nav-mobile" class="right hide-on-med-and-down">
-					<% if (typeof req.session.username != "undefined") { %>
+					<% if (typeof req.session != "undefined" && typeof req.session.username != "undefined") { %>
 					<li>
 						<a class="dropdown-button" href="#!" data-activates="dropdown1"><%= req.session.username %><i class="material-icons right">arrow_drop_down</i></a>
 						<ul id="dropdown1" class="dropdown-content">
@@ -55,7 +55,7 @@
 					<% } %>
 				 </ul>
 				 <ul class="side-nav" id="mobile-demo">
-					<% if (typeof req.session.username != "undefined") { %>
+					<% if (typeof req.session != "undefined" && typeof req.session.username != "undefined") { %>
 					<li style="color: black;">Hello <%= req.session.username %></li>
 					<li><a href="/user/profile">Profile</a></li>
 					<li><a href="/feed/manage">My Feeds</a></li>
@@ -143,7 +143,7 @@
 		<script src="/js/dependencies/materialize/materialize.min.js"></script>
 		<script src="/js/main.js"></script>
 		<!--SCRIPTS END-->
-		<% if (typeof req.session.msg != "undefined") { %>
+		<% if (typeof req.session != "undefined" && typeof req.session.msg != "undefined") { %>
 		<!-- Toast display -->
 		<script type="text/javascript">
 			$(document).ready(function() {

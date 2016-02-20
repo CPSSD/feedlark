@@ -19,14 +19,16 @@ module.exports = {
 		// User want's the input form?
 		if (req.method != "POST") return res.ok({}, "feed_add");
 
-		var url = req.param("url").toLowerCase();
+		var url = req.param("url")
+		if (typeof url == "undefined" || url.length < 8) return res.badRequest({err: "Invalid URL provided"});
+		url = url.toLowerCase();
 
-		// TODO: Check if we need to manually check for duplicates
 		Feed.create({
 			url: url,
 			items: []
 		}).exec(function (err, feed) {
-			if (err) return res.serverError({err: "Failed to add feed to database"});
+			// This will only fail if the URL is invalid
+			if (err) return res.badRequest({err: "Invalid URL provided"});
 
 			// Add URL to user's subscribed feeds
 			User.findByUsername(req.session.username).exec(function (err, user) {
@@ -55,7 +57,9 @@ module.exports = {
 		// User want's the input form?
 		if (req.method != "GET") return res.badRequest({err: "Invalid request type"});
 
-		var url = req.param("url").toLowerCase();
+		var url = req.param("url")
+		if (typeof url == "undefined" || url.length < 8) return res.badRequest({err: "Invalid URL provided"});
+		url = url.toLowerCase();
 
 		// Remove URL from user's subscribed feeds
 		// TODO: Remove feed from feed db if this was the last user using it?
@@ -63,7 +67,7 @@ module.exports = {
 			user = user[0];
 			if (err || typeof user == "undefined") return res.serverError({err: "Something went wrong finding your user"});
 
-			var index = user.subscribed_feeds.indexOf(url)
+			var index = user.subscribed_feeds.indexOf(url);
 			if (index > -1) user.subscribed_feeds.splice(index, 1);
 
 			user.save(function (err, ret_user) {
@@ -81,13 +85,6 @@ module.exports = {
 	 * `FeedController.manage()`
 	 */
 	manage: function (req, res) {
-		// Get all the feeds for the current user
-		User.findByUsername(req.session.username).exec(function (err, user) {
-			user = user[0];
-			if (err || typeof user == "undefined") return res.serverError({err: "Something went wrong finding your user"});
-
-			// Go to feed manager page
-			return res.ok({}, "feed_manage");
-		});
+		return res.ok({}, "feed_manage");
 	}
 };

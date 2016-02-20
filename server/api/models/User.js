@@ -23,18 +23,24 @@ module.exports = {
   attributes: {
 
     username: {
-      type: 'string',
+      type: 'alphanumericdashed',
       required: true,
-      unique: true
+      unique: true,
+      minLength: 4,
+      maxLength: 254
     },
     email: {
-      type: 'string',
+      type: 'email',
       required: true,
-      unique: true
+      unique: true,
+      minLength: 5,
+      maxLength: 254
     },
     password: {
       type: 'string',
-      required: true
+      required: true,
+      minLength: 8,
+      maxLength: 254
     },
     subscribed_feeds: {
       type: 'array',

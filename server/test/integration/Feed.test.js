@@ -4,10 +4,10 @@ var request = require('supertest');
 
 describe('FeedModel', function() {
   var user_details_base = {
-    username: "rms",
+    username: "rmss",
     email: "rms@gnu.org",
     password: "gnuisnotlinux"
-  };
+  }
   var feed_details = {
     url: "https://news.ycombinator.com/rss"
   }
@@ -38,6 +38,13 @@ describe('FeedModel', function() {
         .send(feed_details)
         .expect(200, done);
     });
+    it('User cant use an invalid url', function (done) {
+      agent
+        .post('/feed/add')
+        .type('json')
+        .send({url: "blonk u.wat"})
+        .expect(400, done);
+    });
     // TODO: Fails, as far as I can tell, due to the sails-memory db
   //   it('User can safely try to add a duplicate', function (done) {
   //     agent
@@ -47,7 +54,14 @@ describe('FeedModel', function() {
   //       .expect(200, done);
   //   });
   });
-  // describe('#remove()', function() {
+  describe('#remove()', function() {
+    it('User cant use blank', function (done) {
+      agent
+        .post('/feed/add')
+        .type('json')
+        .send({})
+        .expect(400, done);
+    });
     // TODO: Fails, as far as I can tell, due to the sails-memory db
   //   it('User can remove a feed', function (done) {
   //     agent
@@ -64,7 +78,7 @@ describe('FeedModel', function() {
     //     .send(feed_details)
     //     .expect(200, done);
     // });
-  // });
+  });
   describe('#logout()', function() {
     it('User can log out', function (done) {
       agent

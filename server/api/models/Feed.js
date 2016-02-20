@@ -11,9 +11,11 @@ module.exports = {
   attributes: {
 
     url: {
-      type: 'string',
+      type: 'url',
       required: true,
-      unique: true
+      unique: true,
+      minLength: 8,
+      maxLength: 25564
     },
     items: {
       type: 'array',

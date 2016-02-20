@@ -4,28 +4,62 @@ var request = require('supertest');
 
 describe('UserModel', function() {
   var user_details_base = {
-    username: "rms",
+    username: "rmss",
     email: "rms@gnu.org",
     password: "gnuisnotlinux"
-  };
+  }
   var user_details_email = {
     username: "heyzeus",
     email: "rms@gnu.org",
     password: "gnuisnotlinux"
   }
   var user_details_uname = {
-    username: "rms",
+    username: "rmss",
     email: "rekt@gnu.org",
     password: "gnuisnotlinux"
   }
   var user_details_password = {
-    username: "rms",
-    email: "rekt@gnu.org",
+    username: "rmss",
+    email: "rms@gnu.org",
     password: "gnu1snot1inux"
   }
   // Perisistent agent so session stays
   var agent = request.agent("http://localhost:1337");
   describe('#signup()', function() {
+    // TODO: Add verification tests
+    it('User must provide username', function (done) {
+      request(sails.hooks.http.app)
+        .post('/user/signup')
+        .type('form')
+        .send({
+          username: "",
+          email: "rekt@gnu.org",
+          password: "gnuisnotlinux"
+        })
+        .expect(400, done);
+    });
+    it('User must provide email', function (done) {
+      request(sails.hooks.http.app)
+        .post('/user/signup')
+        .type('form')
+        .send({
+          username: "rmss",
+          email: "r@gn",
+          password: "gnuisnotlinux"
+        })
+        .expect(400, done);
+    });
+    it('User must provide good password', function (done) {
+      request(sails.hooks.http.app)
+        .post('/user/signup')
+        .type('form')
+        .send({
+          username: "rmss",
+          email: "rms@gnu.org",
+          password: "w4t"
+        })
+        .expect(400, done);
+    });
     it('User can sign up', function (done) {
       request(sails.hooks.http.app)
         .post('/user/signup')
