@@ -1,7 +1,7 @@
 var sails = require('sails');
 
 before(function(done) {
-  this.timeout(10000);
+  this.timeout(30000);
 
   sails.lift({
     log: {

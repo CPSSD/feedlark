@@ -31,7 +31,7 @@
   "scripts": {
     "debug": "node debug app.js",
     "start": "node app.js",
-    "test": "NODE_ENV=test node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/*.test.js",
+    "test": "NODE_ENV=test node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test/integration/**/User.test.js test/integration/**/Feed.test.js",
     "hint": "./node_modules/.bin/jshint $(find api/ tasks/ config/ test/ -name \"*.js\") || true"
   },
   "main": "app.js",

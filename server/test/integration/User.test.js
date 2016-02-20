@@ -3,52 +3,91 @@ var assert = require('assert');
 var request = require('supertest');
 
 describe('UserModel', function() {
-  var user_details = {
+  var user_details_base = {
     username: "rms",
     email: "rms@gnu.org",
     password: "gnuisnotlinux"
   };
-  var cookie;
+  var user_details_email = {
+    username: "heyzeus",
+    email: "rms@gnu.org",
+    password: "gnuisnotlinux"
+  }
+  var user_details_uname = {
+    username: "rms",
+    email: "rekt@gnu.org",
+    password: "gnuisnotlinux"
+  }
+  var user_details_password = {
+    username: "rms",
+    email: "rekt@gnu.org",
+    password: "gnu1snot1inux"
+  }
+  // Perisistent agent so session stays
+  var agent = request.agent("http://localhost:1337");
   describe('#signup()', function() {
-    it('should check signup functionality', function (done) {
+    it('User can sign up', function (done) {
       request(sails.hooks.http.app)
         .post('/user/signup')
         .type('form')
-        .send(user_details)
+        .send(user_details_base)
         .expect(200)
-        .expect("Signup successful! Horray!", done);
+        .expect('Success', done);
     });
-    it('should check users cant signup twice', function (done) {
+    it('User cant reuse email', function (done) {
       request(sails.hooks.http.app)
         .post('/user/signup')
         .type('json')
-        .send(user_details)
+        .send(user_details_email)
+        .expect(400, done);
+    });
+    it('User cant reuse username', function (done) {
+      request(sails.hooks.http.app)
+        .post('/user/signup')
+        .type('json')
+        .send(user_details_uname)
         .expect(400, done);
     });
   });
   describe('#login()', function() {
-    it('should check login functionality', function (done) {
-      request(sails.hooks.http.app)
+    it('User cant login with invalid password', function (done) {
+      agent
         .post('/user/login')
         .type('json')
-        .send(user_details)
+        .send(user_details_password)
+        .expect(400, done);
+    });
+    it('User cant login with invalid email', function (done) {
+      agent
+        .post('/user/login')
+        .type('json')
+        .send(user_details_uname)
+        .expect(400, done);
+    });
+    it('User can login', function (done) {
+      agent
+        .post('/user/login')
+        .type('json')
+        .send(user_details_base)
         .expect(200)
-        .expect("Login successful")
-        .end(function (err, res) {
-          if (err) done(err);
-          cookie = res.headers['set-cookie'];
-          done();
-        });
+        .expect("Success", done)
     });
   });
-  describe('#addfeed()', function() {
-    it('should check user can add feed', function (done) {
-      request(sails.hooks.http.app)
-        .post('/user/addfeed')
-        .type('json')
-        .set('cookie', cookie)
-        .send('{"feeds": ["https://www.reddit.com/r/linux/.rss"]}')
+  describe('#profile()', function() {
+    it('User can view profile', function (done) {
+      agent
+        .get('/user/profile')
         .expect(200, done);
+    });
+    it('User can log out', function (done) {
+      agent
+        .get('/user/logout')
+        .expect(200, done);
+    });
+    it('User cant view profile when logged out', function (done) {
+      agent
+        .get('/user/profile')
+        .expect(403, done);
     });
   });
 });

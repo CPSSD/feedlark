@@ -11,7 +11,7 @@ module.exports = {
 	 * `HomepageController.homepage()`
 	 */
 	homepage: function(req, res) {
-		if (!req.session.authenticated) return res.ok({}, "homepage");
+		if (typeof req.session.authenticated == "undefined") return res.ok({}, "homepage");
 		// Check if a user is logged in, return username if possible
 		User.findByEmail(req.session.authenticated).exec(function (err, user) {
 			if (err) return res.negotiate(err);

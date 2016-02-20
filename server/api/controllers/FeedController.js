@@ -31,9 +31,9 @@ module.exports = {
 				// Append the URL to their subscribed urls
 				if (user.subscribed_feeds.indexOf(url) == -1) user.subscribed_feeds.push(url);
 				user.save(function (err, ret_user) {
-					if (err) return res.serverError({err: "Failed to add feed to your user", username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
+					if (err) return res.serverError({err: "Failed to add feed to your user", username: user.username, subscribed_feeds: user.subscribed_feeds});
 
-					// Return to profile page
+					// Return to feed manager page
 					// TODO: Change this to a redirect so the URL changes
 					return res.ok({msg: "Successfully added feed!", username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
 				});
@@ -59,7 +59,7 @@ module.exports = {
 			var index = user.subscribed_feeds.indexOf(url)
 			if (index > -1) user.subscribed_feeds.splice(index, 1);
 			user.save(function (err, ret_user) {
-					if (err) return res.serverError({err: "Failed to remove feed from your user", username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
+				if (err) return res.serverError({err: "Failed to remove feed from your user", username: user.username, subscribed_feeds: user.subscribed_feeds});
 
 				// Return to feed manager page
 				// TODO: Change this to a redirect so the URL changes
@@ -75,11 +75,10 @@ module.exports = {
 		// Get all the feeds for the current user
 		User.findByEmail(req.session.authenticated).exec(function (err, user) {
 			user = user[0];
-			if (err || typeof user == "undefined") return res.serverError({err: "Something went wrong finding your user"}, "feed_manage");
+			if (err || typeof user == "undefined") return res.serverError({err: "Something went wrong finding your user"});
 
 			// Go to feed manager page
 			return res.ok({username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
 		});
 	}
 };
-

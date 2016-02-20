@@ -6,6 +6,11 @@
  */
 var bcrypt = require("bcrypt-nodejs");
 
+function redirect(req, res, url) {
+	if (req.wantsJSON) return res.ok("Success");
+	return res.redirect(url);
+}
+
 module.exports = {
 
 	/**
@@ -15,7 +20,7 @@ module.exports = {
 		// Not logged in, and not trying to...
 		if (req.method != "POST") return res.view("login");
 		// Logged in
-		if (req.session.authenticated) return res.redirect("/user/profile");
+		if (typeof req.session.authenticated != "undefined") return redirect(req, res, "/user/profile");
 
 		// Import things & load request vars
 		var email = req.param("email");
@@ -40,7 +45,7 @@ module.exports = {
 				if (!valid) return res.badRequest({err: "Invalid username/password combination."}, "login");
 
 				req.session.authenticated = user.email;
-				res.redirect("/user/profile");
+				return redirect(req, res, "/user/profile");
 			});
 		});
 	},
@@ -86,7 +91,7 @@ module.exports = {
 
 				// Log the user in
 				req.session.authenticated = email;
-				res.redirect("/user/profile");
+				return redirect(req, res, "/user/profile");
 			});
 		});
 	},
@@ -106,6 +111,6 @@ module.exports = {
 			// Load values needed for page display
 			return res.ok({username: user.username}, "profile");
 		});
-	},
+	}
 
 };
