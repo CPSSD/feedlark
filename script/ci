@@ -3,3 +3,4 @@
 ./script/scraper
 ./script/server
 ./script/dbtools
+./script/aggregator
