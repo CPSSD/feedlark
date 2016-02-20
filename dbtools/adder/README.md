@@ -36,8 +36,8 @@ The `db-add` tool expects you to give it gearman data formatted like this:
 
 ```js
 {
-    "database":"feeds",
-    "collection":"rss",
+    "database":"feedlark",
+    "collection":"feed",
     "data":{
         "dank":"memes"   
     }
@@ -57,8 +57,8 @@ The `db-update` tool expects you to give it gearman data formatted like this:
 
 ```js
 {
-    "database":"feeds",
-    "collection":"rss",
+    "database":"feedlark",
+    "collection":"feed",
     "data":{
         "updates":{
             "dank":"cave"
@@ -77,3 +77,31 @@ It will update a single document that matches the data you give it in `selector`
     "status":"ok"
 }
 ```
+
+The `db-upsert` tool expects this data:
+
+```js
+{
+    "database":"feedlark"    
+    "collection":"feed",
+    "data":{
+        "updates":{
+            "dank":"cave"
+        }
+        "selector":{
+            "dank":"meme"
+        }
+    }
+}
+```
+
+It will see if a document exists with the given query and update it. If no such document exists, it will update the data in `selector` with the data in `updates` and put that in the database as a new document. It returns the following data:
+
+```js
+{
+    "status":"ok"
+    "new_doc":true
+}
+```
+
+`new_doc` will be `true` if the upsert function resulted in the creation of a new document, and `false` if it updated a pre-existing document.
