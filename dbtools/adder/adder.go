@@ -65,6 +65,19 @@ func UpdateDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte
 	return bson, err
 }
 
+func UpsertDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte, error) {
+	fmt.Println("Upserting document in db " + database + " collection " + collection)
+	coll := CreateSession(dbUrl, database, collection)
+	changeInfo, err := coll.Upsert(jsonData["selector"], jsonData["updates"])
+	if err != nil {
+		fmt.Println(err)
+	}
+	newDocCreated := changeInfo.Updated == 0
+	response := bson.M{"status": "ok", "new_doc": newDocCreated}
+	bson, _ := bson.Marshal(response)
+	return bson, err
+}
+
 type DbData struct {
 	// the layout of a supplied document
 	Database   string `bson:"database"`
