@@ -62,7 +62,7 @@ class Aggregator:
                 },
             })
 
-        gm_job = self.gm_client.submit_job('db-update',str(request))
+        gm_job = self.gm_client.submit_job('db-upsert',str(request))
         if bson.BSON(gm_job.result).decode()['status'] != 'ok':
             print "Adding to g2g failed"
             print "Status: " + bson.BSON(gm_job.result).decode()['status']
