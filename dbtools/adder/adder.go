@@ -20,6 +20,8 @@ func Create() error {
 	w.AddFunc("db-add", DbAdd, worker.Unlimited)
 	fmt.Println("Adding 'db-update' function.")
 	w.AddFunc("db-update", DbUpdate, worker.Unlimited)
+	fmt.Println("Adding 'db-upsert' function.")
+	w.AddFunc("db-upsert", DbUpsert, worker.Unlimited)
 	if err := w.Ready(); err != nil {
 		fmt.Println("Fatal error")
 		fmt.Println(err)
@@ -116,6 +118,24 @@ func DbUpdate(job worker.Job) ([]byte, error) {
 	}
 	fmt.Println("DbUpdate data: ", data)
 	response, err := UpdateDocument("127.0.0.1:27017", data.Database, data.Collection, data.Data)
+	if err != nil {
+		fmt.Println(err)
+		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
+	}
+	err = job.Err()
+	return response, err
+}
+
+func DbUpsert(job worker.Job) ([]byte, error) {
+	// a gearman wrapper for UpsertDocument
+	fmt.Println("database upserter called!")
+	var data DbData
+	if err := bson.Unmarshal(job.Data(), &data); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	fmt.Println("DbUpsert data: ", data)
+	response, err := UpsertDocument("127.0.0.1:27017", data.Database, data.Collection, data.Data)
 	if err != nil {
 		fmt.Println(err)
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
