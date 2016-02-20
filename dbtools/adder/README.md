@@ -12,7 +12,15 @@ Dependencies
 How to set up your environment
 ------------------------------
 
-Running `go get` in the dir the file is in supposedly adds the required libraries to the environment, but it gives errors for me about the $GOPATH. However, `go run adder.go` still works; I need to investigate this further, but it may be easier to trace the problem on a fresh go install.
+Make sure the `$GOPATH` is set.
+
+```go
+go get "github.com/mikespook/gearman-go/worker"
+go get "gopkg.in/mgo.v2"
+go get "gopkg.in/mgo.v2/bson"
+```
+
+You can start the worker with `go run ../start_workers.go`
 
 How to do tests
 ---------------
