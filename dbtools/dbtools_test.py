@@ -45,6 +45,32 @@ class TestDbTools(unittest.TestCase):
         self.assertEquals(resp["docs"][0]["inserttime"], req["data"]["inserttime"])
         
 
+    def test_upserter(self):
+        ident = bson.objectid.ObjectId()
+        req = {"database":"testing", "collection":"unit_tests", "data":{"_id":ident, "inserttime":time(), "test":"upserter", "dank":"memes"}}
+        bson_req = bson.BSON.encode(req)
+        raw_response = self.client.submit_job('db-add', str(bson_req))
+
+        upsert_req = {"database":"testing", "collection":"unit_tests", "data":{"selector":{"_id":ident}, "updates":{"dank":"cave"}}}
+        bson_req = bson.BSON.encode(upsert_req)
+        raw_response = self.client.submit_job('db-upsert', str(bson_req))
+        resp = bson.BSON.decode(bson.BSON(raw_response.result))
+
+        self.assertTrue("status" in resp)
+        self.assertTrue("new_doc" in resp)
+        self.assertEquals(resp["status"], "ok")
+        self.assertEquals(resp["new_doc"], False)
+
+        get_req = {"database":"testing", "collection":"unit_tests", "query": {"_id": ident}, "projection": {"dank": 1}}
+        bson_req = bson.BSON.encode(get_req)
+        raw_response = self.client.submit_job('db-get', str(bson_req))
+        resp = bson.BSON.decode(bson.BSON(raw_response.result))
+
+        self.assertTrue("status" in resp)
+        self.assertEquals(resp["status"], "ok")
+        self.assertEquals(len(resp["docs"]), 1)
+        self.assertEquals(resp["docs"][0]["dank"], "cave")
+        
 
 if __name__ == '__main__':
     #set the gearman workers running
