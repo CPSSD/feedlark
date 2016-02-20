@@ -50,8 +50,8 @@ module.exports = {
 	 */
 	logout: function (req, res) {
 		req.session.authenticated = null;
-		// Have to use redirect here so that the URL changes
-		res.redirect("/", {data: {msg: "Logged out! See you next time :)"}});
+		// TODO: Change this to a redirect so the URL changes
+		return res.ok({msg: "Logged out! See you next time :)"}, "homepage");
 	},
 
 	/**

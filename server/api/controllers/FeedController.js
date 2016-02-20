@@ -34,6 +34,7 @@ module.exports = {
 					if (err) return res.serverError({err: "Failed to add feed to your user", username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
 
 					// Return to profile page
+					// TODO: Change this to a redirect so the URL changes
 					return res.ok({msg: "Successfully added feed!", username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
 				});
 			});
@@ -50,6 +51,7 @@ module.exports = {
 		var url = req.param("url").toLowerCase();
 
 		// Remove URL from user's subscribed feeds
+		// TODO: Remove feed from feed db if this was the last user using it?
 		User.findByEmail(req.session.authenticated).exec(function (err, user) {
 			user = user[0];
 			if (err || typeof user == "undefined") return res.serverError({err: "Something went wrong finding your user"});
@@ -60,6 +62,7 @@ module.exports = {
 					if (err) return res.serverError({err: "Failed to remove feed from your user", username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
 
 				// Return to feed manager page
+				// TODO: Change this to a redirect so the URL changes
 				return res.ok({msg: "Successfully removed feed!", username: user.username, subscribed_feeds: user.subscribed_feeds}, "feed_manage");
 			});
 		});

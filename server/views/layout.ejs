@@ -51,7 +51,7 @@
 						</ul>
 					</li>
 					<% } else { %>
-					<li><a href="/user/profile">Login</a></li>
+					<li><a href="/user/login">Login</a></li>
 					<% } %>
 				 </ul>
 				 <ul class="side-nav" id="mobile-demo">
@@ -62,14 +62,14 @@
 					<li class="divider"></li>
 					<li><a href="/user/logout">Logout</a></li>
 					<% } else { %>
-					<li><a href="/user/profile">Login</a></li>
+					<li><a href="/user/login">Login</a></li>
 					<% } %>
 				</ul>
 
 			</div>
 		</nav>
-		<!-- Error message display -->
 		<% if (typeof data != "undefined" && typeof data.err != "undefined") { %>
+		<!-- Error message display -->
 		<div class="row">
 			<div class="col s12 m6">
 				<div class="card red darken-1">
