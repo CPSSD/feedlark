@@ -10,13 +10,13 @@
 				<th data-field="id">URL</th>
 				<th data-field="name" style="width: 10%; text-align: right;">Remove?</th>
 			</tr>
-			<% for (var i = 0; i < data.subscribed_feeds.length; i++) { %>
+			<% for (var i = 0; i < req.session.subscribed_feeds.length; i++) { %>
 			<tr>
 				<td>
-					<%= data.subscribed_feeds[i] %>
+					<%= req.session.subscribed_feeds[i] %>
 				</td>
 				<td>
-					<a href="/feed/remove?url=<%= data.subscribed_feeds[i] %>" class="waves-effect waves-circle waves-light btn-floating secondary-content">
+					<a href="/feed/remove?url=<%= req.session.subscribed_feeds[i] %>" class="waves-effect waves-circle waves-light btn-floating secondary-content">
 						<i class="material-icons">delete</i>
 					</a>
 				</td>

@@ -20,7 +20,7 @@ module.exports = {
 		// Not logged in, and not trying to...
 		if (req.method != "POST") return res.view("login");
 		// Logged in
-		if (typeof req.session.authenticated != "undefined") return redirect(req, res, "/user/profile");
+		if (typeof req.session.username != "undefined") return redirect(req, res, "/user/profile");
 
 		// Import things & load request vars
 		var email = req.param("email");
@@ -38,13 +38,16 @@ module.exports = {
 			if (err) return res.serverError({err: err}, "login");
 
 			// Is the user name valid? (DB query returns nothing if not)
-			if (typeof user == "undefined") return res.badRequest({err: "Invalid username/password combination."}, "login");
+			if (typeof user == "undefined") return res.badRequest({err: "Invalid email/password combination."}, "login");
 
 			// Check their password
 			bcrypt.compare(password, user.password, function(err, valid) {
-				if (!valid) return res.badRequest({err: "Invalid username/password combination."}, "login");
+				if (!valid) return res.badRequest({err: "Invalid email/password combination."}, "login");
 
-				req.session.authenticated = user.email;
+				// Set session vars and redirect
+				req.session.username = user.username;
+				req.session.subscribed_feeds = user.subscribed_feeds;
+				req.session.msg = "Successfully logged in.";
 				return redirect(req, res, "/user/profile");
 			});
 		});
@@ -54,9 +57,11 @@ module.exports = {
 	 * `UserController.logout()`
 	 */
 	logout: function (req, res) {
-		req.session.authenticated = null;
-		// TODO: Change this to a redirect so the URL changes
-		return res.ok({msg: "Logged out! See you next time :)"}, "homepage");
+		req.session.destroy(function(err) {
+			// There is accordingly a bug with destroying sessions where if you redirect there is a chance it won't destroy fully
+			// As a result, we need a "logout" view
+			res.ok({}, "logout");
+		});
 	},
 
 	/**
@@ -90,7 +95,9 @@ module.exports = {
 				if (err) return res.badRequest({err: "Oops, look like that email or username is already taken."}, "signup");
 
 				// Log the user in
-				req.session.authenticated = email;
+				req.session.username = username;
+				req.session.subscribed_feeds = [];
+				req.session.msg = "Signup successful. Welcome!";
 				return redirect(req, res, "/user/profile");
 			});
 		});
@@ -102,14 +109,14 @@ module.exports = {
 	profile: function(req, res) {
 		// Get the user data
 		// TODO: Make sure the email address is safe for use here
-		User.findByEmail(req.session.authenticated).exec(function (err, user) {
+		User.findByUsername(req.session.username).exec(function (err, user) {
 			if (err) return res.serverError({err: err}, "login");
 
 			user = user[0];
 			if (typeof user == "undefined") return res.redirect("/user/login");
 
 			// Load values needed for page display
-			return res.ok({username: user.username}, "profile");
+			return res.ok({}, "profile");
 		});
 	}
 
