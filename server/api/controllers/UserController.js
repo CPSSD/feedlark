@@ -40,7 +40,7 @@ module.exports = {
 			// Is the user name valid? (DB query returns nothing if not)
 			if (typeof user == "undefined") return res.badRequest({err: "Invalid username/password combination."}, "login");
 
-			// Check thier password
+			// Check their password
 			bcrypt.compare(password, user.password, function(err, valid) {
 				if (!valid) return res.badRequest({err: "Invalid username/password combination."}, "login");
 
