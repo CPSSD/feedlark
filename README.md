@@ -1,4 +1,4 @@
-# feedlark.com
+# Feedlark 
 
 Simple and Sharp RSS Reader
 
@@ -18,14 +18,14 @@ Included Packages
 	MongoDB v3.2+
 	Gearman Job Server
 	Go Compiler (& GOPATH)
-	Python 2.7.10 + 3.4+
-	Pip 3
-	Python 3 package "feeparser"
-	Python 3 package "beautifulsoup4"
-	Python 3 package "requests"
-	Python 3 package "gearman"
-	Python 3 package "virtualenv"
-	Python 3 package "pymongo"
+	Python 2.7+ & 3.4+
+	Pip for Python 2 + 3
+	Python package "feeparser"
+	Python package "beautifulsoup4"
+	Python package "requests"
+	Python package "gearman"
+	Python package "virtualenv"
+	Python package "pymongo"
 	NodeJS 4.3
 	NPM
 	NodeJS packages from "server" directory
@@ -73,9 +73,15 @@ To stop the box:
 
 MongoDB is forwarded/exposed on port `27017`
 
-The Gearman job server will run on port `4730`
+The Gearman job server runs on port `4730`
 
-All other services (Nginx, MongoDB) should be exposed on the IP `192.168.2.2`
+All services are also exposed on the IP `192.168.2.2`
 
-Use `python3` and `pip3` commands instead of their normal versions (which are 2.X based)
+Startup
+------------
+
+To start the program, run the following commands (NOT IN VAGRANT):
+
+	$ cd <root_of_your_repo>
+	$ script/start.sh
 
