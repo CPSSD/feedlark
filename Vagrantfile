@@ -87,8 +87,10 @@ Vagrant.configure(2) do |config|
     sudo apt-get clean
     sudo pip install -r /vagrant/script/requirements.txt
     sudo su -c "gem install sass"
+    cd /vagrant/server
+    npm install -y
+    npm dedupe
     npm cache clean
-    cd /vagrant/server && npm install -y
     echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
     echo "export PATH=/vagrant/server/node_modules/.bin:$PATH:" >> /home/vagrant/.profile
     mkdir -p /home/vagrant/.go
