@@ -44,7 +44,7 @@ Here's a list of what you can do:
 | command         | notable details                                           |
 | ------          | ---------------                                           |
 | `npm run start` | starts the sail server, using `sails lift`.               |
-| `npm run tests` | starts the mocha.js tests located in `tests/`             |
+| `npm run test` | starts the mocha.js tests located in `tests/`             |
 
 Here's a list of what we _maybe should_ be able to do:
 
@@ -52,3 +52,4 @@ Here's a list of what we _maybe should_ be able to do:
 | ------          | ---------------                                           |
 | `npm run irl`   | starts the sail server with configuration for deployment  |
 | `npm run lint`  | lint everything                                           |
+
