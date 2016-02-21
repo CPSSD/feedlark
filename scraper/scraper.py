@@ -1,6 +1,7 @@
 import sys
 import requests
 import feedparser
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 
@@ -23,16 +24,14 @@ class Scraper:
             raise TypeError('URL must be a string')
 
         feed = feedparser.parse(rss_url)
-
         items_list = []
         for item in feed['entries']:
             items_list.append({
-                'title':item['title'],
+                'name':item['title'],
                 'link':item['link'],
-                'pub_date':item['published_parsed'],
+                'pub_date':datetime(*item['published_parsed'][:6]),
                 'article_text':self._parse_from_web(item['link']),
                 })
-
         return items_list
 
     def _parse_from_web(self, article_url):
@@ -43,8 +42,3 @@ class Scraper:
             s.extract()
 
         return soup.getText()
-
-##scr = Scraper()
-##for item in scr.get_feed_data("http://spritesmods.com/rss.php")["data"]:
-##    print item
-##    print
