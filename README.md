@@ -43,8 +43,7 @@ Setup
 
 Run the following commands inside your user folder or equivalent
 
-	$ cp Vagrantfile /home/Vagrant/Vagrantfile
-	$ cd /home/Vagrant/Vagrantfile
+	$ cd <root_of_your_repo>
 	$ vagrant up
 
 This will download an image of Ubuntu 15.10 (Wily), install the required packages and setup the services. Pip dependencies will also be downloaded
