@@ -6,7 +6,7 @@
 	</div>
 
 	<div class="row">
-		<% if (typeof data == "undefined" || typeof data.feeds == "undefined") { %>
+		<% if (typeof data == "undefined" || typeof data.feeds == "undefined" || data.feeds.length < 1) { %>
 		<div class="col s6 offset-s3">
 			<p class="center-align">Failed to load your feeds. No data was received from the server</p>
 		</div>
