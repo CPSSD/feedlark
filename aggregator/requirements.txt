@@ -1,2 +1,0 @@
-gearman
-pymongo

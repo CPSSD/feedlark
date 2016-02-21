@@ -38,6 +38,7 @@ Vagrant.configure(2) do |config|
   #
   config.vm.provider "virtualbox" do |vb|
      vb.memory = "1024"
+     vb.cpus = "2"
      vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   end
   #
@@ -52,9 +53,6 @@ Vagrant.configure(2) do |config|
   # config.push.define "atlas" do |push|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
-
-  # Add mongodb config
-  config.vm.provision "file", source: "script/vagrant/mongod.conf", destination: "/tmp/mongod.conf"
 
   # Make sure the swap is up before installs
   config.vm.provision "shell", path: "script/vagrant/create_swap.sh"
@@ -87,18 +85,14 @@ Vagrant.configure(2) do |config|
     sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
-    sudo pip install feedparser
-    sudo pip install beautifulsoup4
-    sudo pip install requests
-    sudo pip install virtualenv
-    sudo pip install gearman
-    sudo pip install pymongo
+    sudo pip install -r /vagrant/script/requirements.txt
     sudo su -c "gem install sass"
     npm cache clean
     cd /vagrant/server && npm install -y
     echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
     echo "export PATH=/vagrant/server/node_modules/.bin:$PATH:" >> /home/vagrant/.profile
     mkdir -p /home/vagrant/.go
+    export GOPATH=/home/vagrant/.go
     go get github.com/mikespook/gearman-go/worker 
     go get gopkg.in/mgo.v2
     go get gopkg.in/mgo.v2/bson
@@ -108,7 +102,7 @@ Vagrant.configure(2) do |config|
     chown -R mongodb:mongodb /home/vagrant/.mongodb
     sudo mv /etc/mongod.conf /etc/mongod.conf.orig
     sudo rm -f /etc/mongod.conf
-    sudo mv /tmp/mongod.conf /etc/mongod.conf
+    sudo cp /vagrant/script/vagrant/mongod.conf /etc/mongod.conf
     sudo systemctl enable mongod
     sudo systemctl start mongod
     sudo systemctl enable gearman-job-server
