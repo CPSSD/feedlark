@@ -1,6 +1,7 @@
 import sys
 import requests
 import feedparser
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 
@@ -28,7 +29,7 @@ class Scraper:
             items_list.append({
                 'name':item['title'],
                 'link':item['link'],
-                'pub_date':str(item['published_parsed']),
+                'pub_date':datetime(*item['published_parsed'][:6]),
                 'article_text':self._parse_from_web(item['link']),
                 })
         return items_list
