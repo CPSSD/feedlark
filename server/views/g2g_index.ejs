@@ -13,7 +13,7 @@
 		<%
 		} else {
 			for (var i = 0; i < data.feeds.length; i++) {
-				var date = new Date(data.feeds[i].updatedAt);
+				var date = new Date(data.feeds[i].pub_date);
 				date = date.toLocaleDateString();
 		%>
 		<div class="col s8 offset-s2 card">
