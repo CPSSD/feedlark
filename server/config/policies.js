@@ -26,5 +26,8 @@ module.exports.policies = {
 	},
 	FeedController: {
 		'*': 'isLoggedIn'
+	},
+	G2gController: {
+		'*': 'isLoggedIn'
 	}
 };
