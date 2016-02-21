@@ -83,5 +83,6 @@ Startup
 To start the program, run the following commands (NOT IN VAGRANT):
 
 	$ cd <root_of_your_repo>
+	$ vagrant up
 	$ script/start.sh
 
