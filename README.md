@@ -1,9 +1,8 @@
-# Feedlark 
+Feedlark
+========
 
-Simple and Sharp RSS Reader
+Simple and Sharp RSS Reader.
 
-Development Environment
-============
 
 Dependencies
 ------------
@@ -11,77 +10,81 @@ Dependencies
 - Vagrant
 - VirtualBox
 
-Included Packages
-------------
-
-	Git
-	MongoDB v3.2+
-	Gearman Job Server
-	Go Compiler (& GOPATH)
-	Python 2.7+ & 3.4+
-	Pip for Python 2 + 3
-	Python package "feeparser"
-	Python package "beautifulsoup4"
-	Python package "requests"
-	Python package "gearman"
-	Python package "virtualenv"
-	Python package "pymongo"
-	NodeJS 4.3
-	NPM
-	NodeJS packages from "server" directory
-	OpenJDK 7
-	Scala 2.11
-
-Something missing? Open an issue with the following content:
-
-- Title: Add ~package~ to development environment
-- Purpose of package
-- Install command, if readily available
-
-Setup
-------------
-
-Run the following commands inside your user folder or equivalent
-
-	$ cd <root_of_your_repo>
-	$ vagrant up
-
-This will download an image of Ubuntu 15.10 (Wily), install the required packages and setup the services. Pip dependencies will also be downloaded
-It will also make the following local symlinks
-
-- `. -> /vagrant`
-
 Usage
 ------------
 
-To start the box:
+For windows users, `vagrant ssh` doesn't work _straight_ away. Please read:
+https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY
 
-	$ vagrant up
+```sh
+$ vagrant up # start
+$ vagrant provision  # setup depends
+$ vagrant ssh # gain ssh (on a POSIX system)
+$ vagrant halt # stop
+```
 
-To update an existing box (after starting):
+### Vagrantfile
 
-	$ vagrant provision
+This will download an image of Ubuntu 15.10 (Wily), install the required
+packages and setup the services.
 
-To gain SSH access:
+Pip dependencies will also be downloaded.
 
-	$ vagrant ssh
+#### Ports
 
-To stop the box:
+- `27017`: MongoDB is forwarded/exposed on port
+-  `4730`: The Gearman job server runs on port
+- `192.168.2.2`: All services are also exposed on the IP
 
-	$ vagrant halt
+#### Symlinks
 
-MongoDB is forwarded/exposed on port `27017`
 
-The Gearman job server runs on port `4730`
+- `. -> /vagrant`
 
-All services are also exposed on the IP `192.168.2.2`
+Is something missing from the Vagrant? Open an issue!
 
-Startup
-------------
+#### Running the whole application stack
 
-To start the program, run the following commands (NOT IN VAGRANT):
+Run the following commands inside your user folder or equivalent:
 
-	$ cd <root_of_your_repo>
-	$ vagrant up
-	$ script/start.sh
+```sh
+$ cd <root_of_your_repo>
+$ vagrant up
+$ script/start.sh
+# if you get errors, ssh to the vagrant box and try:
+$ cd /vagrant && bash script/start_internal.sh
+```
 
+Project Directory Overview
+---------------------------
+
+#### `./aggregator`
+
+This is the code that ties the three Feedlark databases together, it coalesces
+`feed` and `user` and places the data in `g2g`.
+
+#### `./dbtools`
+
+This is we implement gearman mongo-db workers.
+
+#### `./doc`
+
+This is where all documentation lives that doesn't directly relate to code.
+Find all the specs here.
+
+#### `./scheduler`
+
+A simple gearman cron-like job that makes sure the workers are working.
+
+#### `./scraper`
+
+This is where we scrape from the web. This tool plays an important part in
+getting information from individual feeds.
+
+#### `./script`
+
+This is where we keep scripts/confs, related to the project.
+
+#### `./server`
+
+This is where we keep the server, which routes HTTP and renders responses.
