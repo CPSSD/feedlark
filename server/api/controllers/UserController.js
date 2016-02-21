@@ -95,11 +95,20 @@ module.exports = {
 				// Catch errors
 				if (err) return res.badRequest({err: err}, "signup");
 
-				// Log the user in
-				req.session.username = username;
-				req.session.subscribed_feeds = [];
-				req.session.msg = "Signup successful. Welcome!";
-				return redirect(req, res, "/user/profile");
+				G2g.create({
+					username: username,
+					feeds: []
+				}).exec(function (err, data) {
+
+					// Catch errors
+					if (err) return res.badRequest({err: err}, "signup");
+
+					// Log the user in
+					req.session.username = username;
+					req.session.subscribed_feeds = [];
+					req.session.msg = "Signup successful. Welcome!";
+					return redirect(req, res, "/user/profile");
+				});
 			});
 		});
 	},

@@ -9,10 +9,21 @@ html, body {
 	padding-left: 1em !important;
 }
 
-h1 {
-	font-size: 3em;
+h3 {
+	font-size: 1.3em;
 }
 
-h3 {
-	font-size: 1.25em;
+.homepage-wrapper {
+	p {
+		padding-left: 1em;
+		text-size: 1.5em;
+	}
+}
+
+.hacky-shadow-fix {
+	color: white;
+}
+
+.parallax-container {
+  height: 500;
 }

@@ -7,6 +7,8 @@
 
 module.exports = {
 	tableName: 'g2g',
+	autoCreatedAt: false,
+	autoUpdatedAt: false,
 
 	username: {
 		type: 'alphanumericdashed',

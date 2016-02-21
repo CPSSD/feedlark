@@ -34,6 +34,15 @@ If you are not, then inside `/server` run:
 $ npm install -y
 ```
 
+Attention Windows Vagrant Users
+-------------------------------
+
+Run `vagrant up` as admin. Not doing that causes problems when `npm install`
+trys to make symlinks in the directory. Admin is required so vagrant can
+force VirtualBox to allow symlinks.
+
+Anyway, to do that, make sure you start your Command Prompt as Admin.
+
 Usage
 -----
 
@@ -44,7 +53,7 @@ Here's a list of what you can do:
 | command         | notable details                                           |
 | ------          | ---------------                                           |
 | `npm run start` | starts the sail server, using `sails lift`.               |
-| `npm run tests` | starts the mocha.js tests located in `tests/`             |
+| `npm run test` | starts the mocha.js tests located in `tests/`             |
 
 Here's a list of what we _maybe should_ be able to do:
 
