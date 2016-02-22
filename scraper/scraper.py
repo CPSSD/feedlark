@@ -26,10 +26,11 @@ class Scraper:
         feed = feedparser.parse(rss_url)
         items_list = []
         for item in feed['entries']:
+            date = item['published_parsed'] if 'published_parsed' in item else item['updated_parsed']
             items_list.append({
                 'name':item['title'],
                 'link':item['link'],
-                'pub_date':datetime(*item['published_parsed'][:6]),
+                'pub_date':datetime(*date[:6]),
                 'article_text':''#self._parse_from_web(item['link']),
                 })
         return items_list
