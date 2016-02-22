@@ -31,7 +31,7 @@ class Scraper:
                 'name':item['title'],
                 'link':item['link'],
                 'pub_date':datetime(*date[:6]),
-                'article_text':'',#self._parse_from_web(item['link']),
+                'article_text':''#self._parse_from_web(item['link']),
                 })
         return items_list
 
