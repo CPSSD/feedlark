@@ -10,7 +10,7 @@ class TestScraping(unittest.TestCase):
         scr = Scraper()
 
         #The url is to a static RSS feed stolen from Hacker News
-        test_feed = scr.get_feed_data('http://u.m1cr0man.com/l/feed.txt')
+        test_feed = scr.get_feed_data('http://u.m1cr0man.com/l/feed.xml')
 
         title = 'Why it is NOT WISE to discuss personal information in front of smart TVs'
         self.assertEqual(test_feed[0]['name'],title)
