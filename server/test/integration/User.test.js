@@ -8,25 +8,19 @@ describe('UserModel', function() {
     email: "rms@gnu.org",
     password: "gnuisnotlinux"
   }
-  var user_details_email = {
+  var user_details_dupe_email = {
     username: "heyzeus",
     email: "rms@gnu.org",
     password: "gnuisnotlinux"
   }
-  var user_details_uname = {
+  var user_details_dupe_uname = {
     username: "rmss",
     email: "rekt@gnu.org",
     password: "gnuisnotlinux"
   }
-  var user_details_password = {
-    username: "rmss",
-    email: "rms@gnu.org",
-    password: "gnu1snot1inux"
-  }
   // Perisistent agent so session stays
   var agent = request.agent("http://localhost:1337");
   describe('#signup()', function() {
-    // TODO: Add verification tests
     it('User must provide username', function (done) {
       request(sails.hooks.http.app)
         .post('/user/signup')
@@ -72,14 +66,14 @@ describe('UserModel', function() {
       request(sails.hooks.http.app)
         .post('/user/signup')
         .type('json')
-        .send(user_details_email)
+        .send(user_details_dupe_email)
         .expect(400, done);
     });
     it('User cant reuse username', function (done) {
       request(sails.hooks.http.app)
         .post('/user/signup')
         .type('json')
-        .send(user_details_uname)
+        .send(user_details_dupe_uname)
         .expect(400, done);
     });
   });
@@ -88,14 +82,18 @@ describe('UserModel', function() {
       agent
         .post('/user/login')
         .type('json')
-        .send(user_details_password)
+        .send({
+		  username: "rmss",
+		  email: "rms@gnu.org",
+		  password: "gnu1snotlinux"
+		})
         .expect(400, done);
     });
     it('User cant login with invalid email', function (done) {
       agent
         .post('/user/login')
         .type('json')
-        .send(user_details_uname)
+        .send(user_details_dupe_uname)
         .expect(400, done);
     });
     it('User can login', function (done) {
