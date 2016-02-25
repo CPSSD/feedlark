@@ -77,40 +77,47 @@ module.exports = {
 		if (password.length < 8) return res.badRequest({err: "Password too short."}, "signup");
 		if (username.length < 4) return res.badRequest({err: "Username too short."}, "signup");
 
-		// Generate the password hash
-		bcrypt.hash(password, null, null, function(err, hash) {
+		// Check this user isn't already in the database
+		User.findOne({"$or": [{"username": username}, {"email": email}]}, function (err, user) {
 			if (err) return res.serverError({err: err}, "signup");
+			if (typeof user != "undefined") return res.badRequest({err: "Username/Email already in use."}, "signup");
 
-			// Add new user to the database
-			User.create({
-				username: username,
-				email: email,
-				subscribed_feeds: [],
-				password: hash
-			})
+			// Generate the password hash
+			bcrypt.hash(password, null, null, function(err, hash) {
+				if (err) return res.serverError({err: err}, "signup");
 
-			// Do stuff with the new data
-			.exec(function (err, user) {
-
-				// Catch errors
-				if (err) return res.badRequest({err: err}, "signup");
-
-				G2g.create({
+				// Add new user to the database
+				User.create({
 					username: username,
-					feeds: []
-				}).exec(function (err, data) {
+					email: email,
+					subscribed_feeds: [],
+					password: hash
+				})
+
+				// Do stuff with the new data
+				.exec(function (err, user) {
 
 					// Catch errors
 					if (err) return res.badRequest({err: err}, "signup");
 
-					// Log the user in
-					req.session.username = username;
-					req.session.subscribed_feeds = [];
-					req.session.msg = "Signup successful. Welcome!";
-					return redirect(req, res, "/user/profile");
+					G2g.create({
+						username: username,
+						feeds: []
+					}).exec(function (err, data) {
+
+						// Catch errors
+						if (err) return res.badRequest({err: err}, "signup");
+
+						// Log the user in
+						req.session.username = username;
+						req.session.subscribed_feeds = [];
+						req.session.msg = "Signup successful. Welcome!";
+						return redirect(req, res, "/user/profile");
+					});
 				});
 			});
 		});
+
 	},
 
 	/**
