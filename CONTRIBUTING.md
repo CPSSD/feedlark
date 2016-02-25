@@ -9,15 +9,15 @@ Branches
 Branches are named like so:
 
     assignee_first_initial/name#issue_number
-	
+
 For multiple assignees the initals can be hyphenated.
 
 For example:
-	
+
 	c/atom_support#43
 	c-r/atom_support#43
 
-
+**NOTE** Documentation updates of any form should be commited straight to `master` without any extra branches.
 
 Pull Requests
 -------------
