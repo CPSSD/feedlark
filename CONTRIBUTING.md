@@ -66,10 +66,8 @@ All documentation should be in Markdown (.md) format. Where applicable, use the 
 
 Where applicable, documentation updates related to new code/commits should be added to their own commit in your current branch, following this example format:
 
-	```
-		ea283476	#123	Add gearman worker for word vectorisation
-		fd723145	#124	Add documentation for #123
-	```
+	ea283476	#123	Add gearman worker for word vectorisation
+	fd723145	#124	Add documentation for #123
 
 ### Updated Documentation
 
@@ -77,5 +75,5 @@ For updating the documentation in the general case, the following procedure shou
 
 	- Create/switch to branch `doc-update`
 	- Make your changes & commit
-	- Make a PR to master, with a title in the following format: `Documenation update for X in path/FILE.md`
+	- Make a PR to master, with a title in the following format: `Documentation update for X in path/FILE.md`
 	- When merged, delete the branch `doc-update`
