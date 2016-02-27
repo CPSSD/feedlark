@@ -4,13 +4,33 @@ import gearman
 
 # convert given data to bson in valid format for db-update
 def bsonify_update_data(item_id, url , allData):
-    items_list = {"database":"feedlark","collection":"feed", "data": {"updates" : {"items":allData, "url":url}, "selector": {"_id": item_id } } }
-    return (bson.BSON.encode(items_list))
+    items_list = {
+        "database":"feedlark",
+        "collection":"feed",
+        "data":{
+            "updates":{
+                "items":allData,
+                "url":url
+                },
+            "selector":{
+                "_id": item_id
+                },
+            },
+        }
+    return bson.BSON.encode(items_list)
 
 # submits a job to 'db-get' to get all ids and urls of the feeds
 def get_all_feed_ids_url():
 	# format the request
-	to_get_urls_ids = str(bson.BSON.encode({"database":"feedlark","collection":"feed", "query": {},"projection":{"_id":1, "url":1}}))
+	to_get_urls_ids = str(bson.BSON.encode({
+            "database":"feedlark",
+            "collection":"feed",
+            "query": {},
+            "projection":{
+                "_id":1,
+                "url":1
+                },
+            }))
 	url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
 	bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
 	print "response: " + str(bson_object)
