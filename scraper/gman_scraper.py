@@ -29,45 +29,76 @@ def get_feed_db_data():
             "projection":{
                 "_id":1,
                 "url":1,
-                "items":{
+                "items":[{
                     "link":1,
-                    },
+                    "pub_date":1,
+                    "link":1,
+                    "article_text":1,
+                    }],
                 },
             }))
 	url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
 	bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
 	print "response: " + str(bson_object)
-
+	
 	return bson_object["docs"]
 
 
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_feeds(worker,job):
 	print "'update-all-feeds' initiated"
-	feed_urls, feed_ids = get_all_feed_ids_url()
-	print feed_urls
 	print "Retrieving data from feed db"
+	feed_db_data = get_feed_db_data()
 
-	for i in range(len(feed_urls)):
-		print "Loading items in feed " + str(feed_urls[i])
-		result = scr.get_feed_data(feed_urls[i]) # returns a list of dictionaries, a dict for each item in the feed
+	for doc in feed_db_data:
+		print "Loading items in feed: " + doc['url']
+		updated_item_list = []
+		result = scr.get_feed_data(doc['url'])#list of item dicts
+		
+		for item in result:
+                    for db_item in doc['items']:
+                        if item['url'] == db_item['url']:
+                            #If item already in db
+                            updated_item_list.append(db_item)
+                            break
+                    else:
+                        #Runs if loop doesn't break, implying new item
+                        updated_item_list.append({
+                            'name':item['name'],
+                            'pub_date':item['pub_date'],
+                            'link':item['link'],
+                            'article_text':''#Call to text getter here with item['link']
+                            })
+    
+                    
 		bson_data = None
 		try:
-			bson_data = bsonify_update_data(feed_ids[i], feed_urls[i], result)
+			bson_data = bsonify_update_data(doc['_id'], doc['url'], updated_item_list)
 		except Exception as e:
 			print e
-			return str(bson.BSON.encode({"status":"error", "error-description":str(e)}))
+			return str(bson.BSON.encode({
+                            "status":"error",
+                            "error-description":str(e)
+                            }))
+		
 		print "ready to db-update"
 		update_response = None
 		try:
 			update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
 		except Exception as e:
 			print e
-			return str(bson.BSON.encode({"status":"error", "error-description":str(e)}))
+			return str(bson.BSON.encode({
+                            "status":"error",
+                            "error-description":str(e)
+                            }))
+		
 		print "update response: " + str(update_response)
 
 	print "'update-all-feeds' finished"
-	return str(bson.BSON.encode({"updated_feeds":feed_ids, "status":"ok"}))
+	return str(bson.BSON.encode({
+            "status":"ok",
+            "updated_feeds":[x['_id'] for x in feed_db_data],
+            }))
 
 
 scr = Scraper()
