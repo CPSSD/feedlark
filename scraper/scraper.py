@@ -20,7 +20,7 @@ class Scraper:
 
         Each item contains a name, link, and date published.
         '''
-        if type(rss_url) != str:
+        if type(rss_url) != str and type(rss_url) != unicode:
             raise TypeError('URL must be a string')
 
         feed = feedparser.parse(rss_url)
