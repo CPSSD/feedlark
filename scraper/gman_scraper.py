@@ -20,7 +20,7 @@ def bsonify_update_data(item_id, url , allData):
     return bson.BSON.encode(items_list)
 
 # submits a job to 'db-get' to get all ids and urls of the feeds
-def get_all_feed_ids_url():
+def get_feed_db_data():
 	# format the request
 	to_get_urls_ids = str(bson.BSON.encode({
             "database":"feedlark",
@@ -28,23 +28,17 @@ def get_all_feed_ids_url():
             "query": {},
             "projection":{
                 "_id":1,
-                "url":1
+                "url":1,
+                "items":{
+                    "link":1,
+                    },
                 },
             }))
 	url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
 	bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
 	print "response: " + str(bson_object)
 
-	#extract the url and id strings
-	urls = []
-	ids = []
-	for item in bson_object["docs"]:
-		if "url" not in item or "_id" not in item:
-			continue
-		urls.append(str(item['url']))
-		ids.append(item['_id'])
-
-	return urls, ids
+	return bson_object["docs"]
 
 
 # updates all of the item fields for all the unique feeds in the feeds db
