@@ -57,7 +57,7 @@ def update_all_feeds(worker,job):
 		
 		for item in result:
                     for db_item in doc['items']:
-                        if item['url'] == db_item['url']:
+                        if item['link'] == db_item['link']:
                             #If item already in db
                             updated_item_list.append(db_item)
                             break
