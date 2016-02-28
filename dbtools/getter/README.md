@@ -1,24 +1,7 @@
 Feedlark Database Getter
 ========================
 
-Dependencies
-------------
-
-- Python 2.7
-- [Pymongo 3.2.1](https://github.com/mongodb/mongo-python-driver)
-- [Python-Gearman 2.0.2](https://pypi.python.org/pypi/gearman)
-
-How to set up your environment
-------------------------------
-
-```python
-pip install gearman
-
-git clone https://github.com/mongodb/mongo-python-driver
-python setup.py install
-```
-
-Don't install another BSON lib, pymongo comes with its own one.
+You can run the worker with `go run ../start_workers.go`
 
 How to do tests
 ---------------
