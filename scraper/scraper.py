@@ -3,6 +3,7 @@ import requests
 import feedparser
 from datetime import datetime
 from bs4 import BeautifulSoup
+from article_text_getter import Text_scraper
 
 
 #Ensure the class is used with a recent Python 2.
@@ -22,7 +23,7 @@ class Scraper:
         '''
         if type(rss_url) != str:
             raise TypeError('URL must be a string')
-
+        text_getter = Text_scraper()
         feed = feedparser.parse(rss_url)
         items_list = []
         for item in feed['entries']:
@@ -31,15 +32,6 @@ class Scraper:
                 'name':item['title'],
                 'link':item['link'],
                 'pub_date':datetime(*date[:6]),
-                'article_text':''#self._parse_from_web(item['link']),
+                'article_text': text_getter.get_article_text(item['link'])
                 })
         return items_list
-
-    def _parse_from_web(self, article_url):
-        html = requests.get(article_url).content
-        soup = BeautifulSoup(html,'html.parser')
-
-        for s in soup(['style', 'script', '[document]', 'head', 'title']):
-            s.extract()
-
-        return soup.getText()
