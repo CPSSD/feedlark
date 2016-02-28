@@ -22,18 +22,14 @@ func log(level int, s string) {
 func Create() error {
 	// Create the worker and connect it to Gearman
 
-	//fmt.Println("Creating Gearman worker 'db-add' & 'db-update'")
-	log(0, "Creating Gearman workers 'db-add' and 'db-update'")
+	log(0, "Creating Gearman worker 'db-get'")
 	w := worker.New(worker.OneByOne)
 	w.ErrorHandler = func(e error) {
 		fmt.Println(e)
 	}
 	w.AddServer("tcp4", "127.0.0.1:4730")
-	//fmt.Println("Adding 'db-get' function.")
 	w.AddFunc("db-get", DBGet, worker.Unlimited)
 	if err := w.Ready(); err != nil {
-		//fmt.Println("Fatal error")
-		//fmt.Println(err)
 		log(2, "Fatal error: "+err.Error())
 		return err
 	}
@@ -59,13 +55,11 @@ type DBData struct {
 }
 
 func GetDocuments(dbUrl, database, collection string, query bson.M, projection bson.M) ([]byte, error) {
-	//fmt.Println("Getting documents from db " + database + " collection " + collection)
 	log(0, "Getting documents from db "+database+" collection "+collection)
 	coll := CreateSession(dbUrl, database, collection)
 	var results []bson.M
 	err := coll.Find(query).Select(projection).All(&results)
 	if err != nil {
-		//fmt.Println("Could not iterate documents:" + err.Error())
 		log(2, "Could not iterate documents: "+err.Error())
 		b, _ := bson.Marshal(bson.M{"status": "error", "error": err.Error()})
 		return b, err
@@ -74,7 +68,6 @@ func GetDocuments(dbUrl, database, collection string, query bson.M, projection b
 	var bsonResponse []byte
 	bsonResponse, err = bson.Marshal(response)
 	if err != nil {
-		//fmt.Println("Could not marshal bson:" + err.Error())
 		log(2, "Could not marshal bson: "+err.Error())
 		b, _ := bson.Marshal(bson.M{"status": "error", "description": err.Error()})
 		return b, err
@@ -84,18 +77,14 @@ func GetDocuments(dbUrl, database, collection string, query bson.M, projection b
 
 func DBGet(job worker.Job) ([]byte, error) {
 	// a gearman wrapper for GetDocuments
-	//fmt.Println("database getter called!")
 	log(0, "Database getter called!")
 	var data DBData
 	if err := bson.Unmarshal(job.Data(), &data); err != nil {
-		//fmt.Println(err)
 		log(2, err.Error())
 		return nil, err
 	}
-	//fmt.Println("DBGet data: ", data)
 	response, err := GetDocuments("127.0.0.1:27017", data.Database, data.Collection, data.Query, data.Projection)
 	if err != nil {
-		//fmt.Println(err)
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
 	}
