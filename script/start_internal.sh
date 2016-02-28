@@ -1,13 +1,9 @@
 #!/bin/bash
 echo "Starting backend elements in screen sessions"
 cd /vagrant
-mkdir -p log/backend-getter
-cd log/backend-getter
-screen -dmLS backend-getter python /vagrant/dbtools/getter/getter.py
-cd ..
-mkdir -p backend-workers
-cd backend-workers
-screen -dmLS backend-workers go run /vagrant/dbtools/start_workers.go
+mkdir -p backend-db-workers
+cd backend-db-workers
+screen -dmLS backend-db-workers go run /vagrant/dbtools/start_workers.go
 cd ..
 mkdir -p backend-aggregator
 cd backend-aggregator
