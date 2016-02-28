@@ -1,5 +1,5 @@
-Feedlark Database Adder
-=======================
+Feedlark DBTools: Adder & Getter
+================================
 
 There are two elements to `dbtools`: `adder/adder.go`, and `getter/getter.go`. They are both written in Go, share the same dependencies, and can be run with `go run start_workers.go`.
 
