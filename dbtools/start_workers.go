@@ -2,14 +2,12 @@ package main
 
 import (
 	"./adder"
+	"./getter"
 	"fmt"
 )
 
 func main() {
 	fmt.Println("Starting dbtools Gearman workers.")
-	err := adder.Create()
-	if err != nil {
-		fmt.Println("Could not create Adder worker: ")
-		fmt.Println(err)
-	}
+	go adder.Create()
+	getter.Create()
 }
