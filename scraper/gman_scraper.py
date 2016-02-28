@@ -54,7 +54,8 @@ def update_all_feeds(worker,job):
 		print "Loading items in feed: " + doc['url']
 		updated_item_list = []
 		result = scr.get_feed_data(doc['url'])#list of item dicts
-		
+
+		items_to_scrape = []
 		for item in result:
                     for db_item in doc['items']:
                         if item['link'] == db_item['link']:
@@ -63,11 +64,14 @@ def update_all_feeds(worker,job):
                             break
                     else:
                         #Runs if loop doesn't break, implying new item
+                        items_to_scrape.append({
+                            '_id':doc['_id'],
+                            'link':item['link'],
+                            })
                         updated_item_list.append({
                             'name':item['name'],
                             'pub_date':item['pub_date'],
                             'link':item['link'],
-                            'article_text':''#Call to text getter here with item['link']
                             })
     
                     
@@ -91,8 +95,15 @@ def update_all_feeds(worker,job):
                             "status":"error",
                             "error-description":str(e)
                             }))
+                print "update response: " + str(update_response)
+
+                print "Submitting items for scraping"
+		#Submit items for scraping
+		for item in items_to_scrape:                
+                    text_getter_data = str(bson.BSON.encode(item))
+                    gm_client.submit_job('article-text-getter',text_getter_data, background=True)
+                
 		
-		print "update response: " + str(update_response)
 
 	print "'update-all-feeds' finished"
 	return str(bson.BSON.encode({
