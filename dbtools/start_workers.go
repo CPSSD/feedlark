@@ -9,5 +9,5 @@ import (
 func main() {
 	fmt.Println("Starting dbtools Gearman workers.")
 	go adder.Create()
-	go getter.Create()
+	getter.Create()
 }
