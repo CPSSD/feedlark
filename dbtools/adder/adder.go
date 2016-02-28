@@ -103,13 +103,11 @@ type DbData struct {
 func DbAdd(job worker.Job) ([]byte, error) {
 	// a gearman wrapper for AddDocument
 	log(0, "Database adder called!")
-	log(0, string(job.Data()))
 	var data DbData
 	if err := bson.Unmarshal(job.Data(), &data); err != nil {
 		log(2, err.Error())
 		return nil, err
 	}
-	log(0, "Trying to add document to db")
 	response, err := AddDocument("127.0.0.1:27017", data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
@@ -145,7 +143,6 @@ func DbUpsert(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	fmt.Println("DbUpsert data: ", data)
 	response, err := UpsertDocument("127.0.0.1:27017", data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
