@@ -1,8 +1,9 @@
 #!/bin/bash
 echo "Starting backend elements in screen sessions"
 cd /vagrant
-mkdir -p backend-db-workers
-cd backend-db-workers
+# first one should be in log/XYZ, the rest of them then cd to this new log/ dir and create their own subdirs from there
+mkdir -p log/backend-db-workers
+cd log/backend-db-workers
 screen -dmLS backend-db-workers go run /vagrant/dbtools/start_workers.go
 cd ..
 mkdir -p backend-aggregator
