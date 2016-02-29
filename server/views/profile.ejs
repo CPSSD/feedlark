@@ -1,7 +1,9 @@
+<% include partials/header.ejs %>
 <div class="container">
-	<div class="row">
-		<div class="col s6">
-			<h3>Hello, <%= req.session.username %></h3>
-		</div>
-	</div>
+  <div class="row">
+    <div class="col s6">
+      <h3>Hello, <%= req.session.username %></h3>
+    </div>
+  </div>
 </div>
+<% include partials/footer.ejs %>

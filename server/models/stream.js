@@ -9,5 +9,5 @@ import {transaction, findOne} from "../middleware/db";
 
 // Gets all the feeds of the current user
 export getFeeds function (username, cb) {
-  transaction(db => findOne(db, "g2g", {"username": username}, data => cb(data.feeds)));
+  transaction(db => findOne(db, "g2g", {username: username}, data => cb(data.feeds)));
 }

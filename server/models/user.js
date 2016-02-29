@@ -23,6 +23,7 @@ export findByEmail function (email, cb) {
   db.transaction(db => db.findOne(db, "user", {email: email}, cb));
 }
 
+// Returns a user if one exists
 export exists function (username, email, cb) {
   db.transaction(db => db.findOne(db, "user", {"$or": [{username: username}, {email: email}]}, cb));
 }

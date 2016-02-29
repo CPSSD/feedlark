@@ -13,10 +13,13 @@ import { create, remove } from "../models/feed";
 const app = express();
 
 app.route("/feeds")
+
+  // Add feed page/form
   .get("/add", isAuthed, (req, res) => {
     res.render("feed_add");
   });
 
+  // New feed processing
   .post("/add", isAuthed, (req, res) => {
 
     // TODO sanitise url
@@ -36,6 +39,7 @@ app.route("/feeds")
     });
   })
 
+  // Remove feed processing
   .get("/remove", isAuthed, (req, res) => {
     // Only need to remove from user, for now
     // TODO clean up no longer relevant feeds from the feed collection

@@ -13,8 +13,11 @@ import { findByEmail, exists, create } from "../models/user";
 const app = express();
 
 app.route("/user")
+
+  // Profile page
   .get("/profile", isAuthed, (req, res) => { res.render("profile"); })
 
+  // Login form
   .get("/login", (req, res) => {
 
     // Go to profile page if user is already logged in
@@ -23,6 +26,7 @@ app.route("/user")
     return res.render("login");
   })
 
+  // Login processing
   .post("/login", (req, res) => {
 
     // Load request vars & verify
@@ -49,13 +53,16 @@ app.route("/user")
     });
   })
 
+  // Logout processing
   .all("/logout", (req, res) => {
     // TODO Destroy the session
     res.render("logout");
   })
 
+  // Signup page
   .get("/signup", (req, res) => { res.render("signup") })
 
+  // Signup processing
   .post("/signup", (req, res) => {
 
     // Import things & load request vars
@@ -72,6 +79,7 @@ app.route("/user")
     // Add new user to the database
     // TODO Create blank g2g entry
     create(username, email, password, _ => {
+
       // Log the user in
       // TODO Setup session
       req.session.username = username;

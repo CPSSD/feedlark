@@ -1,0 +1,19 @@
+    <!-- JQuery JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+
+    <!-- Materialize JS -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+
+    <% if (typeof req.session != "undefined" && typeof req.session.msg != "undefined") { %>
+    <!-- Toast display -->
+    <script type="text/javascript">
+      $(document).ready(function() {
+        Materialize.toast("<%= req.session.msg %>", 5000);
+      });
+    </script>
+    <%
+      req.session.msg = undefined;
+    }
+    %>
+  </body>
+</html>
