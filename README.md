@@ -18,10 +18,7 @@ Dependencies
 - VirtualBox
 
 Usage
-------------
-
-For windows users, `vagrant ssh` doesn't work _straight_ away. Please read:
-https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY
+-----
 
 ```sh
 $ vagrant up # start
@@ -30,7 +27,13 @@ $ vagrant ssh # gain ssh (on a POSIX system)
 $ vagrant halt # stop
 ```
 
-### Vagrantfile
+For windows users, `vagrant ssh` doesn't work _straight_ away. Please read:
+https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY
+
+
+### Vagrant Configuration
+
+The Vagrant configuration is laid out in the `Vagrantfile`.
 
 This will download an image of Ubuntu 15.10 (Wily), install the required
 packages and setup the services.
