@@ -82,12 +82,11 @@ This is where all documentation lives that doesn't directly relate to code. Find
 
 #### `./scheduler`
 
-A simple gearman cron-like job that makes sure the workers are working.
+A simple Gearman cron-like job that refreshes the feeds at regular intervals.
 
 #### `./scraper`
 
-This is where we scrape from the web. This tool plays an important part in
-getting information from individual feeds.
+This contains the Gearman worker to scrape feeds from the web.
 
 #### `./script`
 
