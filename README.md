@@ -66,12 +66,11 @@ $ cd /vagrant && bash script/start_internal.sh
 ```
 
 Project Directory Overview
----------------------------
+--------------------------
 
 #### `./aggregator`
 
-This is the code that ties the three Feedlark databases together, it coalesces
-`feed` and `user` and places the data in `g2g`.
+This is the code that coalesces the database collections `feed` and `user`, and places the data in `g2g`. That is, it takes the feed data, and the user data, and creates the feeds tailored to each individual user.
 
 #### `./dbtools`
 
@@ -79,8 +78,7 @@ The code that provides the Gearman database workers `db-add`, `db-get`, `db-upda
 
 #### `./doc`
 
-This is where all documentation lives that doesn't directly relate to code.
-Find all the specs here.
+This is where all documentation lives that doesn't directly relate to code. Find the specs for the database collections, and the logging specs, here.
 
 #### `./scheduler`
 
