@@ -91,7 +91,7 @@ getting information from individual feeds.
 
 #### `./script`
 
-This is where we keep scripts/confs, related to the project.
+This is where we keep the scripts and configs related to the project. For example, the scripts to run the tests on all aspects of the project are here.
 
 #### `./server`
 
