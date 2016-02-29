@@ -7,7 +7,7 @@ https://github.com/google/styleguide/blob/gh-pages/docguide/style.md
 
 ### Python Style guide
 The following is a link to the Pocoo style guide which we will use for all Python code in our project.
-http://www.pocoo.org/internal/styleguide/http://www.pocoo.org/internal/styleguide/
+http://www.pocoo.org/internal/styleguide/
 
 ### Go Style guide
 The following is a link to the golang style guide which we will use for all Go code in our project.
