@@ -75,7 +75,7 @@ This is the code that ties the three Feedlark databases together, it coalesces
 
 #### `./dbtools`
 
-This is we implement gearman mongo-db workers.
+The code that provides the Gearman database workers `db-add`, `db-get`, `db-update`, and `db-upsert`. The workers are written in Go.
 
 #### `./doc`
 
