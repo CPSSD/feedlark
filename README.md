@@ -3,7 +3,7 @@ Feedlark
 
 Simple and Sharp RSS Reader.
 
-Feedlark uses [Vagrant](http://vagrantup.com). Vagrant is a tool to deploy a virtual machine with our required environment fully configured. It requires Virtualbox to host the VM. The Vagrant startup instructions can be seen in the `Vagrantfile` script.
+Feedlark uses [Vagrant](http://vagrantup.com). Vagrant is a tool to deploy a virtual machine with our required environment fully configured. It requires Virtualbox to host the VM. The Vagrant startup script can be seen in `Vagrantfile`. You can start Vagrant with the instructions in the 'Usage' section below.
 
 Once the environment is set up, Feedlark uses the [Gearman](http://gearman.org) application framework. Gearman allows different modules of the project to be run as separate applications called Workers. These Workers can then be requested to complete their task by a Client. The Gearman Job Serveri, initiated by Vagrant, handles the communication between each module. All of our Gearman data is transmitted in [BSON](https://en.wikipedia.org/wiki/BSON). The format of the data required by each worker is listed in its individual `README.md` file.
 
