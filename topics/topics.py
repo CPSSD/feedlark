@@ -14,7 +14,7 @@ def count_words(word_list):
     words = {}
     print("Word list: " + str(word_list))
     for orig_word in word_list:
-        word = orig_word.text.strip()
+        word = orig_word.text.lower().strip()
         if word in words:
             words[word] += 1
         else:
