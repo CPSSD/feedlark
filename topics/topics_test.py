@@ -29,3 +29,6 @@ class TestTopics(unittest.TestCase):
         self.assertTrue("banana" in topics)
         self.assertTrue("orange" in topics)
         self.assertFalse("the" in topics)
+
+if __name__ == '__main__':
+    unittest.main()
