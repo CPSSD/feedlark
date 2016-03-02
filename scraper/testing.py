@@ -1,7 +1,6 @@
 import unittest
 from datetime import datetime
 from scraper import Scraper
-from article_text_getter import Text_scraper
 import gearman
 import bson
 
@@ -24,17 +23,6 @@ class TestScraping(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             scr.get_feed_data(666)
-
-"""    def test_article_getter(self):
-        testing = Text_scraper()
-        try:
-            f = open("test_article_text_data.txt","r")
-            text = f.read()
-            f.close()
-        except:
-            print "file not found"
-        test_text = testing.get_article_text("http://u.m1cr0man.com/l/feed.xml")
-        self.assertEqual(text, test_text)"""
 
     """def test_update_all(self):
         # takes too long to do every build
