@@ -5,9 +5,11 @@
  * @docs        :: https://github.com/CPSSD/feedlark/blob/master/doc/db/g2g.md
  */
 
-import {transaction, findOne} from "../middleware/db";
+const dbFuncs = require("../middleware/db");
 
 // Gets all the feeds of the current user
-export getFeeds function (username, cb) {
-  transaction(db => findOne(db, "g2g", {username: username}, data => cb(data.feeds)));
+module.exports = {
+	getFeeds: (username, cb) => {
+	  dbFuncs.transaction(db => dbFuncs.findOne(db, "g2g", {username: username}, data => cb(data.feeds)));
+	}
 }

@@ -4,21 +4,22 @@
 Some authorization helper functions
 */
 
-export function isAuthed(req, res, next) {
-  if (req.session.username) {
+module.exports = {
+  isAuthed: (req, res, next) => {
+    if (req.session.username) {
+      next(req, res);
+    } else {
+      res.status(403).end();
+    }
+  },
+
+  authorise: (req, res, user, next) => {
+    req.session.username = user;
+    next(req, res);
+  },
+
+  deauthorize: (req, res, next) => {
+    req.session.destroy();
     next(req, res);
   }
-  else {
-    res.status(403).end();
-  }
-}
-
-export function authorise (req, res, user, next) {
-  req.session.username = user;
-  next(req, res);
-}
-
-export function deauthorize (req, res, next) {
-  req.session.destroy();
-  next(req, res);
 }

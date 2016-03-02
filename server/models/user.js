@@ -5,7 +5,7 @@
  * @docs        :: https://github.com/CPSSD/feedlark/blob/master/doc/db/user.md
  */
 
-import db from "../middleware/db";
+const dbFuncs = require("../middleware/db");
 
 function encrypt(password, cb) {
   var bcrypt = require("bcrypt-nodejs");
@@ -18,67 +18,70 @@ function encrypt(password, cb) {
   });
 }
 
-// Gets user details
-export findByEmail function (email, cb) {
-  db.transaction(db => db.findOne(db, "user", {email: email}, cb));
-}
+module.exports = {
 
-// Returns a user if one exists
-export exists function (username, email, cb) {
-  db.transaction(db => db.findOne(db, "user", {"$or": [{username: username}, {email: email}]}, cb));
-}
+  // Gets user details
+  findByEmail: (email, cb) => {
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {email: email}, cb));
+  },
 
-export create function (username, email, password, cb) {
-  // TODO Verify everything
+  // Returns a user if one exists
+  exists: (username, email, cb) => {
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {"$or": [{username: username}, {email: email}]}, cb));
+  },
 
-  // Encrypt the password first
-  encrypt(password, (new_password) => db.transaction(db => db.insert(db, "user", {
-    username: username,
-    email: email,
-    password: new_password,
-    subscribed_feeds: []
-  }, _ => cb(username))));
-}
+  create: (username, email, password, cb) => {
+    // TODO Verify everything
 
-export addFeed function (db, username, url, cb) {
-  // Standardise the URL
-  let url = url.lower();
+    // Encrypt the password first
+    encrypt(password, (new_password) => dbFuncs.transaction(db => dbFuncs.insert(db, "user", {
+      username: username,
+      email: email,
+      password: new_password,
+      subscribed_feeds: []
+    }, _ => cb(username))));
+  },
 
-  db.findOne(db, "user", {username: username}, user => {
+  addFeed: (db, username, url, cb) => {
+    // Standardise the URL
+    var url = url.lower();
 
-    // Check if the user is already subscribed to this feed
-    if (user.subscribed_feeds.indexOf(url) > -1) return cb();
+    dbFuncs.findOne(db, "user", {username: username}, user => {
 
-    // Append and update
-    user.subscribed_feeds.push(url);
-    db.update(
-      db,
-      "user",
-      {username: username},
-      {subscribed_feeds: user.subscribed_feeds},
-      cb
-    );
-  });
-}
+      // Check if the user is already subscribed to this feed
+      if (user.subscribed_feeds.indexOf(url) > -1) return cb();
 
-export removeFeed function (db, username, url, cb) {
-  // Standardise the URL
-  let url = url.lower();
+      // Append and update
+      user.subscribed_feeds.push(url);
+      dbFuncs.update(
+        db,
+        "user",
+        {username: username},
+        {subscribed_feeds: user.subscribed_feeds},
+        cb
+      );
+    });
+  },
 
-  db.findOne(db, "user", {username: username}, user => {
+  removeFeed: (db, username, url, cb) => {
+    // Standardise the URL
+    var url = url.lower();
 
-    // Check if the user is already subscribed to this feed
-    let index = user.subscribed_feeds.indexOf(url);
-    if (index == -1) return cb();
+    dbFuncs.findOne(db, "user", {username: username}, user => {
 
-    // Append and update
-    user.subscribed_feeds.splice(index, 1);
-    update(
-      db,
-      "user",
-      {username: username},
-      {subscribed_feeds: user.subscribed_feeds},
-      cb
-    );
-  });
+      // Check if the user is already subscribed to this feed
+      var index = user.subscribed_feeds.indexOf(url);
+      if (index == -1) return cb();
+
+      // Append and update
+      user.subscribed_feeds.splice(index, 1);
+      update(
+        db,
+        "user",
+        {username: username},
+        {subscribed_feeds: user.subscribed_feeds},
+        cb
+      );
+    });
+  }
 }
