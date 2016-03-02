@@ -21,8 +21,8 @@ def bsonify_update_data(item_id, url , allData):
 
 # submits a job to 'db-get' to get all ids and urls of the feeds
 def get_feed_db_data():
-	# format the request
-	to_get_urls_ids = str(bson.BSON.encode({
+    # format the request
+    to_get_urls_ids = str(bson.BSON.encode({
             "database":"feedlark",
             "collection":"feed",
             "query": {},
@@ -37,26 +37,25 @@ def get_feed_db_data():
                     }],
                 },
             }))
-	url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
-	bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
-	print "response: " + str(bson_object)
-	
-	return bson_object["docs"]
+    url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
+    bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
+
+    return bson_object["docs"]
 
 
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_feeds(worker,job):
-	print "'update-all-feeds' initiated"
-	print "Retrieving data from feed db"
-	feed_db_data = get_feed_db_data()
+    print "'update-all-feeds' initiated"
+    print "Retrieving data from feed db"
+    feed_db_data = get_feed_db_data()
 
-	for doc in feed_db_data:
-		print "Loading items in feed: " + doc['url']
-		updated_item_list = []
-		result = scr.get_feed_data(doc['url'])#list of item dicts
+    for doc in feed_db_data:
+        print "Loading items in feed: " + doc['url']
+        updated_item_list = []
+        result = scr.get_feed_data(doc['url'])#list of item dicts
 
-		items_to_scrape = []
-		for item in result:
+        items_to_scrape = []
+        for item in result:
                     for db_item in doc['items']:
                         if item['link'] == db_item['link']:
                             #If item already in db
@@ -72,41 +71,44 @@ def update_all_feeds(worker,job):
                             'name':item['name'],
                             'pub_date':item['pub_date'],
                             'link':item['link'],
+                            'article_text':"",
                             })
-    
-                    
-		bson_data = None
-		try:
-			bson_data = bsonify_update_data(doc['_id'], doc['url'], updated_item_list)
-		except Exception as e:
-			print e
-			return str(bson.BSON.encode({
+
+
+        bson_data = None
+        try:
+            bson_data = bsonify_update_data(doc['_id'], doc['url'], updated_item_list)
+        except Exception as e:
+            print e
+            return str(bson.BSON.encode({
                             "status":"error",
                             "error-description":str(e)
                             }))
-		
-		print "ready to db-update"
-		update_response = None
-		try:
-			update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
-		except Exception as e:
-			print e
-			return str(bson.BSON.encode({
+
+        print "ready to db-update"
+        update_response = None
+        try:
+            update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
+        except Exception as e:
+            print e
+            return str(bson.BSON.encode({
                             "status":"error",
                             "error-description":str(e)
                             }))
-                print "update response: " + str(update_response)
+        print "update response: " + str(update_response)
 
-                print "Submitting items for scraping"
-		#Submit items for scraping
-		for item in items_to_scrape:                
-                    text_getter_data = str(bson.BSON.encode(item))
-                    gm_client.submit_job('article-text-getter',text_getter_data, background=True)
-                
-		
+        print "Submitting items for scraping"
+        #Submit items for scraping
+        gm_client.submit_job('update-all-article-text',"", background=True)
+        """
+        for item in items_to_scrape:
+                text_getter_data = str(bson.BSON.encode(item))
+                gm_client.submit_job('article-text-getter',text_getter_data, background=True)
+        """
 
-	print "'update-all-feeds' finished"
-	return str(bson.BSON.encode({
+
+    print "'update-all-feeds' finished"
+    return str(bson.BSON.encode({
             "status":"ok",
             "updated_feeds":[x['_id'] for x in feed_db_data],
             }))

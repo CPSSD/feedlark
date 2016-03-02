@@ -39,12 +39,11 @@ def get_feed_db_data():
             }))
     url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
     bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
-    #print "response: " + str(bson_object)
 
     return bson_object["docs"]
 
 # updates all of the item fields for all the unique feeds in the feeds db
-def update_article_text():#worker,job):
+def update_all_article_text(worker,job):
     print "'update-all-article-text' initiated"
     print "Retrieving data from feed db"
     feed_db_data = get_feed_db_data()
@@ -55,12 +54,10 @@ def update_article_text():#worker,job):
 
         for db_item in doc['items']:
             if db_item['article_text'] != "":
-                print "2"
                 #If item in db already has article_text
                 updated_item_list.append(db_item)
                 continue
             else:
-                print "3"
                 #Runs if loop doesn't break, implying new item
                 updated_item_list.append({
                     'name':db_item['name'],
@@ -68,7 +65,6 @@ def update_article_text():#worker,job):
                     'link':db_item['link'],
                     'article_text': art_get.get_article_text(db_item['link'])
                 })
-                print "4"
 
         bson_data = None
         try:
@@ -107,6 +103,5 @@ gm_client = gearman.GearmanClient(["localhost:4730"])
 
 # register the tasks -> update all the article text for all feeds.
 print "Registering task 'update-all-article-text'"
-gm_worker.register_task('update-all-article-text', update_article_text)
-update_article_text()
-#gm_worker.work()
+gm_worker.register_task('update-all-article-text', update_all_article_text)
+gm_worker.work()
