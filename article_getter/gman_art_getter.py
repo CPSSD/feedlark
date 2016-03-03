@@ -22,6 +22,7 @@ def bsonify_update_data(item_id, url , allData):
 # submits a job to 'db-get' to get all ids and urls of the feeds
 def get_feed_db_data():
     # format the request
+    print "started"
     to_get_urls_ids = str(bson.BSON.encode({
             "database":"feedlark",
             "collection":"feed",
@@ -39,14 +40,45 @@ def get_feed_db_data():
             }))
     url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
     bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
+    return bson_object["docs"]
 
+# submits a job to 'db-get' to get all ids and urls of the singular feed
+def get_single_feed_db_data(url):
+    # format the request
+    to_get_urls_ids = str(bson.BSON.encode({
+            "database":"feedlark",
+            "collection":"feed",
+            "query": {"url":url},
+            "projection":{
+                "_id":1,
+                "url":1,
+                "items":[{
+                    "link":1,
+                    "pub_date":1,
+                    "link":1,
+                    "article_text":1,
+                    }],
+                },
+            }))
+    url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
+    bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
     return bson_object["docs"]
 
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_article_text(worker,job):
     print "'update-all-article-text' initiated"
-    print "Retrieving data from feed db"
-    feed_db_data = get_feed_db_data()
+    try:
+        bson_job_obj = bson.BSON.decode(bson.BSON(job.data))["url"]
+        if bson_job_obj == "":
+            print "Retrieving data from feed db"
+            feed_db_data = get_feed_db_data()
+        else:
+            print "Retrieving data from",bson_job_obj, "db"
+            feed_db_data = get_single_feed_db_data(bson_job_obj)
+
+    except:
+        print "no go on single url. Updating all, This was url specified:", job.data
+        feed_db_data = get_feed_db_data()
 
     for doc in feed_db_data:
         print "Loading items in feed: " + doc['url'] + " for article getter"

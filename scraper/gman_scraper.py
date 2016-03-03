@@ -99,12 +99,9 @@ def update_all_feeds(worker,job):
 
         print "Submitting items for scraping"
         #Submit items for scraping
-        gm_client.submit_job('update-all-article-text',"", background=True)
-        """
-        for item in items_to_scrape:
-                text_getter_data = str(bson.BSON.encode(item))
-                gm_client.submit_job('article-text-getter',text_getter_data, background=True)
-        """
+        to_encode = {"url":""}
+        text_getter_data = str(bson.BSON.encode(to_encode))
+        gm_client.submit_job('update-all-article-text',text_getter_data, background=True)
 
 
     print "'update-all-feeds' finished"
