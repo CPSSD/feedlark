@@ -10,6 +10,14 @@ const feedModel = require("../models/feed");
 
 module.exports = {
 
+  index: (req, res) => {
+
+    // Get all subscribed feeds from the db
+    userModel.findByUsername(req.session.username, (data) => {
+      return res.render("feeds_index", {subscribed_feeds: data.subscribed_feeds});
+    });
+  },
+
   add: (req, res) => {
 
     // TODO sanitise url
@@ -35,9 +43,9 @@ module.exports = {
     // TODO clean up no longer relevant feeds from the feed collection
 
     // TODO sanitise url
-    var url = req.params.url.toLowerCase();
+    var url = req.query.url.toLowerCase();
 
-    userModel.removeFeed(url, req.session.username, url, _ => {
+    userModel.removeFeed(req.session.username, url, _ => {
 
       // Return to feed manager page
       req.session.msg = "Successfully removed feed!";

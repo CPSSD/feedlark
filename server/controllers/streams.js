@@ -6,7 +6,6 @@
  */
 
 const getFeeds = require("../models/stream").getFeeds;
-const isAuthed = require("../middleware/auth").isAuthed;
 
 // Stream listing
 module.exports = {

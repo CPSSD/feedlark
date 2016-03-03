@@ -25,6 +25,10 @@ module.exports = {
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {email: email}, cb));
   },
 
+  findByUsername: (username, cb) => {
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, cb));
+  },
+
   // Returns a user if one exists
   exists: (username, email, cb) => {
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {"$or": [{username: username}, {email: email}]}, cb));
@@ -43,8 +47,6 @@ module.exports = {
   },
 
   addFeed: (db, username, url, cb) => {
-    // Standardise the URL
-    url = url.lower();
 
     dbFuncs.findOne(db, "user", {username: username}, user => {
 
@@ -63,11 +65,9 @@ module.exports = {
     });
   },
 
-  removeFeed: (db, username, url, cb) => {
-    // Standardise the URL
-    url = url.lower();
+  removeFeed: (username, url, cb) => {
 
-    dbFuncs.findOne(db, "user", {username: username}, user => {
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
 
       // Check if the user is already subscribed to this feed
       var index = user.subscribed_feeds.indexOf(url);
@@ -75,13 +75,13 @@ module.exports = {
 
       // Append and update
       user.subscribed_feeds.splice(index, 1);
-      update(
+      dbFuncs.update(
         db,
         "user",
         {username: username},
         {subscribed_feeds: user.subscribed_feeds},
         cb
       );
-    });
+    }));
   }
 };

@@ -8,9 +8,6 @@ const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
 
-// Stream
-router.get("/stream", streamController.index);
-
 // User pages
 
 // Logout
@@ -36,7 +33,7 @@ router.get("/user", isAuthed, (req, res) => { res.render("profile"); });
 // Feeds pages
 
 // Add
-router.get("/feeds/add", isAuthed, (req, res) => { res.render("feed_add"); });
+router.get("/feeds/add", isAuthed, (req, res) => { res.render("feeds_add"); });
 
 // Add processing
 router.post("/feeds/add", isAuthed, feedController.add);
@@ -45,7 +42,10 @@ router.post("/feeds/add", isAuthed, feedController.add);
 router.get("/feeds/remove", isAuthed, feedController.remove);
 
 // List
-router.get("/feeds", isAuthed, (req, res) => { res.render("feed_index"); });
+router.get("/feeds", isAuthed, feedController.index);
+
+// Stream
+router.get("/stream", isAuthed, streamController.index);
 
 // Home/Index
 router.get("/", (req, res) => {

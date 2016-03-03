@@ -7,24 +7,24 @@
       </div>
 
       <div class="row">
-        <% if (typeof data == "undefined" || typeof data.feeds == "undefined" || data.feeds.length < 1) { %>
+        <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
         <div class="col s6 offset-s3">
           <p class="center-align">Failed to load your feeds. No data was received from the server</p>
         </div>
         <%
         } else {
-          for (var i = 0; i < data.feeds.length; i++) {
-            var date = new Date(data.feeds[i].pub_date);
+          for (var i = 0; i < feeds.length; i++) {
+            var date = new Date(feeds[i].pub_date);
             date = date.toLocaleDateString();
         %>
         <div class="col s8 offset-s2 card">
           <div class="card-content">
             <p class="secondary-content grey-text text-ligthten-3">Published: <%= date %></p>
             <br />
-            <span class="card-title center-align"><%= data.feeds[i].name %></span>
+            <span class="card-title center-align"><%= feeds[i].name %></span>
           </div>
           <div class="card-action">
-            <a href="<%= data.feeds[i].link %>">Open Article</a>
+            <a href="<%= feeds[i].link %>">Open Article</a>
           </div>
         </div>
 
