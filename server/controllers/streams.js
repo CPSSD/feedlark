@@ -13,4 +13,4 @@ module.exports = {
   index: (req, res) => {
     getFeeds(req.session.username, feeds => res.render("stream_index", {feeds: feeds}));
   }
-}
+};

@@ -44,7 +44,7 @@ module.exports = {
 
   addFeed: (db, username, url, cb) => {
     // Standardise the URL
-    var url = url.lower();
+    url = url.lower();
 
     dbFuncs.findOne(db, "user", {username: username}, user => {
 
@@ -65,7 +65,7 @@ module.exports = {
 
   removeFeed: (db, username, url, cb) => {
     // Standardise the URL
-    var url = url.lower();
+    url = url.lower();
 
     dbFuncs.findOne(db, "user", {username: username}, user => {
 
@@ -84,4 +84,4 @@ module.exports = {
       );
     });
   }
-}
+};

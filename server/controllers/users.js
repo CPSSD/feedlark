@@ -67,4 +67,4 @@ module.exports = {
       return res.redirect(req, res, "/user/profile");
     });
   }
-}
+};

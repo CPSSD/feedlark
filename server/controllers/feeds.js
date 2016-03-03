@@ -44,4 +44,4 @@ module.exports = {
       return res.redirect(200, "/feeds");
     });
   }
-}
+};

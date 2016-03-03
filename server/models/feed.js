@@ -15,6 +15,6 @@ module.exports = {
 	    dbFuncs.insert(db, "feed", {url: url, items: []}, _ => { cb(db); });
 	  });
 	}
-}
+};
 
 // TODO cleanup unused feeds - IE no users with this url

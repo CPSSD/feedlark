@@ -22,4 +22,4 @@ module.exports = {
     req.session.destroy();
     next(req, res);
   }
-}
+};

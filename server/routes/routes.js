@@ -24,7 +24,6 @@ router.post("/user/login", userController.login);
 
 // Login form
 router.get("/user/login", (req, res) => {
-
   // Go to profile if user is already logged in
   if (typeof req.session.username != "undefined") return res.redirect(200, "/user/profile");
 
@@ -49,6 +48,8 @@ router.get("/feeds/remove", isAuthed, feedController.remove);
 router.get("/feeds", isAuthed, (req, res) => { res.render("feed_index"); });
 
 // Home/Index
-router.get("/", (req, res) => { res.render('index'); });
+router.get("/", (req, res) => {
+  res.render('index');
+});
 
 module.exports = router;
