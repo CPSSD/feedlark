@@ -9,8 +9,6 @@ module.exports = {
       if (err) throw err;
 
       next(db);
-
-      db.close();
     });
   },
 

@@ -29,12 +29,6 @@ app.use(session({
   store: new MongoStore({ url: 'mongodb://localhost:27017/feedlark' })
 }));
 
-// Pass the session to each view as a local var
-app.use('/', (req, res, next) => {
-  res.locals.session = req.session;
-  next();
-});
-
 // Load all the routing
 app.use('/', require('./routes/routes'));
 

@@ -7,6 +7,7 @@
 
 const bcrypt = require("bcrypt-nodejs");
 const userModel = require("../models/user");
+const _ = require("lodash");
 
 module.exports = {
   // Login processing
@@ -28,10 +29,9 @@ module.exports = {
           if (!valid) return res.status(400).render("login", {err: "Invalid email/password combination."});
 
           // Set session vars and redirect
-          // TODO Setup session
           req.session.username = user.username;
           req.session.msg = "Successfully logged in.";
-          return res.redirect(200, "/user/profile");
+          return res.redirect(200, "/user");
         });
     });
   },
@@ -61,10 +61,9 @@ module.exports = {
     userModel.create(username, email, password, _ => {
 
       // Log the user in
-      // TODO Setup session
       req.session.username = username;
       req.session.msg = "Signup successful. Welcome!";
-      return res.redirect(req, res, "/user/profile");
+      return res.redirect(req, res, "/user");
     });
   }
 };
