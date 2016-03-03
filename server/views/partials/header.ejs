@@ -63,19 +63,19 @@
     </nav>
 
     <div class="hacky-shadow-fix">?</div>
-    <% if (typeof data != "undefined" && typeof data.err != "undefined") { %>
+    <% if (typeof err != "undefined") { %>
     <!-- Error message display -->
     <div class="row">
       <div class="col s12 m6">
         <div class="card red darken-1">
           <div class="card-content white-text">
             <span class="card-title">Warning</span>
-            <p><%= data.err %></p>
+            <p><%= err %></p>
           </div>
         </div>
       </div>
     </div>
     <%
-      data.err = undefined;
+      err = undefined;
     }
     %>
