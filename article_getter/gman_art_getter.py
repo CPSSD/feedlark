@@ -100,7 +100,7 @@ def update_article_text(worker,job):
     log(0,"'update-all-article-text' finished")
     return str(bson.BSON.encode({
             "status":"ok",
-            "updated_feeds":[x['_id'] for x in feed_db_data],
+            "updated_feed": feed_db_data['_id'],
             }))
 
 art_get = Article_getter()
