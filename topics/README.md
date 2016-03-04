@@ -36,9 +36,14 @@ It returns the following:
 ```js
 {
     "status":"ok",
-    "topics":["lorem", "ipsum"]
+    "topics":{
+        "lorem":0.5,
+        "ipsum":0.25,
+        "dolor":0.25
+    }
 }
 ```
 
-The `topics` field will contain a list of arbitrary length; it cannot be assumed that there will be any particular number of topics.
+The `topics` field will contain an arbitrary number of entries; it cannot be assumed that there will be any particular number of topics.
 
+Each of the float values associated with each topic is the ratio of that word and the total number of content words in the article, not the ratio of that word and the words in the returned topics. That means that the float values of all topics in the returned list will not add up to one, if there are more topics in the article than the max number returned.
