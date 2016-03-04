@@ -30,5 +30,14 @@ class TestTopics(unittest.TestCase):
         self.assertTrue("orange" in topics)
         self.assertFalse("the" in topics)
 
+    def test_top_values_of_dict(self):
+        d = {'cat':7, 'dog':4, 'gerbil': 5, 'watermelon':1}
+        e = limit_dict(d, 3)
+        self.assertEqual(len(e), 3)
+        self.assertTrue('cat' in e)
+        self.assertTrue('dog' in e)
+        self.assertTrue('gerbil' in e)
+        self.assertFalse('watermelon' in e)
+
 if __name__ == '__main__':
     unittest.main()
