@@ -39,5 +39,13 @@ class TestTopics(unittest.TestCase):
         self.assertTrue('gerbil' in e)
         self.assertFalse('watermelon' in e)
 
+    def test_punctuation(self):
+        article = u"the cat was on the mat."
+        topics = get_topics(article)
+        self.assertEqual(len(topics), 2)
+        self.assertTrue("cat" in topics)
+        self.assertTrue("mat" in topics)
+        self.assertFalse("." in topics)
+
 if __name__ == '__main__':
     unittest.main()

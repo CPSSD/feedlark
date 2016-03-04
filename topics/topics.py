@@ -26,7 +26,7 @@ def limit_dict(d, num):
 def remove_stop_words(doc):
     new_doc = []
     for index in range(len(doc)-1, -1, -1):
-        if (not (doc[index]).is_stop) and (len(re.sub("\s+", "", doc[index].text)) > 0):
+        if (not (doc[index]).is_stop) and (len(re.sub("[^\w]+", "", doc[index].text)) > 0):
             new_doc.append(doc[index])
     return new_doc
 
