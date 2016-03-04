@@ -3,6 +3,13 @@
 
   <!-- Materialize JS -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.js"></script>
+
+  <!-- Materialize Parallax -->
+  <script type="text/javascript">
+    $(document).ready(_ => {
+      $('.parallax').parallax();
+    });
+  </script>
   <% if (typeof session != "undefined" && typeof session.msg != "undefined") { %>
 
   <!-- Toast display -->
