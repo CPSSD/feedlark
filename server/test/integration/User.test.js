@@ -1,4 +1,4 @@
-
+var app = require("../../app");
 var assert = require('assert');
 var request = require('supertest');
 
@@ -19,7 +19,7 @@ describe('UserModel', function() {
     password: "gnuisnotlinux"
   }
   // Perisistent agent so session stays
-  var agent = request.agent("http://localhost:3000");
+  var agent = request.agent(app);
   describe('#signup()', function() {
     it('User must provide username', function (done) {
       agent
@@ -59,8 +59,7 @@ describe('UserModel', function() {
         .post('/user/signup')
         .type('form')
         .send(user_details_base)
-        .expect(200)
-        .expect('Success', done);
+        .expect(200, done);
     });
     it('User cant reuse email', function (done) {
       agent
@@ -108,7 +107,7 @@ describe('UserModel', function() {
   describe('#profile()', function() {
     it('User can view profile', function (done) {
       agent
-        .get('/user/profile')
+        .get('/user')
         .expect(200, done);
     });
     it('User can log out', function (done) {
@@ -118,7 +117,7 @@ describe('UserModel', function() {
     });
     it('User cant view profile when logged out', function (done) {
       agent
-        .get('/user/profile')
+        .get('/user')
         .expect(403, done);
     });
   });

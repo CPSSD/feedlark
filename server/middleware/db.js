@@ -23,7 +23,7 @@ module.exports = {
     });
   },
 
-  create: (db, collection, data, cb) => {
+  insert: (db, collection, data, cb) => {
     db.collection(collection).insertOne(data, (err, data) => {
 
       if (err) throw err;

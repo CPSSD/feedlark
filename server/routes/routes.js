@@ -16,6 +16,9 @@ router.all("/user/logout", userController.logout);
 // Signup
 router.get("/user/signup", (req, res) => { res.render("signup"); });
 
+// Signup processing
+router.post("/user/signup", userController.signup);
+
 // Login processing
 router.post("/user/login", userController.login);
 
