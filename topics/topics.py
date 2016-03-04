@@ -32,18 +32,25 @@ def get_topics(article):
     print(word_counts)
     return word_counts
 
-def get_topics_gearman(job_data):
-    data = bson.BSON.decode(job_data)
+def get_topics_gearman(worker, job):
+    print("Get topics: " + job.data)
+    bson_obj = bson.BSON(job.data)
+    data = bson_obj.decode() 
+    if "article" not in data:
+        return str(bson.BSON.encode({"status":"error", "description":"No article supplied"}))
+    print("Article: " + data["article"])
 
-    print(data)
+    article = data["article"]
+    topics = get_topics(article)
 
-    response = {"status":"ok"}
+    response = {"status":"ok", "topics":topics}
     bson_response = bson.BSON.encode(response)
-    return bson_response
+    return str(bson_response)
 
 if __name__ == '__main__':
     gearman_client = gearman.GearmanClient(['localhost:4730'])
     gearman_worker = gearman.GearmanWorker(['localhost:4730'])
     gearman_worker.set_client_id('topic-modeller')
+    print("Registering gearman worker 'get-topics'")
     gearman_worker.register_task('get-topics', get_topics_gearman)
     gearman_worker.work()
