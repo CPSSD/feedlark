@@ -45,6 +45,20 @@ def get_topics_gearman(worker, job):
 
     article = data["article"]
     topics = get_topics(article)
+    if(len(topics) > 10):
+        try:
+            print("More than 10 topics")
+            sorted_topics = sorted(topics.items(), key=lambda x : x[1], reverse=True)
+            print(sorted_topics)
+            new_topics = {}
+            for i in xrange(10):
+                new_topics[sorted_topics[i][0]] = sorted_topics[i][1]
+            topics = new_topics
+        except Exception as e:
+
+            print(e)
+
+    print(topics)
 
     response = {"status":"ok", "topics":topics}
     bson_response = bson.BSON.encode(response)
