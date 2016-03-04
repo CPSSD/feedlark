@@ -30,7 +30,7 @@ app.use(session({
 }));
 
 // Load all the routing
-app.use('/', require('./routes/routes'));
+app.use('/', require('./middleware/routes'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

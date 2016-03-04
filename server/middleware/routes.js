@@ -3,10 +3,19 @@
 //  like express and the auth middleware aren't imported N times
 
 const router = require("express").Router();
-const isAuthed = require("../middleware/auth").isAuthed;
 const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
+
+// Checks if the client is authenticated
+function isAuthed(req, res, next) {
+  if (req.session.username) {
+    res.locals.session = req.session;
+    next();
+  } else {
+    res.status(403).end();
+  }
+}
 
 // User pages
 
