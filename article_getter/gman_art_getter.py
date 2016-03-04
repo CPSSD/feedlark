@@ -1,6 +1,15 @@
 from article_text_getter import Article_getter
+from datetime import datetime
 import bson
 import gearman
+
+
+#Log some information
+def log(level, message):
+    levels = ['INFO:','WARNING:','ERROR:']
+    time = str(datetime.now()).replace('-','/')[:-7]
+    print time,levels[level],message
+    pass
 
 # convert given data to bson in valid format for db-update
 def bsonify_update_data(item_id, url , allData):
@@ -18,29 +27,6 @@ def bsonify_update_data(item_id, url , allData):
             },
         }
     return bson.BSON.encode(items_list)
-
-# submits a job to 'db-get' to get all ids and urls of the feeds
-def get_feed_db_data():
-    # format the request
-    print "started"
-    to_get_urls_ids = str(bson.BSON.encode({
-            "database":"feedlark",
-            "collection":"feed",
-            "query": {},
-            "projection":{
-                "_id":1,
-                "url":1,
-                "items":[{
-                    "link":1,
-                    "pub_date":1,
-                    "link":1,
-                    "article_text":1,
-                    }],
-                },
-            }))
-    url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
-    bson_object = bson.BSON.decode(bson.BSON(url_fields_gotten.result))
-    return bson_object["docs"]
 
 # submits a job to 'db-get' to get all ids and urls of the singular feed
 def get_single_feed_db_data(url):
@@ -65,61 +51,53 @@ def get_single_feed_db_data(url):
     return bson_object["docs"]
 
 # updates all of the item fields for all the unique feeds in the feeds db
-def update_all_article_text(worker,job):
-    print "'update-all-article-text' initiated"
+def update_article_text(worker,job):
+    log(0,"'update-all-article-text' initiated")
     try:
         bson_job_obj = bson.BSON.decode(bson.BSON(job.data))["url"]
-        if bson_job_obj == "":
-            print "Retrieving data from feed db"
-            feed_db_data = get_feed_db_data()
-        else:
-            print "Retrieving data from",bson_job_obj, "db"
-            feed_db_data = get_single_feed_db_data(bson_job_obj)
+        log(0,"Retrieving data from " + bson_job_obj + " item in db")
+        feed_db_data = get_single_feed_db_data(bson_job_obj)[0]
 
     except:
-        print "no go on single url. Updating all, This was url specified:", job.data
-        feed_db_data = get_feed_db_data()
+        log(1,"No valid url recieved. This was url specified:", job.data)
 
-    for doc in feed_db_data:
-        print "Loading items in feed: " + doc['url'] + " for article getter"
-        updated_item_list = []
+    log(0,"db get complete")
+    updated_item_list = []
+    for db_item in feed_db_data['items']:
+        if db_item['article_text'] != "":
+            #If item in db already has article_text
+            updated_item_list.append(db_item)
+            continue
+        else:
+            #Runs if loop doesn't break, implying new item
+            updated_item_list.append({
+                'name':db_item['name'],
+                'pub_date':db_item['pub_date'],
+                'link':db_item['link'],
+                'article_text': art_get.get_article_text(db_item['link'])
+            })
+    bson_data = None
+    try:
+        bson_data = bsonify_update_data(feed_db_data['_id'], feed_db_data['url'], updated_item_list)
+    except Exception as e:
+        log(2,e)
+        return str(bson.BSON.encode({
+                        "status":"error",
+                        "error-description":str(e)
+                        }))
+    log(0,"ready to db-update")
+    update_response = None
+    try:
+        update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
+    except Exception as e:
+        log(2,e)
+        return str(bson.BSON.encode({
+                        "status":"error",
+                        "error-description":str(e)
+                        }))
 
-        for db_item in doc['items']:
-            if db_item['article_text'] != "":
-                #If item in db already has article_text
-                updated_item_list.append(db_item)
-                continue
-            else:
-                #Runs if loop doesn't break, implying new item
-                updated_item_list.append({
-                    'name':db_item['name'],
-                    'pub_date':db_item['pub_date'],
-                    'link':db_item['link'],
-                    'article_text': art_get.get_article_text(db_item['link'])
-                })
-
-        bson_data = None
-        try:
-            bson_data = bsonify_update_data(doc['_id'], doc['url'], updated_item_list)
-        except Exception as e:
-            print e
-            return str(bson.BSON.encode({
-                            "status":"error",
-                            "error-description":str(e)
-                            }))
-        print "ready to db-update"
-        update_response = None
-        try:
-            update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
-        except Exception as e:
-            print e
-            return str(bson.BSON.encode({
-                            "status":"error",
-                            "error-description":str(e)
-                            }))
-
-        print "update response: " + str(update_response)
-    print "'update-all-article-text' finished"
+    log(0,"update response: " + str(update_response))
+    log(0,"'update-all-article-text' finished")
     return str(bson.BSON.encode({
             "status":"ok",
             "updated_feeds":[x['_id'] for x in feed_db_data],
@@ -128,12 +106,12 @@ def update_all_article_text(worker,job):
 art_get = Article_getter()
 
 # make the gearman worker to update feeds or add a new feed(adding not done yet). Make the client to allow adder and getter job calls.
-print "Initiating gearman worker"
+log(0,"Initiating gearman worker")
 gm_worker = gearman.GearmanWorker(['localhost:4730'])
-print "Initiating Client"
+log(0,"Initiating Client")
 gm_client = gearman.GearmanClient(["localhost:4730"])
 
 # register the tasks -> update all the article text for all feeds.
-print "Registering task 'update-all-article-text'"
-gm_worker.register_task('update-all-article-text', update_all_article_text)
+log(0,"Registering task 'article-text-getter'")
+gm_worker.register_task('article-text-getter', update_article_text)
 gm_worker.work()
