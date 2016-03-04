@@ -7,6 +7,7 @@
 
 const userModel = require("../models/user");
 const feedModel = require("../models/feed");
+const _ = require("lodash");
 
 module.exports = {
 
@@ -20,7 +21,10 @@ module.exports = {
 
   add: (req, res) => {
 
-    // TODO sanitise url
+    if (!_.isString(req.body.url) || !_.isArray(req.body.url.match(/https?:\/\/[^\/]+/g))) {
+      req.session.msg = "Invalid URL provided";
+      return res.redirect(302, "/feeds");
+    }
     var url = req.body.url.toLowerCase();
 
     // Add to feed DB
@@ -42,7 +46,10 @@ module.exports = {
     // Only need to remove from user, for now
     // TODO clean up no longer relevant feeds from the feed collection
 
-    // TODO sanitise url
+    if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
+      req.session.msg = "Invalid URL provided";
+      return res.redirect(302, "/feeds");
+    }
     var url = req.query.url.toLowerCase();
 
     userModel.removeFeed(req.session.username, url, _ => {

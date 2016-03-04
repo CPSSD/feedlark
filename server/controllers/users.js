@@ -25,7 +25,7 @@ module.exports = {
       if (typeof user == "undefined") return res.status(400).render("login", {err: "Invalid email/password combination."});
 
         // Check their password
-        bcrypt.compare(password, user.password, function(err, valid) {
+        bcrypt.compare(password, user.password, (err, valid) => {
           if (!valid) return res.status(400).render("login", {err: "Invalid email/password combination."});
 
           // Set session vars and redirect
@@ -51,19 +51,24 @@ module.exports = {
     var username = req.body.username;
 
     // Verify these details
-    if (!_.isString(email) || !_.isString(password) || !_.isString(username)) return res.status(400).render("signup", {err: "Invalid input data"});
+    if (!_.isString(email) || !_.isString(password) || !_.isString(username)) return res.status(400).render("signup", {err: "Invalid input data."});
     if (email.length < 5) return res.status(400).render("signup", {err: "Email Address too short."});
     if (password.length < 8) return res.status(400).render("signup", {err: "Password too short."});
     if (username.length < 4) return res.status(400).render("signup", {err: "Username too short."});
 
-    // Add new user to the database
-    // TODO Create blank g2g entry
-    userModel.create(username, email, password, _ => {
+    // Check the user doesn't already exist
+    userModel.exists(username, email, data => {
+      if (data) return res.status(400).render("signup", {err: "Email/Username already taken."});
 
-      // Log the user in
-      req.session.username = username;
-      req.session.msg = "Signup successful. Welcome!";
-      return res.redirect(302, "/user");
+      // Add new user to the database
+      userModel.create(username, email, password, _ => {
+
+        // Log the user in
+        req.session.username = username;
+        req.session.msg = "Signup successful. Welcome!";
+        return res.redirect(302, "/user");
+      });
     });
+
   }
 };

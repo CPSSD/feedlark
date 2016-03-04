@@ -35,15 +35,19 @@ module.exports = {
   },
 
   create: (username, email, password, cb) => {
-    // TODO Verify everything
 
     // Encrypt the password first
-    encrypt(password, (new_password) => dbFuncs.transaction(db => dbFuncs.insert(db, "user", {
+    encrypt(password, new_password => dbFuncs.transaction(db => dbFuncs.insert(db, "user", {
       username: username,
       email: email,
       password: new_password,
       subscribed_feeds: []
-    }, _ => cb(username))));
+
+    // Also create the blank entry in g2g
+    }, _ => dbFuncs.insert(db, "g2g", {
+      username: username,
+      feeds: []
+    }, cb))));
   },
 
   addFeed: (db, username, url, cb) => {

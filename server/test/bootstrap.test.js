@@ -1,15 +1,26 @@
-var dbFuncs = require("../middleware/db");
-var port = 3000;
+const MongoClient = require("mongodb");
 
 function removeTestUser(done) {
-  dbFuncs.transaction(db => dbFuncs.remove(db, "user", {username: "rmss"}, done));
-  done();
+  MongoClient.connect("mongodb://localhost:27017/feedlark", (err, db) => {
+    if (err) throw err;
+
+    db.collection("user").remove({"$or": [{username: "rmss"}, {username: "heyzeus"}]}, err => {
+      if (err) throw err;
+
+      db.collection("g2g").remove({"$or": [{username: "rmss"}, {username: "heyzeus"}]}, err => {
+        if (err) throw err;
+
+        db.close();
+        console.log("Database cleaned");
+        done();
+      });
+    });
+  });
 }
 
-describe('app', function () {
+// Remove tests users from the database before and after
+// Not inside a describe block, as per recommendations in Mocha's "Root-level hooks" documentation
+// See https://mochajs.org/#hooks
+before(removeTestUser);
 
-  // Remove rmss from the database before and after
-  before (removeTestUser);
-
-  after(removeTestUser);
-});
+after(removeTestUser);

@@ -17,7 +17,10 @@ module.exports = {
     // Mongo's findOne is deprecated. Recommended to use find().limit(1)
     db.collection(collection).find(selector).limit(1).toArray((err, data) => {
 
-      if (err) throw err;
+      if (err) {
+        console.log("oops");
+        throw err;
+      }
 
       return cb(data[0]);
     });
