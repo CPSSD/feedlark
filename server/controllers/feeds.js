@@ -14,7 +14,7 @@ module.exports = {
 
     // Get all subscribed feeds from the db
     userModel.findByUsername(req.session.username, (data) => {
-      return res.render("feeds_index", {subscribed_feeds: data.subscribed_feeds});
+      return res.status(200).render("feeds_index", {subscribed_feeds: data.subscribed_feeds});
     });
   },
 
@@ -32,7 +32,7 @@ module.exports = {
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";
-        return res.redirect(200, "/feeds");
+        return res.redirect(302, "/feeds");
       });
     });
   },
@@ -49,7 +49,7 @@ module.exports = {
 
       // Return to feed manager page
       req.session.msg = "Successfully removed feed!";
-      return res.redirect(200, "/feeds");
+      return res.redirect(302, "/feeds");
     });
   }
 };

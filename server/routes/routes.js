@@ -25,7 +25,7 @@ router.post("/user/login", userController.login);
 // Login form
 router.get("/user/login", (req, res) => {
   // Go to profile if user is already logged in
-  if (typeof req.session.username != "undefined") return res.redirect(200, "/user");
+  if (typeof req.session.username != "undefined") return res.redirect(302, "/user");
 
   res.render("login");
 });

@@ -31,7 +31,7 @@ module.exports = {
           // Set session vars and redirect
           req.session.username = user.username;
           req.session.msg = "Successfully logged in.";
-          return res.redirect(200, "/user");
+          return res.redirect(302, "/user");
         });
     });
   },
@@ -39,7 +39,7 @@ module.exports = {
   // Logout processing
   logout: (req, res) => {
     req.session.destroy();
-    res.render("logout");
+    res.status(200).render("logout");
   },
 
   // Signup processing
@@ -63,7 +63,7 @@ module.exports = {
       // Log the user in
       req.session.username = username;
       req.session.msg = "Signup successful. Welcome!";
-      return res.redirect(req, res, "/user");
+      return res.redirect(302, "/user");
     });
   }
 };
