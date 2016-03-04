@@ -14,6 +14,7 @@ def remove_stop_words(doc):
 
 def count_words(word_list):
     words = {}
+    total = 0
     print("Word list: " + str(word_list))
     for orig_word in word_list:
         word = orig_word.text.lower().strip()
@@ -21,16 +22,18 @@ def count_words(word_list):
             words[word] += 1
         else:
             words[word] = 1
-    return words
+        total += 1
+    return words, total
 
 def get_topics(article):
     doc = nlp(article)
     print("orig: " + str(doc))
     doc = remove_stop_words(doc)
     print("sans stop words: " + str(doc))
-    word_counts = count_words(doc)
+    word_counts, total = count_words(doc)
     print(word_counts)
-    return word_counts
+    normalised_counts = {k:(v/float(total)) for k,v in word_counts.items()}
+    return normalised_counts
 
 def get_topics_gearman(worker, job):
     print("Get topics: " + job.data)
