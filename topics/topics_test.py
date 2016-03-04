@@ -1,5 +1,5 @@
 import unittest
-from topics import get_topics
+from topics import get_topics, limit_dict
 
 class TestTopics(unittest.TestCase):
     def test_topics_without_stop_words(self):

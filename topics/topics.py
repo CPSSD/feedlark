@@ -11,6 +11,18 @@ def log(level, message):
     levels = ['INFO', 'WARNING', 'ERROR']
     print(str(time) + " " + levels[level] + ": " + str(message))
 
+def limit_dict(d, num):
+    # returns a dict of max length num, with the elements of d that had the highest values
+    if len(d) <= num:
+        return d
+    sorted_d = sorted(d.items(), key=lambda x : x[1], reverse=True)
+    log(0, sorted_d)
+    e = {}
+    for i in xrange(num):
+        e[sorted_d[i][0]] = sorted_d[i][1]
+    return e
+
+
 def remove_stop_words(doc):
     new_doc = []
     for index in range(len(doc)-1, -1, -1):
@@ -53,13 +65,7 @@ def get_topics_gearman(worker, job):
     topics = get_topics(article)
     if(len(topics) > 10):
         log(0, "More than 10 topic words, returning only most frequent 110")
-        sorted_topics = sorted(topics.items(), key=lambda x : x[1], reverse=True)
-        log(0, sorted_topics)
-        new_topics = {}
-        for i in xrange(10):
-            new_topics[sorted_topics[i][0]] = sorted_topics[i][1]
-        topics = new_topics
-
+        topics = limit_dict(topics, 10)
     response = {"status":"ok", "topics":topics}
     bson_response = bson.BSON.encode(response)
     return str(bson_response)
