@@ -18,9 +18,9 @@ class Scraper:
         Returns a list of dictionaries.
         Each dictionary corresponds to a item in the feed.
 
-        The item contains a title, link, date published, and article text.
+        Each item contains a name, link, and date published.
         '''
-        if type(rss_url) != str:
+        if type(rss_url) != str and type(rss_url) != unicode:
             raise TypeError('URL must be a string')
 
         feed = feedparser.parse(rss_url)
@@ -31,15 +31,5 @@ class Scraper:
                 'name':item['title'],
                 'link':item['link'],
                 'pub_date':datetime(*date[:6]),
-                'article_text':''#self._parse_from_web(item['link']),
                 })
         return items_list
-
-    def _parse_from_web(self, article_url):
-        html = requests.get(article_url).content
-        soup = BeautifulSoup(html,'html.parser')
-
-        for s in soup(['style', 'script', '[document]', 'head', 'title']):
-            s.extract()
-
-        return soup.getText()

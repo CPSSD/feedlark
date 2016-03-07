@@ -1,25 +1,6 @@
 Feedlark Database Adder
 =======================
 
-Dependencies
-------------
-
-- Go v1.5
-- https://github.com/mikespook/gearman-go
-- http://labix.org/mgo
-
-
-How to set up your environment
-------------------------------
-
-Make sure the `$GOPATH` is set.
-
-```go
-go get "github.com/mikespook/gearman-go/worker"
-go get "gopkg.in/mgo.v2"
-go get "gopkg.in/mgo.v2/bson"
-```
-
 You can start the worker with `go run ../start_workers.go`
 
 How to do tests

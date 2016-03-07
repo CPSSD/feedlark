@@ -3,6 +3,14 @@ Feedlark
 
 Simple and Sharp RSS Reader.
 
+Feedlark uses [Vagrant](http://vagrantup.com). Vagrant is a tool to deploy a virtual machine with our required environment fully configured. It requires Virtualbox to host the VM. The Vagrant startup script can be seen in `Vagrantfile`. You can start Vagrant with the instructions in the 'Usage' section below.
+
+Once the environment is set up, Feedlark uses the [Gearman](http://gearman.org) application framework. Gearman allows different modules of the project to be run as separate applications called Workers. These Workers can then be requested to complete their task by a Client. The Gearman Job Server, initiated by Vagrant, handles the communication between each module. All of our Gearman data is transmitted in [BSON](https://en.wikipedia.org/wiki/BSON). The format of the data required by each worker is listed in its individual `README.md` file.
+
+Feedlark is using [MongoDB](http://mongodb.org) for its data storage. There are Gearman workers in the `dbtools` directory to handle most database interactions, so that each individual module doesn't need to re-implement database connections.
+
+The front end uses [express.js](http://expressjs.com/), an MVC framework in Node.js.
+
 
 Dependencies
 ------------
@@ -10,11 +18,9 @@ Dependencies
 - Vagrant
 - VirtualBox
 
-Vagrant Usage
--------------
 
-For windows users, `vagrant ssh` doesn't work _straight_ away. Please read:
-https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY
+Vagrant
+-------------
 
 ```sh
 $ vagrant up # start
@@ -22,6 +28,11 @@ $ vagrant provision  # setup depends
 $ vagrant ssh # gain ssh (on a POSIX system)
 $ vagrant halt # stop
 ```
+
+For windows users, `vagrant ssh` doesn't always work unless you have an ssh binary.
+Please read
+[this](https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY)
+to setup putty.
 
 #### Running the whole application stack
 
@@ -35,7 +46,9 @@ $ script/start.sh
 $ cd /vagrant && bash script/start_internal.sh
 ```
 
-### Vagrantfile
+### Vagrant Configuration
+
+The Vagrant configuration is laid out in the `Vagrantfile`.
 
 This will download an image of Ubuntu 15.10 (Wily), install the required
 packages and setup the services.
@@ -62,30 +75,27 @@ Project Directory Overview
 
 #### `./aggregator`
 
-This is the code that ties the three Feedlark databases together, it coalesces
-`feed` and `user` and places the data in `g2g`.
+This is the code that coalesces the database collections `feed` and `user`, and places the data in `g2g`. That is, it takes the feed data, and the user data, and creates the feeds tailored to each individual user.
 
 #### `./dbtools`
 
-This is we implement gearman mongo-db workers.
+The code that provides the Gearman database workers `db-add`, `db-get`, `db-update`, and `db-upsert`. The workers are written in Go.
 
 #### `./doc`
 
-This is where all documentation lives that doesn't directly relate to code.
-Find all the specs here.
+This is where all documentation lives that doesn't directly relate to code. Find the specs for the database collections, and the logging specs, here.
 
 #### `./scheduler`
 
-A simple gearman cron-like job that makes sure the workers are working.
+A simple Gearman cron-like job that refreshes the feeds at regular intervals.
 
 #### `./scraper`
 
-This is where we scrape from the web. This tool plays an important part in
-getting information from individual feeds.
+This contains the Gearman worker to scrape feeds from the web.
 
 #### `./script`
 
-This is where we keep scripts/confs, related to the project.
+This is where we keep the scripts and configs related to the project. For example, the scripts to run the tests on all aspects of the project are here.
 
 #### `./server`
 
