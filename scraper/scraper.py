@@ -33,12 +33,3 @@ class Scraper:
                 'pub_date':datetime(*date[:6]),
                 })
         return items_list
-
-    def _parse_from_web(self, article_url):
-        html = requests.get(article_url).content
-        soup = BeautifulSoup(html,'html.parser')
-
-        for s in soup(['style', 'script', '[document]', 'head', 'title']):
-            s.extract()
-
-        return soup.getText()
