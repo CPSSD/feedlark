@@ -14,14 +14,6 @@ Dependencies
 - requests
 - BeautifulSoup
 
-How to set up your environment
-------------------------------
-
-Use pip to download the dependencies (making sure you have activated the
-virtualenv)
-
-    $ pip install -r requirements.txt
-
 How to run
 ------------
 To run the article getter you must submit a job to the gearman article-text-getter worker with the bson object of the url of the feed you want to get the articles for.
