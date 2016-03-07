@@ -10,8 +10,8 @@ Dependencies
 - Vagrant
 - VirtualBox
 
-Usage
-------------
+Vagrant Usage
+-------------
 
 For windows users, `vagrant ssh` doesn't work _straight_ away. Please read:
 https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY
@@ -22,26 +22,6 @@ $ vagrant provision  # setup depends
 $ vagrant ssh # gain ssh (on a POSIX system)
 $ vagrant halt # stop
 ```
-
-### Vagrantfile
-
-This will download an image of Ubuntu 15.10 (Wily), install the required
-packages and setup the services.
-
-Pip dependencies will also be downloaded.
-
-#### Ports
-
-- `27017`: MongoDB is forwarded/exposed on port
--  `4730`: The Gearman job server runs on port
-- `192.168.2.2`: All services are also exposed on the IP
-
-#### Symlinks
-
-
-- `. -> /vagrant`
-
-Is something missing from the Vagrant? Open an issue!
 
 #### Running the whole application stack
 
@@ -55,8 +35,30 @@ $ script/start.sh
 $ cd /vagrant && bash script/start_internal.sh
 ```
 
+### Vagrantfile
+
+This will download an image of Ubuntu 15.10 (Wily), install the required
+packages and setup the services.
+
+Pip dependencies will also be downloaded.
+
+#### IPs & Ports
+
+- `192.168.2.2`: All services
+- `3000`: ExpressJS Web Server
+- `4730`: Gearman Job Server
+- `27017`: MongoDB
+
+#### Symbolic Links
+
+The following symlinks your github repository into your Vagrant box's file system:
+
+- `. -> /vagrant`
+
+Is something missing from the Vagrant? Open an issue!
+
 Project Directory Overview
----------------------------
+--------------------------
 
 #### `./aggregator`
 
