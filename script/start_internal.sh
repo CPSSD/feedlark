@@ -1,13 +1,10 @@
 #!/bin/bash
 echo "Starting backend elements in screen sessions"
 cd /vagrant
-mkdir -p log/backend-getter
-cd log/backend-getter
-screen -dmLS backend-getter python /vagrant/dbtools/getter/getter.py
-cd ..
-mkdir -p backend-workers
-cd backend-workers
-screen -dmLS backend-workers go run /vagrant/dbtools/start_workers.go
+# first one should be in log/XYZ, the rest of them then cd to this new log/ dir and create their own subdirs from there
+mkdir -p log/backend-db-workers
+cd log/backend-db-workers
+screen -dmLS backend-db-workers go run /vagrant/dbtools/start_workers.go
 cd ..
 mkdir -p backend-aggregator
 cd backend-aggregator
@@ -20,6 +17,10 @@ cd ..
 mkdir -p backend-scheduler
 cd backend-scheduler
 screen -dmLS backend-scheduler python /vagrant/scheduler/scheduler.py
+cd ..
+mkdir -p backend-art-getter
+cd backend-art-getter
+screen -dmLS backend-art-getter python /vagrant/article_getter/gman_art_getter.py
 echo "Starting frontend elements in screen sessions"
 cd /vagrant/server
 screen -dmLS frontend-express /usr/bin/npm run start
