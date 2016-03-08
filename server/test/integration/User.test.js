@@ -1,8 +1,8 @@
+const app = require("../../app");
+const assert = require('assert');
+const request = require('supertest');
 
-var assert = require('assert');
-var request = require('supertest');
-
-describe('UserModel', function() {
+describe('UserModel', _ => {
   var user_details_base = {
     username: "rmss",
     email: "rms@gnu.org",
@@ -19,10 +19,10 @@ describe('UserModel', function() {
     password: "gnuisnotlinux"
   }
   // Perisistent agent so session stays
-  var agent = request.agent("http://localhost:1337");
-  describe('#signup()', function() {
-    it('User must provide username', function (done) {
-      request(sails.hooks.http.app)
+  var agent = request.agent(app);
+  describe('#signup()', _ => {
+    it('User must provide username', done => {
+      agent
         .post('/user/signup')
         .type('form')
         .send({
@@ -32,8 +32,8 @@ describe('UserModel', function() {
         })
         .expect(400, done);
     });
-    it('User must provide email', function (done) {
-      request(sails.hooks.http.app)
+    it('User must provide email', done => {
+      agent
         .post('/user/signup')
         .type('form')
         .send({
@@ -43,8 +43,8 @@ describe('UserModel', function() {
         })
         .expect(400, done);
     });
-    it('User must provide good password', function (done) {
-      request(sails.hooks.http.app)
+    it('User must provide good password', done => {
+      agent
         .post('/user/signup')
         .type('form')
         .send({
@@ -54,71 +54,69 @@ describe('UserModel', function() {
         })
         .expect(400, done);
     });
-    it('User can sign up', function (done) {
-      request(sails.hooks.http.app)
+    it('User can sign up', done => {
+      agent
         .post('/user/signup')
         .type('form')
         .send(user_details_base)
-        .expect(200)
-        .expect('Success', done);
+        .expect(302, done);
     });
-    it('User cant reuse email', function (done) {
-      request(sails.hooks.http.app)
+    it('User cant reuse email', done => {
+      agent
         .post('/user/signup')
-        .type('json')
+        .type('form')
         .send(user_details_dupe_email)
         .expect(400, done);
     });
-    it('User cant reuse username', function (done) {
-      request(sails.hooks.http.app)
+    it('User cant reuse username', done => {
+      agent
         .post('/user/signup')
-        .type('json')
+        .type('form')
         .send(user_details_dupe_uname)
         .expect(400, done);
     });
   });
-  describe('#login()', function() {
-    it('User cant login with invalid password', function (done) {
+  describe('#login()', _ => {
+    it('User cant login with invalid password', done => {
       agent
         .post('/user/login')
-        .type('json')
+        .type('form')
         .send({
-		  username: "rmss",
-		  email: "rms@gnu.org",
-		  password: "gnu1snotlinux"
-		})
+          username: "rmss",
+          email: "rms@gnu.org",
+          password: "gnu1snotlinux"
+        })
         .expect(400, done);
     });
-    it('User cant login with invalid email', function (done) {
+    it('User cant login with invalid email', done => {
       agent
         .post('/user/login')
-        .type('json')
+        .type('form')
         .send(user_details_dupe_uname)
         .expect(400, done);
     });
-    it('User can login', function (done) {
+    it('User can login', done => {
       agent
         .post('/user/login')
-        .type('json')
+        .type('form')
         .send(user_details_base)
-        .expect(200)
-        .expect("Success", done)
+        .expect(302, done);
     });
   });
-  describe('#profile()', function() {
-    it('User can view profile', function (done) {
+  describe('#profile()', _ => {
+    it('User can view profile', done => {
       agent
-        .get('/user/profile')
+        .get('/user')
         .expect(200, done);
     });
-    it('User can log out', function (done) {
+    it('User can log out', done => {
       agent
         .get('/user/logout')
         .expect(200, done);
     });
-    it('User cant view profile when logged out', function (done) {
+    it('User cant view profile when logged out', done => {
       agent
-        .get('/user/profile')
+        .get('/user')
         .expect(403, done);
     });
   });

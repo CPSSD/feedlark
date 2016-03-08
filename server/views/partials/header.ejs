@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RSS Aggregator">
+    <meta name="author" content="Team DkIT">
+
+    <title>Feedlark</title>
+
+    <!-- Materialize CSS -->
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Our CSS -->
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css">
+
+    <!-- Favicon -->
+    <!-- Hash stops caching issues -->
+    <!-- <link rel="shortcut icon" href="/images/favicon.ico?v=057651f691c119d4501eaabc3de181e1"> -->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <nav>
+      <div class="nav-wrapper light-blue">
+        <a href="/" class="brand-logo">Feedlark</a>
+        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+
+         <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <% if (typeof session != "undefined" && typeof session.username != "undefined") { %>
+          <li><a href="/stream">Stream</a></li>
+          <li>
+            <a class="dropdown-button" href="#!" data-activates="dropdown1"><%= session.username %><i class="material-icons right">arrow_drop_down</i></a>
+            <ul id="dropdown1" class="dropdown-content">
+              <li><a href="/user">Profile</a></li>
+              <li><a href="/feeds">My Feeds</a></li>
+              <li class="divider"></li>
+              <li><a href="/user/logout">Logout</a></li>
+            </ul>
+          </li>
+          <% } else { %>
+          <li><a href="/user/login">Login</a></li>
+          <% } %>
+         </ul>
+         <ul class="side-nav" id="mobile-demo">
+          <% if (typeof session != "undefined" && typeof session.username != "undefined") { %>
+          <li style="color: black;">Hello <%= session.username %></li>
+          <li><a href="/stream">Stream</a></li>
+          <li><a href="/user">Profile</a></li>
+          <li><a href="/feeds">My Feeds</a></li>
+          <li class="divider"></li>
+          <li><a href="/user/logout">Logout</a></li>
+          <% } else { %>
+          <li><a href="/user/login">Login</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </nav>
+    <!-- Shadow fix -->
+    <br>
+
+    <div class="hacky-shadow-fix"></div>
+    <% if (typeof err != "undefined") { %>
+    <!-- Error message display -->
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card red darken-1">
+          <div class="card-content white-text">
+            <span class="card-title">Warning</span>
+            <p><%= err %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%
+      err = undefined;
+    }
+    %>

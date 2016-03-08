@@ -9,7 +9,8 @@ Once the environment is set up, Feedlark uses the [Gearman](http://gearman.org) 
 
 Feedlark is using [MongoDB](http://mongodb.org) for its data storage. There are Gearman workers in the `dbtools` directory to handle most database interactions, so that each individual module doesn't need to re-implement database connections.
 
-The front end uses [Sails.js](http://sailsjs.org), an MVC framework in Node.js.
+The front end uses [express.js](http://expressjs.com/), an MVC framework in Node.js.
+
 
 Dependencies
 ------------
@@ -17,8 +18,9 @@ Dependencies
 - Vagrant
 - VirtualBox
 
-Usage
------
+
+Vagrant
+-------------
 
 ```sh
 $ vagrant up # start
@@ -27,31 +29,10 @@ $ vagrant ssh # gain ssh (on a POSIX system)
 $ vagrant halt # stop
 ```
 
-For windows users, `vagrant ssh` doesn't work _straight_ away. Please read:
-https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY
-
-
-### Vagrant Configuration
-
-The Vagrant configuration is laid out in the `Vagrantfile`.
-
-This will download an image of Ubuntu 15.10 (Wily), install the required
-packages and setup the services.
-
-Pip dependencies will also be downloaded.
-
-#### Ports
-
-- `27017`: MongoDB is forwarded/exposed on port
--  `4730`: The Gearman job server runs on port
-- `192.168.2.2`: All services are also exposed on the IP
-
-#### Symlinks
-
-
-- `. -> /vagrant`
-
-Is something missing from the Vagrant? Open an issue!
+For windows users, `vagrant ssh` doesn't always work unless you have an ssh binary.
+Please read
+[this](https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY)
+to setup putty.
 
 #### Running the whole application stack
 
@@ -64,6 +45,30 @@ $ script/start.sh
 # if you get errors, ssh to the vagrant box and try:
 $ cd /vagrant && bash script/start_internal.sh
 ```
+
+### Vagrant Configuration
+
+The Vagrant configuration is laid out in the `Vagrantfile`.
+
+This will download an image of Ubuntu 15.10 (Wily), install the required
+packages and setup the services.
+
+Pip dependencies will also be downloaded.
+
+#### IPs & Ports
+
+- `192.168.2.2`: All services
+- `3000`: ExpressJS Web Server
+- `4730`: Gearman Job Server
+- `27017`: MongoDB
+
+#### Symbolic Links
+
+The following symlinks your github repository into your Vagrant box's file system:
+
+- `. -> /vagrant`
+
+Is something missing from the Vagrant? Open an issue!
 
 Project Directory Overview
 --------------------------
