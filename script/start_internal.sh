@@ -14,6 +14,10 @@ mkdir -p backend-scraper
 cd backend-scraper
 screen -dmLS backend-scraper python /vagrant/scraper/gman_scraper.py
 cd ..
+mkdir -p backend-topics
+cd backend-topics
+screen -dmLS backend-topics python /vagrant/topics/topics.py
+cd ..
 mkdir -p backend-scheduler
 cd backend-scheduler
 screen -dmLS backend-scheduler python /vagrant/scheduler/scheduler.py

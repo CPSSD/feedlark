@@ -75,7 +75,7 @@ def get_topics_gearman(worker, job):
     article = data["article"]
     topics = get_topics(article)
     if(len(topics) > 10):
-        log(0, "More than 10 topic words, returning only most frequent 110")
+        log(0, "More than 10 topic words, returning only most frequent 10")
         topics = limit_dict(topics, 10)
     response = {"status":"ok", "topics":topics}
     try:
