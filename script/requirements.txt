@@ -4,4 +4,4 @@ requests
 pymongo
 gearman
 virtualenv
-scrapy
+spacy
