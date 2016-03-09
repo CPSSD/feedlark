@@ -3,6 +3,8 @@ Feedlark Topic Modeller
 
 This is the module for grabbing the topics out of an article. Right now, we just use a method where we take the words that come up the most commonly in an article, and then remove stop words (ie. Words that carry no meaning, function words).
 
+This worker takes in a specific article to get the topics of, and then updates the `feed` database with this information.
+
 Setup
 -----
 
@@ -33,9 +35,14 @@ The tool takes in Gearman data in the following format:
 
 ```js
 {
-    article: "lorem ipsum dolor sit amet"
+    "article": "lorem ipsum dolor sit amet",
+    "_id": ObjectId(000000000000),
+    "link": "http://dave.cheney.net/2016/02/06/unhelpful-abstractions"
 }
 ```
+
+`article` should contain the text of the post to be analysed. `_id` must be the id of the document in the `feed` collection. `link` should be the link to that specific article, so that this worker can update just the entry for this article without modifying any of the other articles in the document specified by `_id`.
+
 
 It returns the following:
 
