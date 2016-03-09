@@ -11,6 +11,17 @@ def log(level, message):
     levels = ['INFO', 'WARNING', 'ERROR']
     print(str(time) + " " + levels[level] + ": " + str(message))
 
+def update_article_data(old_data, link, modifications):
+    if "items" not in old_data:
+        raise IndexError("No 'items' entry exists in the document")
+    for item in old_data["items"]:
+        if item["link"] == link:
+            for k in modifications:
+                item[k] = modifications[k]
+            break
+    return old_data
+        
+
 def limit_dict(d, num):
     # returns a dict of max length num, with the elements of d that had the highest values
     if len(d) <= num:
