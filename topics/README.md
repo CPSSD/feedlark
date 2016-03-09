@@ -14,6 +14,12 @@ The following libraries are required:
 
 The worker must use Python 2, as Gearman does not support python 3.
 
+Spacy requires the following before it is installed:
+
+`sudo apt-get install build-essential python-dev` 
+
+This is detailed in the install instructions linked above.
+
 It will also be necessary to download Spacy's English model with the following command:
 
 `python -m spacy.en.download`
