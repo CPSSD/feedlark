@@ -57,7 +57,7 @@ router.get("/feeds/remove", isAuthed, feedController.remove);
 router.get("/feeds", isAuthed, feedController.index);
 
 // Stream
-router.get("/stream", isAuthed, streamController.index);
+router.get("/stream/:page", isAuthed, streamController.index);
 
 // Home/Index
 router.get("/", (req, res) => {
