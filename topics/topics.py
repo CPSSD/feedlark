@@ -78,6 +78,25 @@ def get_topics_gearman(worker, job):
         log(0, "More than 10 topic words, returning only most frequent 110")
         topics = limit_dict(topics, 10)
     response = {"status":"ok", "topics":topics}
+    try:
+        log(0, 'got topics, sending to db')
+        gclient = gearman.GearmanClient(['localhost:4730'])
+        log(0, '_id:' + str(bson.ObjectId(data['_id'])))
+        log(0, data)
+        db_resp = bson.BSON.decode(bson.BSON(gclient.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'feed', 'query':{u'_id':data[u'_id']}, 'projection':{'_id':1, 'items':1}}))).result))
+        if len(db_resp['docs']) == 0:
+             raise Exception('No documents returned with given query.')
+        old_data = db_resp['docs'][0]
+        log(0, 'old_data: ' + str(old_data))
+        modifications = {"topics":topics}
+        link = data['link']
+        new_data = update_article_data(old_data, link, modifications)
+        log(0, 'new_data: ' + str(new_data))
+        r = bson.BSON.decode(bson.BSON(gclient.submit_job('db-update', str(bson.BSON.encode({'database':'feedlark', 'collection': 'feed', 'data':{'selector':{'_id':data['_id']}, 'updates':new_data}}))).result))
+    except Exception as e:
+	log(2, str(e))
+        response = {"status":"error", "description": str(e)}        
+
     bson_response = bson.BSON.encode(response)
     return str(bson_response)
 
