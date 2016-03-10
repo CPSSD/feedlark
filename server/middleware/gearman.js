@@ -8,13 +8,9 @@
 const gearman = require("gearman");
 const client = new gearman.Gearman("localhost", 4730 , {timeout: 3000});
 
+// TODO: remove timeout messages when client isn't connected
 client.on('timeout', () => {
   console.log("gearman client timed out");
-  client.close();
-});
-
-client.on('WORK_COMPLETE', (job) => {
-  console.log('job completed, result:', job.payload.toString());
   client.close();
 });
 
@@ -23,7 +19,7 @@ module.exports = {
     if (!job_options) {
       job_options = {
         background: true,
-        encoding: "utf-8",
+        encoding: "utf-8"
       };
     }
     client.connect( () => {
