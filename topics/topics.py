@@ -73,16 +73,15 @@ def get_topics_gearman(worker, job):
     response = {"status":"ok", "topics":topics}
     try:
         log(0, 'got topics, sending to db')
-        gclient = gearman.GearmanClient(['localhost:4730'])
         log(0, '_id:' + str(bson.ObjectId(data['_id'])))
-        db_resp = bson.BSON.decode(bson.BSON(gclient.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'feed', 'query':{u'_id':data[u'_id']}, 'projection':{'_id':1, 'items':1}}))).result))
+        db_resp = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'feed', 'query':{u'_id':data[u'_id']}, 'projection':{'_id':1, 'items':1}}))).result))
         if len(db_resp['docs']) == 0:
              raise Exception('No documents returned with given query.')
         old_data = db_resp['docs'][0]
         modifications = {"topics":topics}
         link = data['link']
         new_data = update_article_data(old_data, link, modifications)
-        r = bson.BSON.decode(bson.BSON(gclient.submit_job('db-update', str(bson.BSON.encode({'database':'feedlark', 'collection': 'feed', 'data':{'selector':{'_id':data['_id']}, 'updates':new_data}}))).result))
+        r = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-update', str(bson.BSON.encode({'database':'feedlark', 'collection': 'feed', 'data':{'selector':{'_id':data['_id']}, 'updates':new_data}}))).result))
     except Exception as e:
 	log(2, str(e))
         response = {"status":"error", "description": str(e)}        
