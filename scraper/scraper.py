@@ -97,12 +97,12 @@ def get_single_feed_doc(url):
     return bson_object["docs"]
 
 
-def update_feed(doc):
+def gather_updates(doc):
     """Expects a doc as returned by get_feed"""
     log(0, "Loading items in feed: " + doc['url'])
     updated_item_list = []
     result = get_feed_data(doc['url'])  # list of item dicts
-
+    log(0, "Parsed feed " + doc['url'])
     for item in result:
         for db_item in doc['items']:
             if item['link'] == db_item['link']:
@@ -117,6 +117,7 @@ def update_feed(doc):
                 'link': item['link'],
                 'article_text': '',
             })
+    log(0, "Gathered list of items to update for: " + doc['url'])
     return updated_item_list
 
 
@@ -162,10 +163,20 @@ def update_database(doc, updated_item_list):
 def update_single_feed(worker, job):
     log(0, "'update-single-feed' initiated")
     url = str(job.data)
-    log(0, "url to update: " + url)
-    feed = get_all_feed_docs(url)
-    updated_feeds = update_feed(feed[0])
-    update_database(doc, updated_feeds)
+
+    try:
+        feed = get_single_feed_doc(url)
+        updated_feeds = gather_updates(feed[0])
+        log(0, "'update-single-feed' finished gathering updates, applying")
+        update_database(feed[0], updated_feeds)
+    except Exception as e:
+        log(2, "'update-single-feed' failed")
+        return str(bson.BSON.encode({
+            "status": "error",
+            "error-description": str(e)
+        }))
+
+    log(0, "'update-single-feed' finished")
     return str(bson.BSON.encode({
         "status": "ok",
         "updated_feeds": [x['_id'] for x in feed],
@@ -179,9 +190,16 @@ def update_all_feeds(worker, job):
 
     feed_db_data = get_all_feed_docs()
 
-    for doc in feed_db_data:
-        updated_feeds = update_feed(doc)
-        update_database(doc, updated_feeds)
+    try:
+        for doc in feed_db_data:
+            updated_feeds = gather_updates(doc)
+            update_database(doc, updated_feeds)
+    except Exception as e:
+        log(2, "'update-all-feeds' failed")
+        return str(bson.BSON.encode({
+            "status": "error",
+            "error-description": str(e)
+        }))
 
     log(0, "'update-all-feeds' finished")
     return str(bson.BSON.encode({
