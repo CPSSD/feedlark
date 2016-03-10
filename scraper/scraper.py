@@ -164,7 +164,7 @@ def update_single_feed(worker, job):
     url = str(job.data)
     log(0, "url to update: " + url)
     feed = get_all_feed_docs(url)
-    updated_feeds = update_feed(doc)
+    updated_feeds = update_feed(doc[0])
     update_database(doc, updated_feeds)
     return str(bson.BSON.encode({
         "status": "ok",
