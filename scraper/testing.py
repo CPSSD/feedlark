@@ -1,14 +1,12 @@
 import unittest
 from datetime import datetime
-from scraper import Scraper
+import scraper as scr
 import gearman
 import bson
 
 class TestScraping(unittest.TestCase):
 
     def test_get_feed_data(self):
-        scr = Scraper()
-
         #The url is to a static RSS feed stolen from Hacker News
         test_feed = scr.get_feed_data('http://u.m1cr0man.com/l/feed.xml')
 
