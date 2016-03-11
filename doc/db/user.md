@@ -20,6 +20,7 @@ Example Document
 	"username": "iandioch",
 	"email": "noah@feedlark.com",
 	"password": "$2a$08$ThzPc3zm84JPb6LmvcfCkuXkwyh8H.Mn1VC4EKu9guksI9lbdb7Fa",
-	"subscribed_feeds": ["news.ycombinator.com/rss", "pssd.computing.dcu.ie/rss.xml"]
+	"subscribed_feeds": ["news.ycombinator.com/rss", "pssd.computing.dcu.ie/rss.xml"],
+	"words": {"butter":2, "milk":13, "antidisestablishmentarianism":-33},
 }
 ```

@@ -8,7 +8,7 @@ def log(message, level=0):
 
 def get_feed_db_data(url):
     # format the request
-    to_get_urls_ids = str(BSON.encode({
+    data_request = str(BSON.encode({
         "database":"feedlark",
         "collection":"feed",
         "query": {'url':url},
@@ -18,33 +18,55 @@ def get_feed_db_data(url):
             "items":1,
             },
         }))
-    url_fields_gotten = gm_client.submit_job("db-get", to_get_urls_ids)
-    bson_object = BSON.decode(bson.BSON(url_fields_gotten.result))
+    response = gm_client.submit_job("db-get", data_request)
+    db_data = BSON.decode(BSON(response.result))
 
-    return bson_object["docs"]
+    return db_data["docs"]
+
+def get_user_db_data(username):
+    # format the request
+    data_request = str(BSON.encode({
+        "database":"feedlark",
+        "collection":"user",
+        "query": {'username':username},
+        "projection":{
+            "_id":1,
+            "username":1,
+            "words":1,
+            },
+        }))
+    response = gm_client.submit_job("db-get", data_request)
+    db_data = BSON.decode(BSON(response.result))
+
+    return db_data["docs"]
 
 def score_keywords(worker, job):
     log("'score-keywords' initiated")
     try:
         feed_url = BSON.decode(BSON(job.data))['url']
+        username = BSON.decode(BSON(job.data))['username']
     except:
         log("Error when reading job data: "+job.data,2)
         error = {
             'status':'error',
-            'data':'Invalid url/parameter',
+            'data':'Invalid parameters',
             }
         return str(BSON.encode(error))
 
     try:
         log("Getting feed from feed db")
         feed_data = get_feed_db_data(feed_url)[0]
+        log("Getting user from user db")
+        user_data = get_user_db_data(username)[0]
     except:
-        log("Error when getting feed db data",2)
+        log("Error when getting db data",2)
         error = {
             'status':'error',
-            'data':'Error getting feed data',
+            'data':'Error getting DB data',
             }
         return str(BSON.encode(error))
+
+    
 
     
     
