@@ -6,6 +6,17 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="col s2">
+          <label>Items per page</label>
+          <select id="page_length" class="browser-default">
+            <option<%= page_length == 5 ? ' selected' : '' %>>5</option>
+            <option<%= page_length == 10? ' selected' : '' %>>10</option>
+            <option<%= page_length == 20? ' selected' : '' %>>20</option>
+            <option<%= page_length == 50? ' selected' : '' %>>50</option>
+          </select>
+        </div>
+      </div>
       <ul class="collection">
         <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
         <li class="collection-item">
@@ -41,7 +52,7 @@
       <% if (page != 0) { %>
       <div class="row">
         <div class="col s6 offset-s3 center-align">
-          <a class="btn-large wave-effect waves-light" href="/stream/<%= page %>">Load more</a>
+          <a class="btn-large wave-effect waves-light" href="/stream/<%= page_length %>/<%= page %>">Load more</a>
         </div>
       </div>
       <% } %>
