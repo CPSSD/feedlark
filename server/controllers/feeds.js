@@ -58,5 +58,27 @@ module.exports = {
       req.session.msg = "Successfully removed feed!";
       return res.redirect(302, "/feeds");
     });
+  },
+
+  like: (req, res) => {
+
+    if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
+      req.session.msg = "Invalid URL provided";
+      return res.redirect(302, "/stream");
+    }
+    var url = req.query.url.toLowerCase();
+    req.session.msg = "Showing interest in " + req.query.feed;
+    return res.redirect(302, "/stream");
+  },
+
+  dislike: (req, res) => {
+
+    if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
+      req.session.msg = "Invalid URL provided";
+      return res.redirect(302, "/stream");
+    }
+    var url = req.query.url.toLowerCase();
+    req.session.msg = "Showing disinterest in " + url;
+    return res.redirect(302, "/stream");
   }
 };

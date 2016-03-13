@@ -59,6 +59,12 @@ router.get("/feeds", isAuthed, feedController.index);
 // Stream
 router.get("/stream", isAuthed, streamController.index);
 
+//Show interest
+router.get("/feeds/like", isAuthed, feedController.like);
+
+//Show disinterest buttons
+router.get("/feeds/dislike", isAuthed, feedController.dislike);
+
 // Home/Index
 router.get("/", (req, res) => {
   res.render('index');
