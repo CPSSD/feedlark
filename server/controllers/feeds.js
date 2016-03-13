@@ -34,12 +34,11 @@ module.exports = {
 
       // Add to current user
       userModel.addFeed(db, req.session.username, url, _ => {
+        // Call gearman
+        gearman.startJob('update-single-feed', url, undefined, () => {});
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";
-        gearman.startJob('update-single-feed', url, undefined, () => {
-          console.log("added feed :)")
-        });
         return res.redirect(302, "/feeds");
       });
     });
