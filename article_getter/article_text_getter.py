@@ -124,14 +124,14 @@ def update_article_text(worker,job):
             "updated_feed": feed_db_data['_id'],
             }))
 
+if __name__ == "__main__":
+	# make the gearman worker to update feeds or add a new feed(adding not done yet). Make the client to allow adder and getter job calls.
+	log(0,"Initiating gearman worker")
+	gm_worker = gearman.GearmanWorker(['localhost:4730'])
+	log(0,"Initiating Client")
+	gm_client = gearman.GearmanClient(["localhost:4730"])
 
-# make the gearman worker to update feeds or add a new feed(adding not done yet). Make the client to allow adder and getter job calls.
-log(0,"Initiating gearman worker")
-gm_worker = gearman.GearmanWorker(['localhost:4730'])
-log(0,"Initiating Client")
-gm_client = gearman.GearmanClient(["localhost:4730"])
-
-# register the tasks -> update all the article text for all feeds.
-log(0,"Registering task 'article-text-getter'")
-gm_worker.register_task('article-text-getter', update_article_text)
-gm_worker.work()
+	# register the tasks -> update all the article text for all feeds.
+	log(0,"Registering task 'article-text-getter'")
+	gm_worker.register_task('article-text-getter', update_article_text)
+	gm_worker.work()

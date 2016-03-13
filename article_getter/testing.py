@@ -1,5 +1,5 @@
 import unittest
-import article_text_getter
+import article_text_getter as testing
 import gearman
 import bson
 
@@ -12,7 +12,7 @@ class TestScraping(unittest.TestCase):
             f.close()
         except:
             print "file not found"
-        test_text = get_article_text("http://u.m1cr0man.com/l/feed.xml")
+        test_text = testing.get_article_text("http://u.m1cr0man.com/l/feed.xml")
         self.assertEqual(text, test_text + "\n")
 
 if __name__ == '__main__':
