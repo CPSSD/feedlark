@@ -24,7 +24,7 @@ screen -dmLS backend-scheduler python /vagrant/scheduler/scheduler.py
 cd ..
 mkdir -p backend-art-getter
 cd backend-art-getter
-screen -dmLS backend-art-getter python /vagrant/article_getter/gman_art_getter.py
+screen -dmLS backend-art-getter python /vagrant/article_getter/article_text_getter.py
 echo "Starting frontend elements in screen sessions"
 cd /vagrant/server
 screen -dmLS frontend-express /usr/bin/npm run start
