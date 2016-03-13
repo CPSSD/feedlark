@@ -28,6 +28,8 @@ It will also be necessary to download Spacy's English model with the following c
 
 It downloads about 500mb of data.
 
+All of these procedures are included in the Vagrantfile.
+
 Usage
 -----
 
