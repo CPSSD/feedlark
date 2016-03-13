@@ -12,7 +12,11 @@ screen -dmLS backend-aggregator python /vagrant/aggregator/aggregator.py
 cd ..
 mkdir -p backend-scraper
 cd backend-scraper
-screen -dmLS backend-scraper python /vagrant/scraper/gman_scraper.py
+screen -dmLS backend-scraper python /vagrant/scraper/scraper.py
+cd ..
+mkdir -p backend-topics
+cd backend-topics
+screen -dmLS backend-topics python /vagrant/topics/topics.py
 cd ..
 mkdir -p backend-scheduler
 cd backend-scheduler
