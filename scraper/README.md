@@ -31,9 +31,11 @@ This will give you a clean slate to manage dependencies, making sure that
 there is no overlap.
 
 Use pip to download the dependencies (making sure you have activated the
-virtualenv)
+virtualenv).
 
-    $ pip install -r requirements.txt
+Depends are in the root script directory.
+
+    $ pip install -r script/requirements.txt
 
 
 How to do tests

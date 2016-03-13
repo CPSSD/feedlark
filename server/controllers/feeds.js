@@ -8,6 +8,7 @@
 const userModel = require("../models/user");
 const feedModel = require("../models/feed");
 const _ = require("lodash");
+const gearman = require("../middleware/gearman");
 
 module.exports = {
 
@@ -33,6 +34,8 @@ module.exports = {
 
       // Add to current user
       userModel.addFeed(db, req.session.username, url, _ => {
+        // Call gearman
+        gearman.startJob('update-single-feed', url, undefined, () => {});
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";
