@@ -4,6 +4,19 @@
   <!-- Materialize JS -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.js"></script>
 
+  <!-- Selections -->
+  <script type="text/javascript">
+  $(document).ready(_ => {
+    $("select").material_select();
+
+    <% if (typeof page_length != "undefined") { %>
+    $("#page_length").change(_ => {
+      window.location.href = "/stream/" + $("#page_length").val() + "/<%= page - 1 > 0? page - 1 : 0 %>";
+    });
+    <% } %>
+  });
+  </script>
+
   <!-- Materialize Parallax -->
   <script type="text/javascript">
     $(document).ready(_ => {
@@ -22,5 +35,6 @@
     session.msg = undefined;
   }
   %>
+
   </body>
 </html>
