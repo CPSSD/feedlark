@@ -94,7 +94,7 @@ class TestAggregation(unittest.TestCase):
         sticky_marxism = score(a_words, u_words)
 
         a_words2 = {'pancakes':0.2,'syrup':0.1}
-        trip_to_canada = score(a_words, u_words)
+        trip_to_canada = score(a_words2, u_words)
         
         self.assertTrue(sticky_marxism < trip_to_canada)
         
