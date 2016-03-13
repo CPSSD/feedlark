@@ -12,7 +12,7 @@ and salt will be stored. These are stored in the same string in bcrypt.
 
 Example Document
 ----------------
-		password = "ilovegnuhurd", 8 rounds
+
 
 ```js
 {
@@ -24,3 +24,7 @@ Example Document
 	"words": {"butter":2, "milk":13, "antidisestablishmentarianism":-33},
 }
 ```
+
+The above document uses the following data to generate the hashed password:
+
+		password = "ilovegnuhurd", 8 rounds
