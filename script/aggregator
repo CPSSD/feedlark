@@ -8,3 +8,4 @@ go run dbtools/start_workers.go &
 
 #Unit tests
 python aggregator/testing.py
+cd ..

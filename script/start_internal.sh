@@ -21,9 +21,13 @@ cd ..
 mkdir -p backend-scheduler
 cd backend-scheduler
 screen -dmLS backend-scheduler python /vagrant/scheduler/scheduler.py
+cd ..
+mkdir -p backend-art-getter
+cd backend-art-getter
+screen -dmLS backend-art-getter python /vagrant/article_getter/gman_art_getter.py
 echo "Starting frontend elements in screen sessions"
 cd /vagrant/server
-screen -dmLS frontend-sails /usr/bin/npm run start
+screen -dmLS frontend-express /usr/bin/npm run start
 echo "Running! Please allow ~20 seconds for everything to initialise"
 echo "Running screens (Should be 6):"
 sleep 1

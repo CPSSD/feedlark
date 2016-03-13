@@ -1,23 +1,26 @@
-var sails = require('sails');
+const MongoClient = require("mongodb");
 
-before(function(done) {
-  this.timeout(30000);
+function removeTestUser(done) {
+  MongoClient.connect("mongodb://localhost:27017/feedlark", (err, db) => {
+    if (err) throw err;
 
-  sails.lift({
-    log: {
-      level: "silent"
-    },
-    models: {
-      connection: 'test',
-      migrate: 'drop'
-    }
-  }, function(err, server) {
-    if (err) return done(err);
-    done(err);
+    db.collection("user").remove({"$or": [{username: "rmss"}, {username: "heyzeus"}]}, err => {
+      if (err) throw err;
+
+      db.collection("g2g").remove({"$or": [{username: "rmss"}, {username: "heyzeus"}]}, err => {
+        if (err) throw err;
+
+        db.close();
+        console.log("Database cleaned");
+        done();
+      });
+    });
   });
-});
+}
 
-after(function(done) {
-  // here you can clear fixtures, etc.
-  sails.lower(done);
-});
+// Remove tests users from the database before and after
+// Not inside a describe block, as per recommendations in Mocha's "Root-level hooks" documentation
+// See https://mochajs.org/#hooks
+before(removeTestUser);
+
+after(removeTestUser);

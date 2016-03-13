@@ -1,0 +1,26 @@
+  <!-- JQuery JS -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+
+  <!-- Materialize JS -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.js"></script>
+
+  <!-- Materialize Parallax -->
+  <script type="text/javascript">
+    $(document).ready(_ => {
+      $('.parallax').parallax();
+    });
+  </script>
+  <% if (typeof session != "undefined" && typeof session.msg != "undefined") { %>
+
+  <!-- Toast display -->
+  <script type="text/javascript">
+    $(document).ready(function() {
+      Materialize.toast("<%= session.msg %>", 5000);
+    });
+  </script>
+  <%
+    session.msg = undefined;
+  }
+  %>
+  </body>
+</html>

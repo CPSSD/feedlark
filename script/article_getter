@@ -1,0 +1,5 @@
+#!/bin/bash
+set -xe
+cd article_getter
+python testing.py
+cd ..

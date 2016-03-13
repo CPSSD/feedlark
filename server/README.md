@@ -1,5 +1,5 @@
-feedlark web application
-========================
+Feedlark Web Server
+===================
 
 ```
  _______  _______  _______  _______   __          ___      .______       __  ___
@@ -8,31 +8,18 @@ feedlark web application
 |   __|  |   __|  |   __|  |  |  |  ||  |      /  /_\  \   |      /     |    <
 |  |     |  |____ |  |____ |  '--'  ||  `----./  _____  \  |  |\  \----.|  .  \
 |__|     |_______||_______||_______/ |_______/__/     \__\ | _| `._____||__|\__\
-        ___   _______. _______ .______     ____    ____  _______ .______       
-       /  /  /       ||   ____||   _  \    \   \  /   / |   ____||   _  \      
-      /  /  |   (----`|  |__   |  |_)  |    \   \/   /  |  |__   |  |_)  |     
-     /  /    \   \    |   __|  |      /      \      /   |   __|  |      /     
+        ___   _______. _______ .______     ____    ____  _______ .______
+       /  /  /       ||   ____||   _  \    \   \  /   / |   ____||   _  \
+      /  /  |   (----`|  |__   |  |_)  |    \   \/   /  |  |__   |  |_)  |
+     /  /    \   \    |   __|  |      /      \      /   |   __|  |      /
  __ /  / .----)   |   |  |____ |  |\  \----.  \    /    |  |____ |  |\  \----.
 (__)__/  |_______/    |_______|| _| `._____|   \__/     |_______|| _| `._____|
 ```
 
-Requires
---------
+Requirements & Setup
+--------------------
 
-- Node.js to be installed. Recommended `v4.0.0` or up.
-
-- NPM to be installed.
-
-Install
--------
-
-If you are using Vagrant, this should be done.
-
-If you are not, then inside `/server` run:
-
-```sh
-$ npm install -y
-```
+The Feedlark Vagrant box will provide you with all the tools needed to run the web server. If you have not set it up already, see the instructions in the main README.md located in the root of the repository.
 
 Attention Windows Vagrant Users
 -------------------------------
@@ -46,18 +33,20 @@ Anyway, to do that, make sure you start your Command Prompt as Admin.
 Usage
 -----
 
-To execute the various commands of the server, use `npm run`.
+First, make sure you are in the server folder inside the Vagrant box with the commands `vagrant ssh` and `cd /vagrant/server`
+
 
 Here's a list of what you can do:
 
-| command         | notable details                                           |
-| ------          | ---------------                                           |
-| `npm run start` | starts the sail server, using `sails lift`.               |
-| `npm run test` | starts the mocha.js tests located in `tests/`             |
+| command         | description                                               |
+| -------         | -----------                                               |
+| `npm run start` | starts the server, using `npm bin/www`                    |
+| `npm run test`  | starts the mocha.js tests located in `tests/`             |
+
+Once started, the server will be available on http://192.168.2.2:3000
 
 Here's a list of what we _maybe should_ be able to do:
 
-| command         | notable details                                           |
-| ------          | ---------------                                           |
-| `npm run irl`   | starts the sail server with configuration for deployment  |
+| command         | description                                               |
+| -------         | -----------                                               |
 | `npm run lint`  | lint everything                                           |

@@ -5,3 +5,4 @@
 ./script/dbtools
 ./script/aggregator
 ./script/topics
+./script/article_getter
