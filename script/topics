@@ -1,0 +1,6 @@
+#!/bin/bash
+set -xe
+
+cd topics
+python topics_test.py
+cd ..

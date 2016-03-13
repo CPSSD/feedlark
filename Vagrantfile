@@ -86,6 +86,9 @@ Vagrant.configure(2) do |config|
     sudo apt-get autoremove
     sudo apt-get clean
     sudo pip install -r /vagrant/script/requirements.txt
+    sudo apt-get install build-essential python-dev
+    sudo pip install spacy
+    sudo python -m spacy.en.download
     sudo su -c "gem install sass"
     cd /vagrant/server
     npm install -y
