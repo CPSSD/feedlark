@@ -40,14 +40,14 @@ def log(level, message):
     print time, levels[level], message
 
 
-def bsonify_update_data(item_id, url, allData):
+def bsonify_update_data(item_id, url, all_data):
     """Convert given data to bson in valid format for db-update"""
     items_list = {
         "database": "feedlark",
         "collection": "feed",
         "data": {
             "updates": {
-                "items": allData,
+                "items": all_data,
                 "url": url
             },
             "selector": {
