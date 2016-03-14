@@ -55,8 +55,9 @@ def score(article_words, user_words):
 				best_word = str(u).strip()
 
 		article_word = str(a).strip()
-		log("Best match for '",article_word,"' is '",best_word,"', similarity: ",best_sim)
-		total += a_words_norm[article_word] * u_words_norm[best_word] * best_sim
+		if a != '':
+			log("Best match for '",article_word,"' is '",best_word,"', similarity: ",best_sim)
+			total += a_words_norm[article_word] * u_words_norm[best_word] * best_sim
 
 	log("Total: ",total,", total count: ",len(article_words))
 	return total/len(article_words)
