@@ -31,7 +31,7 @@ module.exports = {
       };
     }
     client.connect( () => {
-      var data = BSON.serialize(job_data, false, true, false)
+      var data = BSON.serialize(job_data, false, true, false);
       client.submitJob( job_name, data , options=job_options);
       next();
     });

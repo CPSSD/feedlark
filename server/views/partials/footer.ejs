@@ -16,20 +16,29 @@
     <% } %>
 
 	$(".ajax-link").click(function() {
-		$.ajax(
+		$.ajax({
 			url: $(this).attr("data-url"),
 			success: function(data, status, jqXHR) {
 				Materialize.toast(data, 5000);
 			}
-		);
+		});
 	});
   });
   </script>
 
-  <!-- Materialize Parallax -->
+  <!-- Stream page previous/next buttons -->
+  <script type="text/javascript">
+    function change_page(page) {
+      $("[name='page']").val(page);
+      $("form").submit();
+    }
+  </script>
+
+  <!-- Materialize Stuff -->
   <script type="text/javascript">
     $(document).ready(_ => {
       $('.parallax').parallax();
+      $("select").material_select();
     });
   </script>
   <% if (typeof session != "undefined" && typeof session.msg != "undefined") { %>

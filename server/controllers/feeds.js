@@ -33,12 +33,13 @@ module.exports = {
     feedModel.create(url, db => {
 
       // Add to current user
-      userModel.addFeed(db, req.session.username, url, _ => {
+      userModel.addFeed(db, req.session.username, url, subscribed_feeds => {
         // Call gearman
         gearman.startJob('update-single-feed', {"url":url}, undefined, () => {});
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";
+        req.session.subscribed_feeds = subscribed_feeds;
         return res.redirect(302, "/feeds");
       });
     });
@@ -55,10 +56,11 @@ module.exports = {
     }
     var url = req.query.url.toLowerCase();
 
-    userModel.removeFeed(req.session.username, url, _ => {
+    userModel.removeFeed(req.session.username, url, subscribed_feeds => {
 
       // Return to feed manager page
       req.session.msg = "Successfully removed feed!";
+      req.session.subscribed_feeds = subscribed_feeds;
       return res.redirect(302, "/feeds");
     });
   },
@@ -66,21 +68,23 @@ module.exports = {
   like: (req, res) => {
 	res.type(".txt");
 
-    if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
+	if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
 	  return res.status(200).send("Invalid URL provided, oops!");
-    }
-    var url = req.query.url.toLowerCase();
-    var jobData = {
-      "username": req.session.username,
-      "feed_url": req.query.feed.toLowerCase(),
-      "article_url": url,
-      "positive_opinion": true
-    }
+	}
+	var url = req.query.url.toLowerCase();
+	var jobData = {
+	  "username": req.session.username,
+	  "feed_url": req.query.feed.toLowerCase(),
+	  "article_url": url,
+	  "positive_opinion": true
+  	};
 
     // Call gearman
-    gearman.startJob('update-user-model', jobData, undefined, () => {
-		return res.status(200).send("Showing interest in " + url);
-    });
+	try{
+      gearman.startJob('update-user-model', jobData, undefined, () => {
+		  return res.status(200).send("Showing interest in " + url);
+	  });
+  	} catch(err){ console.log(err); }
   },
 
   dislike: (req, res) => {
@@ -98,9 +102,11 @@ module.exports = {
     };
 
     // Call gearman
-    gearman.startJob('update-user-model', jobData, undefined, () => {
-		return res.status(200).send("Showing disinterest in " + url);
-    });
+	try {
+      gearman.startJob('update-user-model', jobData, undefined, () => {
+		  return res.status(200).send("Showing disinterest in " + url);
+	  });
+  	} catch(err){ console.log(err); }
 
   }
 };

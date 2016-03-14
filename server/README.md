@@ -19,34 +19,55 @@ Feedlark Web Server
 Requirements & Setup
 --------------------
 
-The Feedlark Vagrant box will provide you with all the tools needed to run the web server. If you have not set it up already, see the instructions in the main README.md located in the root of the repository.
+The Feedlark Vagrant box will provide you with all the tools needed to run the
+web server. If you have not set it up already, see the instructions in the main
+ README.md located in the root of the repository.
 
 Attention Windows Vagrant Users
 -------------------------------
+
+Make sure you start your Command Prompt as Admin.
 
 Run `vagrant up` as admin. Not doing that causes problems when `npm install`
 trys to make symlinks in the directory. Admin is required so vagrant can
 force VirtualBox to allow symlinks.
 
-Anyway, to do that, make sure you start your Command Prompt as Admin.
-
 Usage
 -----
 
-First, make sure you are in the server folder inside the Vagrant box with the commands `vagrant ssh` and `cd /vagrant/server`
+First, make sure you are in the server folder inside the Vagrant box with the
+commands `vagrant ssh` and `cd /vagrant/server`
 
 
 Here's a list of what you can do:
 
 | command         | description                                               |
 | -------         | -----------                                               |
-| `npm run start` | starts the server, using `npm bin/www`                    |
+| `npm run start` | starts the server, using `node bin/www`                   |
 | `npm run test`  | starts the mocha.js tests located in `tests/`             |
+| `npm run hint`  | lint everything                                           |
 
 Once started, the server will be available on http://192.168.2.2:3000
 
-Here's a list of what we _maybe should_ be able to do:
+Pagination
+----------
 
-| command         | description                                               |
-| -------         | -----------                                               |
-| `npm run lint`  | lint everything                                           |
+Query strings control how much data is loaded per page.
+
+| query string   | arguments | description                |
+| ------------   | --------- | --------------------       |
+|  `page`        | int       | Current page to view       |
+|  `page_length` | int       | Amount of links per page   |
+
+
+Plaintext
+----------
+
+To access the plaintext endpoint, first generate an API token in your profile
+page.
+
+To make a plaintext request, generate a key and request the stream like so:
+
+    http://feedlark.com/plaintext?token=$token&username=$username
+
+    where $token is your token and $username is your username
