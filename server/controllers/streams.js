@@ -14,22 +14,51 @@ module.exports = {
 
     // Get & verify the page length & number
     // This Lo-Dash function is lovely
-    var page_length = _.toSafeInteger(req.params.page_length);
-    var page = _.toSafeInteger(req.params.page);
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length <= 0) {
+      page_length = 20; // Default Page Length = 20
+    }
+    var page = _.toSafeInteger(req.query.page); // defaults to 0 if undefined
 
     getFeeds(req.session.username, feeds => {
 
       // Get a page worth of feeds
-      var pageinated_feeds = [];
-      for (var i = page * page_length; i < (page + 1) * page_length && i < feeds.length; i++) {
-        pageinated_feeds.push(feeds[i]);
-      }
-
-      // Work out the next page number now, because Lo-Dash sorted out the param already
+      var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
       var next_page = page + 1;
       if ((page + 1) * page_length > feeds.length) next_page = 0;
 
-      res.status(200).render("stream_index", {feeds: pageinated_feeds, page: next_page, page_length: page_length});
+      res.status(200).render("stream_index", {
+        feeds: pageinated_feeds,
+        page: page,
+        next_page: next_page,
+        page_length: page_length
+      });
+    });
+  },
+
+  plaintext: (req, res) => {
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length <= 0) {
+      page_length = 20; // Default Page Length = 20
+    }
+    var page = _.toSafeInteger(req.query.page);
+
+
+    var username = req.query.username;
+    res.type('.txt');
+
+    getFeeds(username, feeds => {
+
+      var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
+      var next_page = page + 1;
+      if ((page + 1) * page_length > feeds.length) next_page = 0;
+
+      res.status(200).render("stream_plaintext", {
+        feeds: pageinated_feeds,
+        page: page,
+        next_page: next_page,
+        page_length: page_length
+      });
     });
   }
 };

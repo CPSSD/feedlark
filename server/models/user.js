@@ -87,5 +87,45 @@ module.exports = {
         cb
       );
     }));
-  }
+  },
+
+  addToken: (username, token, cb) => {
+    if (!token || !username) {
+      return cb();
+    }
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
+
+      // TODO Add and render error message
+      if (!user.tokens) {
+        user.tokens = {};
+      }
+      user.tokens[token] = true;
+
+
+      // TODO: check for max tokens
+      dbFuncs.update(
+        db,
+        "user",
+        {username: username},
+        {tokens: user.tokens},
+        cb
+      );
+    }));
+  },
+
+  removeToken: (username, token, cb) => {
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
+      if (typeof user.tokens != "undefined") {
+        delete user.tokens[token];
+      }
+      dbFuncs.update(
+        db,
+        "user",
+        {username: username},
+        {tokens: user.tokens},
+        cb
+      );
+    }));
+  },
+
 };
