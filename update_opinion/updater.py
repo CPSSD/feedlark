@@ -25,6 +25,15 @@ def add_update_to_db(data):
     bson_req = bson.BSON.encode(req_data)
     gearman_client.submit_job('db-add', str(bson_req))
 
+def update_user_data(username, updates):
+    """update the db entry of the user with the given username, with the given dict of updates"""
+    req_data = {"database":"feedlark", "collection":"user", "data":{"selector":{"username":username}, "updates:"{updates}}}
+    bson_req = bson.BSON.encode(req_data)
+    bson_result = bson.BSON(gearman_client.submit_job('db-update', str(bson_req)).result)
+    result = bson.BSON.decode(bson_result)
+    if result[u"status"] != u"ok":
+        log(2, "Error updating user data: " + str(result))
+
 def get_user_data(username):
     """Get the data of user from database"""
     req_data = {"database":"feedlark", "collection":"user", "query":{"username":username}, "projection":{}}
@@ -36,10 +45,10 @@ def get_user_data(username):
         log(2, "Error getting database entry for user " + str(username))
         return None
     if not "docs" in result:
-        log(2, "No 'docs' field in results for user " + str(username))
+        log(1, "No 'docs' field in results for user " + str(username))
         return None
     if len(result["docs"]) == 0:
-        log(2, "No docs returned for user " + str(username))
+        log(1, "No docs returned for user " + str(username))
         return None
     return result["docs"][0]
 
@@ -53,7 +62,7 @@ def get_feed_data(feed_url):
         log(2, "Error getting database entry for feed " + str(feed_url))
         return None
     if not "docs" in result or len(result["docs"]) == 0:
-        log(2, "No docs returned for feed " + str(feed_url))
+        log(1, "No docs returned for feed " + str(feed_url))
         return None
     return result["docs"][0]
 
@@ -80,6 +89,13 @@ def update_user_model(worker, job):
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
 
+    user_words = user_data['words']
+    for item in feed_data['items']:
+        if item['link'] == input['article_url']:
+            topics = item['topics']
+            user_words = update_topic_counts(user_words, topics, input['positive_opinion'])
+    
+    update_user_data(input['username'], {'words':user_words})
     response = {"status":"ok"}
     bson_response = bson.BSON.encode(response)
     return str(bson_response)
