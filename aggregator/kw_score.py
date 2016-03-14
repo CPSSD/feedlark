@@ -114,9 +114,23 @@ def score_gm(worker, job):
 	return str(BSON.encode({"status":"ok","score":a_score}))
 
 
-
 def fast_score_gm(worker, job):
-	return
+	word_data = BSON(job.data).decode()
+	try:
+		a_words = word_data['article_words']
+		u_words = word_data['user_words']
+	except:
+		log("Problem with data provided",level=2)
+		return str(BSON.encode({"status":"error","description":"Problem with data provided"}))
+
+	try:
+		a_score = fast_score(a_words,u_words)
+	except:
+		log("Problem when scoring, is the data in the right format?")
+		return str(BSON.encode({"status":"error","description":"Problem when scoring, is the data in the right format?"}))
+
+	return str(BSON.encode({"status":"ok","score":a_score}))
+
 
 if __name__ == '__main__':
 	log("Starting Gearman worker")
