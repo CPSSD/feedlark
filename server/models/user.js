@@ -91,7 +91,7 @@ module.exports = {
 
   addToken: (username, token, cb) => {
     if (!token || !username) {
-      return cb()
+      return cb();
     }
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
 
