@@ -1,4 +1,8 @@
 from datetime import datetime
+from spacy.en import English
+
+#This is outside a function so it runs only once, on import.
+nlp = English()
 
 def log(*message, **kwargs):
     '''
@@ -17,6 +21,48 @@ def log(*message, **kwargs):
 
 
 def score(article_words, user_words):
+	'''
+	Scores articles based on the keywords in the article and the ones the user likes.
+
+	This function is O(N*M) where N and M are the lengths of article_words and user_words
+	'''
+	if not (article_words and user_words):
+		#If either are empty then score is 0
+		return 0
+
+	log("Tokenising article_words and user_words")
+	a_tokens = nlp(u' '.join(article_words.keys()))
+	u_tokens = nlp(u' '.join(user_words.keys()))
+	
+	log("Normalising article_words scores")
+	word_sum = sum(article_words.values())
+	a_words_norm = {x[0]:(x[1]/word_sum) for x in article_words.items()}
+
+	log("Normalising user_words scores")
+	word_sum = sum(user_words.values())
+	u_words_norm = {x[0]:(x[1]/word_sum) for x in user_words.items()}
+
+	total = 0.0
+	for a in a_tokens:
+		best_sim = 0
+		best_word = ''
+		for u in u_tokens:
+			u_a_sim = a.similarity(u)
+			if u_a_sim > best_sim:
+				best_sim = u_a_sim
+				best_word = str(u).strip()
+
+		article_word = str(a).strip()
+		log("Best match for '",article_word,"' is '",best_word,"', similarity: ",best_sim)
+		total += a_words_norm[article_word] * u_words_norm[best_word] * best_sim
+
+	log("Total: ",total,", total count: ",len(article_words))
+	return total/len(article_words)
+
+
+
+
+def fast_score(article_words, user_words):
     '''
     Scores articles based on the keywords in the article and the ones the user likes.
 
@@ -29,6 +75,10 @@ def score(article_words, user_words):
     log("Normalising article_words scores")
     word_sum = sum(article_words.values())
     a_words_norm = {x[0]:(x[1]/word_sum) for x in article_words.items()}
+
+    log("Normalising user_words scores")
+    word_sum = sum(user_words.values())
+    u_words_norm = {x[0]:(x[1]/word_sum) for x in user_words.items()}
 
     total = 0
     total_count = 0
