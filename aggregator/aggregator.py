@@ -82,23 +82,23 @@ class Aggregator:
 
         gm_job = self.gm_client.submit_job('db-upsert',str(request))
         if bson.BSON(gm_job.result).decode()['status'] != 'ok':
-            print "Adding to g2g failed"
-            print "Status: " + bson.BSON(gm_job.result).decode()['status']
+            log("Adding to g2g failed", level=2)
+            log("Status: ",bson.BSON(gm_job.result).decode()['status'])
 
         return
 
 
     def aggregate(self, gearman_worker, gearman_job):
-        print "Job recieved"
-        print "Loading users from 'user' database"
+        log("Job recieved")
+        log("Loading users from 'user' database")
         user_data = self.get_users()
 
         for user in user_data:
-            print "\nLoading feeds for:", user['username']
+            log("Loading feeds for: ", user['username'])
             user_g2g = {'username':user['username'],'feeds':[]}
 
             for feed_url in user['subscribed_feeds']:
-                print "--> ", feed_url
+                log("--> ", feed_url)
                 for item in self.get_feed_items(feed_url):
                     user_g2g['feeds'].append(
                         {
@@ -109,7 +109,7 @@ class Aggregator:
                             'pub_date':item['pub_date'],
                         })
 
-            print "Normaising dates"
+            log("Normaising dates")
             oldest = min(user_g2g['feeds'], key=lambda x:x['pub_date'])
             newest = max(user_g2g['feeds'], key=lambda x:x['pub_date'])
             normalised_items = []
@@ -118,13 +118,13 @@ class Aggregator:
                 normalised_items.append(item)
             user_g2g['feeds'] = normalised_items
                         
-            print "Sorting items"
+            log("Sorting items")
             user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date']*x['word_crossover'],reverse=True)
-            print "Putting items in 'g2g' database"
+            log("Putting items in 'g2g' database")
             self.put_g2g(user['username'], user_g2g)
-            print "Completed"
+            log("Completed")
 
-        return "SUCCESS"
+        return str(bson.BSON.encode({'status':'ok'}))
 
 if __name__ == '__main__':
     agg = Aggregator(gearman.GearmanClient(['localhost:4730']))
@@ -132,6 +132,6 @@ if __name__ == '__main__':
     gm_worker = gearman.GearmanWorker(['localhost:4730'])
     gm_worker.set_client_id('aggregator')
     gm_worker.register_task('aggregate', agg.aggregate)
-    print "Reistered 'aggregate' task"
+    log("Reistered 'aggregate' task")
 
     gm_worker.work()
