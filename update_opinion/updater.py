@@ -27,7 +27,7 @@ def add_update_to_db(data):
 
 def update_user_data(username, updates):
     """update the db entry of the user with the given username, with the given dict of updates"""
-    req_data = {"database":"feedlark", "collection":"user", "data":{"selector":{"username":username}, "updates":{updates}}}
+    req_data = {"database":"feedlark", "collection":"user", "data":{"selector":{"username":username}, "updates":updates}}
     bson_req = bson.BSON.encode(req_data)
     bson_result = bson.BSON(gearman_client.submit_job('db-update', str(bson_req)).result)
     result = bson.BSON.decode(bson_result)
@@ -40,7 +40,6 @@ def get_user_data(username):
     bson_req = bson.BSON.encode(req_data)
     bson_result = bson.BSON(gearman_client.submit_job('db-get', str(bson_req)).result)
     result = bson.BSON.decode(bson_result)
-    log(0, result)
     if result[u"status"] != u"ok":
         log(2, "Error getting database entry for user " + str(username))
         return None
@@ -68,34 +67,40 @@ def get_feed_data(feed_url):
 
 def update_user_model(worker, job):
     bson_input = bson.BSON(job.data)
-    input = bson_input.decode()
-    add_update_to_db(input)
-    log(0, 'update-user-model called with data ' + str(input))
-    if not ("username" in input and "feed_url" in input and "article_url" in input and "positive_opinion" in input):
-        log(1, 'Missing field in input: ' + str(input))
+    job_input = bson_input.decode()
+    add_update_to_db(job_input)
+    log(0, 'update-user-model called with data ' + str(job_input))
+    if not ("username" in job_input and "feed_url" in job_input and "article_url" in job_input and "positive_opinion" in job_input):
+        log(1, 'Missing field in input: ' + str(job_input))
         response = {"status":"error", "description":"Missing field in input."}
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
 
-    user_data = get_user_data(input["username"])
+    log(0, "Getting user data from db")
+    user_data = get_user_data(job_input["username"])
     if user_data is None:
-        response = {"status":"error", "description":"No user data received from db for user " + str(input["username"])}
+        response = {"status":"error", "description":"No user data received from db for user " + str(job_input["username"])}
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
     
-    feed_data = get_feed_data(input["feed_url"])
+    log(0, "Getting feed data from db")
+    feed_data = get_feed_data(job_input["feed_url"])
     if feed_data is None:
-        response = {"status":"error", "description":"No feed data receieved from db for feed " + str(input["feed_url"])}
+        response = {"status":"error", "description":"No feed data receieved from db for feed " + str(job_input["feed_url"])}
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
 
+    log(0, "Updating topic weights")
     user_words = user_data['words']
     for item in feed_data['items']:
-        if item['link'] == input['article_url']:
+        if item['link'] == job_input['article_url']:
             topics = item['topics']
-            user_words = update_topic_counts(user_words, topics, input['positive_opinion'])
+            user_words = update_topic_counts(user_words, topics, job_input['positive_opinion'])
     
-    update_user_data(input['username'], {'words':user_words})
+    log(0, "Updating user db with new topic weights")
+    user_data['words'] = user_words
+    update_user_data(job_input['username'], user_data)
+    log(0, "Worker finished.")
     response = {"status":"ok"}
     bson_response = bson.BSON.encode(response)
     return str(bson_response)
