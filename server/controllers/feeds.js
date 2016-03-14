@@ -64,10 +64,10 @@ module.exports = {
   },
 
   like: (req, res) => {
+	res.type(".txt");
 
     if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
-      req.session.msg = "Invalid URL provided";
-      return res.redirect(302, "/stream");
+	  return res.status(200).send("Invalid URL provided, oops!");
     }
     var url = req.query.url.toLowerCase();
     var jobData = {
@@ -79,16 +79,14 @@ module.exports = {
 
     // Call gearman
     gearman.startJob('update-user-model', jobData, undefined, () => {
-      req.session.msg = "Showing interest in " + url;
-      return res.redirect(302, "/stream/20/0");
+		return res.status(200).send("Showing interest in " + url);
     });
   },
 
   dislike: (req, res) => {
-
+	res.type(".txt");
     if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
-      req.session.msg = "Invalid URL provided";
-      return res.redirect(302, "/stream");
+	  return res.status(200).send("Invalid URL provided, oops!");
     }
 
     var url = req.query.url.toLowerCase();
@@ -101,8 +99,7 @@ module.exports = {
 
     // Call gearman
     gearman.startJob('update-user-model', jobData, undefined, () => {
-      req.session.msg = "Showing disinterest in " + url;
-      return res.redirect(302, "/stream/20/0");
+		return res.status(200).send("Showing disinterest in " + url);
     });
 
   }
