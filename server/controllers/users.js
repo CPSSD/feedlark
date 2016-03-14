@@ -31,6 +31,7 @@ module.exports = {
 
           // Set session vars and redirect
           req.session.username = user.username;
+          req.session.subscribed_feeds = user.subscribed_feeds;
           req.session.msg = "Successfully logged in.";
           return res.redirect(302, "/user");
         });
