@@ -33,12 +33,13 @@ module.exports = {
     feedModel.create(url, db => {
 
       // Add to current user
-      userModel.addFeed(db, req.session.username, url, _ => {
+      userModel.addFeed(db, req.session.username, url, subscribed_feeds => {
         // Call gearman
         gearman.startJob('update-single-feed', url, undefined, () => {});
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";
+        req.session.subscribed_feeds = subscribed_feeds;
         return res.redirect(302, "/feeds");
       });
     });
@@ -55,10 +56,11 @@ module.exports = {
     }
     var url = req.query.url.toLowerCase();
 
-    userModel.removeFeed(req.session.username, url, _ => {
+    userModel.removeFeed(req.session.username, url, subscribed_feeds => {
 
       // Return to feed manager page
       req.session.msg = "Successfully removed feed!";
+      req.session.subscribed_feeds = subscribed_feeds;
       return res.redirect(302, "/feeds");
     });
   }

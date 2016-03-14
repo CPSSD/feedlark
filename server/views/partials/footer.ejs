@@ -4,23 +4,19 @@
   <!-- Materialize JS -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.js"></script>
 
-  <!-- Selections -->
+  <!-- Stream page previous/next buttons -->
   <script type="text/javascript">
-  $(document).ready(_ => {
-    $("select").material_select();
-
-    <% if (typeof page_length != "undefined") { %>
-    $("#page_length").change(_ => {
-      window.location.href = "/stream?page_length=" + $("#page_length").val() + "page=<%=page%>";
-    });
-    <% } %>
-  });
+    function change_page(page) {
+      $("[name='page']").val(page);
+      $("form").submit();
+    }
   </script>
 
-  <!-- Materialize Parallax -->
+  <!-- Materialize Stuff -->
   <script type="text/javascript">
     $(document).ready(_ => {
       $('.parallax').parallax();
+      $("select").material_select();
     });
   </script>
   <% if (typeof session != "undefined" && typeof session.msg != "undefined") { %>

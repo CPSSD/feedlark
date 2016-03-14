@@ -64,7 +64,7 @@ module.exports = {
         "user",
         {username: username},
         {subscribed_feeds: user.subscribed_feeds},
-        cb
+        _ => cb(user.subscribed_feeds)
       );
     });
   },
@@ -84,7 +84,7 @@ module.exports = {
         "user",
         {username: username},
         {subscribed_feeds: user.subscribed_feeds},
-        cb
+        _ => cb(user.subscribed_feeds)
       );
     }));
   },
