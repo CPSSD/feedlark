@@ -23,6 +23,23 @@ def add_update_to_db(data):
     bson_req = bson.BSON.encode(req_data)
     gearman_client.submit_job('db-add', str(bson_req))
 
+def get_user_data(username):
+    req_data = {"database":"feedlark", "collection":"user", "query":{"username":username}, "projection":{}}
+    bson_req = bson.BSON.encode(req_data)
+    bson_result = bson.BSON(gearman_client.submit_job('db-get', str(bson_req)).result)
+    result = bson.BSON.decode(bson_result)
+    log(0, result)
+    if result[u"status"] != u"ok":
+        log(2, "Error getting database entry for user " + str(username))
+        return None
+    if not "docs" in result:
+        log(2, "No 'docs' field in results for user " + str(username))
+        return None
+    if len(result["docs"]) == 0:
+        log(2, "No docs returned for user " + str(username))
+        return None
+    return result["docs"]
+
 def update_user_model(worker, job):
     bson_input = bson.BSON(job.data)
     input = bson_input.decode()
@@ -37,9 +54,13 @@ def update_user_model(worker, job):
     bson_response = bson.BSON.encode(response)
     return str(bson_response)
 
-if __name__ == '__main__':
+def init_gearman_client():
+    global gearman_client
     log(0, "Creating gearman client.")
     gearman_client = gearman.GearmanClient(['localhost:4730'])
+
+if __name__ == '__main__':
+    init_gearman_client()
     log(0, "Creating gearman worker 'update-user-model'")
     gearman_worker = gearman.GearmanWorker(['localhost:4730'])
     gearman_worker.set_client_id('update-user-model')

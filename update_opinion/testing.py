@@ -1,5 +1,5 @@
 import unittest
-from updater import update_topic_counts
+from updater import update_topic_counts, get_user_data, init_gearman_client
 
 class TestOpinionUpdater(unittest.TestCase):
     def test_update_topic_counts_positive(self):
@@ -20,7 +20,12 @@ class TestOpinionUpdater(unittest.TestCase):
         self.assertEqual(new_topics["banana"], 2)
         self.assertEqual(new_topics["split"], -17)
 
-
+    def test_get_user_data(self):
+        init_gearman_client()
+        data = get_user_data('sully')
+        self.assertFalse(data is None)
+        data = get_user_data(1337) # should be no results for non-string usernames
+        self.assertTrue(data is None)
 
 if __name__ == '__main__':
     unittest.main()
