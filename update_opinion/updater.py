@@ -28,7 +28,7 @@ def update_user_model(worker, job):
     input = bson_input.decode()
     add_update_to_db(input)
     log(0, 'update-user-model called with data ' + str(input))
-    if not ("username" in input and "feed_url" in input and "article_url" in input "positive_opinion" in input):
+    if not ("username" in input and "feed_url" in input and "article_url" in input and "positive_opinion" in input):
         log(1, 'Missing field in input: ' + str(input))
         response = {"status":"error", "description":"Missing field in input."}
         bson_response = bson.BSON.encode(response)
