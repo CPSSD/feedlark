@@ -69,13 +69,20 @@ module.exports = {
       req.session.msg = "Invalid URL provided";
       return res.redirect(302, "/stream");
     }
-    var url = req.query.url.toLowerCase();
-    req.session.msg = "Showing interest in " + req.query.url;
+	var url = req.query.url.toLowerCase();
+	var jobData = {
+		"username": req.session.username,
+		"feed_url": req.query.feed.toLowerCase(),
+    	"article_url": url,
+    	"positive_opinion": true
+	}
 
 	// Call gearman
-	gearman.startJob('update-single-feed', url, undefined, () => {});
+	gearman.startJob('update-user-model', jobData, undefined, () => {
+		req.session.msg = "Showing interest in " + url;
 
-    return res.redirect(302, "/stream");
+		return res.redirect(302, "/stream/20/0");
+	});
   },
 
   dislike: (req, res) => {
@@ -84,12 +91,21 @@ module.exports = {
       req.session.msg = "Invalid URL provided";
       return res.redirect(302, "/stream");
     }
-    var url = req.query.url.toLowerCase();
-    req.session.msg = "Showing disinterest in " + req.query.url;
-	// session.username
-	// Call gearman
-	gearman.startJob('update-single-feed', url, undefined, () => {});
 
-    return res.redirect(302, "/stream");
+    var url = req.query.url.toLowerCase();
+	var jobData = {
+		"username": req.session.username,
+		"feed_url": req.query.feed.toLowerCase(),
+    	"article_url": url,
+		"positive_opinion": false
+	};
+
+	// Call gearman
+	gearman.startJob('update-user-model', jobData, undefined, () => {
+		req.session.msg = "Showing disinterest in " + url;
+
+		return res.redirect(302, "/stream/20/0");
+	});
+
   }
 };
