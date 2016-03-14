@@ -7,7 +7,7 @@
       </div>
 
       <form class="row" method="GET" action="/stream">
-        <input type="hidden" name="page" value="<%= page %>">
+        <input type="hidden" name="page" value="0">
         <div class="input-field col s3">
           <select name="page_length">
             <option<%= page_length == 5 ? ' selected' : '' %>>5</option>
@@ -80,10 +80,10 @@
       <div class="row">
         <div class="col s12 center-align">
           <% if (page > 0) { %>
-            <a class="btn-large wave-effect waves-light" href="/stream?page_length=<%= page_length %>&page=<%=page-1%>">Prev page</a>
+            <a class="btn-large wave-effect waves-light" onclick="change_page(<%= page-1 %>);">Prev page</a>
           <% } %>
-          <% if (next_page != "0") { %>
-            <a class="btn-large wave-effect waves-light" href="/stream?page_length=<%= page_length %>&page=<%=next_page%>">Next page</a>
+          <% if (next_page > 0) { %>
+            <a class="btn-large wave-effect waves-light" onclick="change_page(<%= next_page%>);">Next page</a>
           <% } %>
         </div>
     </div>

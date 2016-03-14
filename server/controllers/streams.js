@@ -44,7 +44,7 @@ module.exports = {
       var pageinated_feeds = _.slice(filtered_feeds, page*page_length, (page+1)*page_length);
 
       var next_page = page + 1;
-      if ((page + 1) * page_length > feeds.length) next_page = 0;
+      if ((page + 1) * page_length > pageinated_feeds.length) next_page = 0;
 
       res.status(200).render("stream_index", {
         feeds: pageinated_feeds,
