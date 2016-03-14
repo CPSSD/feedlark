@@ -74,6 +74,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y python3
     sudo apt-get install -y python-pip
     sudo apt-get install -y python-dev
+    sudo apt-get install -y python-sklearn
     sudo apt-get install -y gearman-job-server
     sudo apt-get install -y git
     sudo apt-get install -y golang
