@@ -39,22 +39,6 @@ class TestAggregation(unittest.TestCase):
 
         self.assertEqual(user_data, expected_response)
 
-
-    def test_get_feed_items(self):
-        gm_client = gearman.GearmanClient(['localhost:4730'])
-        agg = Aggregator(gm_client)
-
-        feed_items = agg.get_feed_items('http://spritesmods.com/rss.php')
-        expected_response = [
-            {
-                u"name": u"Creating the Tamagotchi Singularity",
-                u"pub_date": u"time.struct_time(tm_year=2016, tm_mon=2, tm_mday=14, tm_hour=21, tm_min=18, tm_sec=2, tm_wday=6, tm_yday=45, tm_isdst=0)",
-                u"link": u"http://spritesmods.com/?art=tamasingularity&amp;f=rss",
-                u"article_text": u"Building the Tamagotchi Singularity. The Singularity has happened, but not to us. I also gave a talk about this project on the Hackaday Superconference 2015. There is a video available of that if you'd rather watch me talk. You can also directly view the end result if you so please. As some of you may know, I recently moved from the Netherlands to Shanghai. In the long term, this is great for my hobby: I got a fair amount of stuff out of China anyway, and me moving there meant I wouldn't have to wait a month for it to arrive anymore. In the short term, my ability to build things took somewhat of a hit, though: aside from my oscilloscope and some small bits and bobs I thought I would have a hard time getting in China, I left most of my electronic stuff back in the Netherlands, with the idea that I would be able to buy myself most stuff anew when I had the time.",
-                u"topics":{u'meant': 0.014705882352941176, u'term': 0.029411764705882353, u'netherlands': 0.029411764705882353, u'fair': 0.014705882352941176, u'superconference': 0.014705882352941176, u'stuff': 0.04411764705882353, u'china': 0.029411764705882353, u'time': 0.029411764705882353, u'singularity': 0.029411764705882353, u'talk': 0.029411764705882353}
-            }]
-        self.assertEqual(feed_items[0], expected_response[0])
-
     def test_put_g2g(self):
         gm_client = gearman.GearmanClient(['localhost:4730'])
         agg = Aggregator(gm_client)
