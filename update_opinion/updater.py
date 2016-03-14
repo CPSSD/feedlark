@@ -27,7 +27,7 @@ def add_update_to_db(data):
 
 def update_user_data(username, updates):
     """update the db entry of the user with the given username, with the given dict of updates"""
-    req_data = {"database":"feedlark", "collection":"user", "data":{"selector":{"username":username}, "updates:"{updates}}}
+    req_data = {"database":"feedlark", "collection":"user", "data":{"selector":{"username":username}, "updates":{updates}}}
     bson_req = bson.BSON.encode(req_data)
     bson_result = bson.BSON(gearman_client.submit_job('db-update', str(bson_req)).result)
     result = bson.BSON.decode(bson_result)
