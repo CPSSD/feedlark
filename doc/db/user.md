@@ -10,6 +10,10 @@ Database to create entries in the finished G2G database.
 The user password will not be stored, instead, a salt and the hashed password
 and salt will be stored. These are stored in the same string in bcrypt.
 
+Tokens represents the randomly generated API tokens. Currently they point to a
+true value but this could be modified such that each token had validation date
+and permissions.
+
 Example Document
 ----------------
 		password = "ilovegnuhurd", 8 rounds
@@ -22,5 +26,6 @@ Example Document
 	"password": "$2a$08$ThzPc3zm84JPb6LmvcfCkuXkwyh8H.Mn1VC4EKu9guksI9lbdb7Fa",
 	"subscribed_feeds": ["news.ycombinator.com/rss", "pssd.computing.dcu.ie/rss.xml"],
 	"words": {"butter":2, "milk":13, "antidisestablishmentarianism":-33},
+	"tokens": {"add15f620657bb3fd8ce7fa9611f1aaba8717559295706a6d80f9e8cf58e81d7":true}
 }
 ```
