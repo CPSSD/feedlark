@@ -1,5 +1,22 @@
+from datetime import datetime
 import gearman,sys
 import bson
+
+
+def log(*message, **kwargs):
+    '''
+    Logs to stdout
+    
+    Pass in parameters as you would the python3 print function.
+    Includes the optional 'level' keyword argument, defaults to 0.
+    '''
+    level = kwargs['level'] if 'level' in kwargs else 0
+    levels = ['INFO:','WARNING:','ERROR:']
+    
+    message_str = ''.join(map(str,message))
+    time = str(datetime.now()).replace('-','/')[:-7]
+    
+    print time,levels[level],message_str
 
 class Aggregator:
 
