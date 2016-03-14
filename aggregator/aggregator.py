@@ -119,7 +119,7 @@ class Aggregator:
             user_g2g['feeds'] = normalised_items
                         
             log("Sorting items")
-            user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date']*x['word_crossover'],reverse=True)
+            user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date']+x['word_crossover'],reverse=True)
             log("Putting items in 'g2g' database")
             self.put_g2g(user['username'], user_g2g)
             log("Completed")

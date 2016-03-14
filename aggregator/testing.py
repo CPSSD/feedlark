@@ -13,6 +13,7 @@ class TestAggregation(unittest.TestCase):
         user_data = agg.get_users()
         for i in range(len(user_data)):
             del user_data[i]['_id']
+            del user_data[i]['words']
 
         expected_response = [
             {
