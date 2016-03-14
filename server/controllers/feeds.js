@@ -35,7 +35,7 @@ module.exports = {
       // Add to current user
       userModel.addFeed(db, req.session.username, url, _ => {
         // Call gearman
-        gearman.startJob('update-single-feed', url, undefined, () => {});
+        gearman.startJob('update-single-feed', {"url":url}, undefined, () => {});
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";

@@ -162,7 +162,7 @@ def update_database(doc, updated_item_list):
 
 def update_single_feed(worker, job):
     log(0, "'update-single-feed' initiated")
-    url = str(job.data)
+    url = bson.BSON(job.data).decode()["url"]
 
     try:
         feed = get_single_feed_doc(url)
