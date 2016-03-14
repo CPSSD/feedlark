@@ -2,7 +2,7 @@ import unittest
 import gearman
 import bson
 from aggregator import Aggregator#Runs aggregator.py
-from kw_score import score
+from kw_score import fast_score, score
 
 class TestAggregation(unittest.TestCase):
 
@@ -87,14 +87,14 @@ class TestAggregation(unittest.TestCase):
         g2g_data = gm_client.submit_job('db-get',str(get_request)).result
         self.assertEqual(bson.BSON(g2g_data).decode()['docs'][0]['test_parameter'], 'YOLO')
 
-    def test_score(self):
+    def test_fast_score(self):
         u_words = {'pancakes':3,'syrup':12, 'communism':-10}
 
         a_words = {'communism':0.2,'syrup':0.1}
-        sticky_marxism = score(a_words, u_words)
+        sticky_marxism = fast_score(a_words, u_words)
 
         a_words2 = {'pancakes':0.2,'syrup':0.1}
-        trip_to_canada = score(a_words2, u_words)
+        trip_to_canada = fast_score(a_words2, u_words)
         
         self.assertTrue(sticky_marxism < trip_to_canada)
         

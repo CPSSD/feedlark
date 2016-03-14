@@ -17,6 +17,10 @@ def log(*message, **kwargs):
 
 
 def score(article_words, user_words):
+	return
+
+
+def fast_score(article_words, user_words):
     '''
     Scores articles based on the keywords in the article and the ones the user likes.
 
