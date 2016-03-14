@@ -64,6 +64,7 @@ router.get("/stream", isAuthed, streamController.index);
 // Tokens (for API stuff!)
 router.get("/token/add", isAuthed, userController.addToken);
 router.get("/token/remove", isAuthed, userController.removeToken);
+router.get("/token/list", isAuthed, userController.listTokens);
 
 // Plaintext Endpoint
 router.get("/plaintext", userController.validToken, streamController.plaintext);

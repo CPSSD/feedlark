@@ -110,6 +110,23 @@ module.exports = {
     });
   },
 
+  listTokens: (req, res) => {
+    const username = req.session.username;
+    userModel.findByUsername(username, user => {
+      if ( user ) {
+        if (user.tokens) {
+          return res.status(200).send(user.tokens);
+        }
+        else {
+          res.status(403).end();
+        }
+      }
+      else {
+        res.status(403).end();
+      }
+    });
+  },
+
   validToken: (req, res, next) => {
     const username = req.query.username;
     const token = req.query.token;

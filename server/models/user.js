@@ -96,13 +96,11 @@ module.exports = {
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
 
       // TODO Add and render error message
+      if (!user.tokens) {
+        user.tokens = {};
+      }
+      user.tokens[token] = true;
 
-      if (user.tokens) {
-        user.tokens[token] = true;
-      }
-      else {
-        user.tokens = {token:true};
-      }
 
       // TODO: check for max tokens
       dbFuncs.update(
