@@ -105,7 +105,7 @@ class Aggregator:
                             'feed':feed_url,
                             'name':item['name'],
                             'link':item['link'],
-                            'word_crossover':score(item['topics'], user['words'])
+                            'word_crossover':score(item['topics'], user['words']),
                             'pub_date':item['pub_date'],
                         })
 
