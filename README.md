@@ -103,4 +103,4 @@ This is where we keep the server, which routes HTTP and renders responses.
 
 #### `./topics`
 
-This contains the tool to parse and article and pick out the topics it relates to.
+This contains the tool to parse an article and pick out the topics it relates to.
