@@ -21,6 +21,11 @@ def log(*message, **kwargs):
 
 
 def score(article_words, user_words):
+	'''
+	Scores articles based on the keywords in the article and the ones the user likes.
+
+	This function is O(N*M) where N and M are the lengths of article_words and user_words
+	'''
 	log("Tokenising article_words and user_words")
 	a_tokens = nlp(u' '.join(article_words.keys()))
 	u_tokens = nlp(u' '.join(user_words.keys()))
