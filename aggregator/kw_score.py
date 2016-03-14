@@ -1,5 +1,7 @@
 from datetime import datetime
 from spacy.en import English
+from bson import BSON
+import gearman
 
 #This is outside a function so it runs only once, on import.
 nlp = English()
@@ -93,3 +95,11 @@ def fast_score(article_words, user_words):
         return total/float(total_count)
     else:
         return 0
+
+def fast_score_gm(worker, job):
+
+
+if __name__ == '__main__':
+	log("Starting Gearman worker")
+	gm_worker = gearman.GearmanWorker(['localhost:4730'])
+
