@@ -9,12 +9,16 @@ Dependencies
 - gearman
 - Feedlark Adder
 - Feedlark Getter
+- spacy
 
 What is this?
 -------------
 
 This is the code that ties the three Feedlark databases together, it coalesces `feed` and `user` and places the data in `g2g`.
 The machine learning components will be put here eventually to decide the order of the items but for now they are sorted chronologically.
+
+This directory also includes `kw_score.py` which provides two functions, `score` and `fast_score` to measure the crossover between the keywords of an article and the users interests.
+The functions assign the articles a score which can be used to help judge what articles a user may prefer.
 
 How to do tests
 ---------------
