@@ -97,7 +97,27 @@ class TestAggregation(unittest.TestCase):
         trip_to_canada = fast_score(a_words2, u_words)
         
         self.assertTrue(sticky_marxism < trip_to_canada)
-        
+
+    def test_score(self):
+        u_words = {'pancakes':3,'syrup':12, 'communism':-10}
+
+        a_words = {'communism':0.2,'syrup':0.1}
+        sticky_marxism = score(a_words, u_words)
+
+        a_words2 = {'pancakes':0.2,'syrup':0.1}
+        trip_to_canada = score(a_words2, u_words)
+
+        self.assertTrue(sticky_marxism < trip_to_canada)
+
+
+        a_words = {'marxism':0.2,'sugar':0.1}
+        sticky_marxism = score(a_words, u_words)
+
+        a_words2 = {'cake':0.2,'honey':0.1}
+        trip_to_canada = score(a_words2, u_words)
+
+        self.assertTrue(sticky_marxism < trip_to_canada)
+
 
 if __name__ == '__main__':
     unittest.main()
