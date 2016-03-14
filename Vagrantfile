@@ -82,11 +82,12 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y openjdk-7-jdk
     sudo apt-get install -y scala
     sudo apt-get install -y ruby
+    sudo apt-get install -y build-essential 
+    sudo apt-get install -y python-dev
     sudo apt-get upgrade -y
     sudo apt-get autoremove
     sudo apt-get clean
     sudo pip install -r /vagrant/script/requirements.txt
-    sudo apt-get install build-essential python-dev
     sudo pip install spacy
     sudo python -m spacy.en.download
     sudo su -c "gem install sass"
