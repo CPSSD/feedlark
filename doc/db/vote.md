@@ -1,5 +1,5 @@
-User Database Specifications
-===========================
+Vote Database Specifications
+============================
 
 The vote collection holds a log of all the votes by users on specific articles.
 
