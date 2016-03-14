@@ -11,6 +11,8 @@ Feedlark is using [MongoDB](http://mongodb.org) for its data storage. There are 
 
 The front end uses [express.js](http://expressjs.com/), an MVC framework in Node.js.
 
+Setting up the Vagrant VM for the first time is very very slow (potentially upwards of 30 minutes), as there are a lot of dependencies. In particular, `spacy`, the tool we are using for Python natural language processing, requires a 500mb download of its English NLP model. However, once this initial setup has been completed, the VM can be booted in less than a minute.
+
 
 Dependencies
 ------------
@@ -75,7 +77,7 @@ Project Directory Overview
 
 #### `./aggregator`
 
-This is the code that coalesces the database collections `feed` and `user`, and places the data in `g2g`. That is, it takes the feed data, and the user data, and creates the feeds tailored to each individual user.
+This is the code that coalesces the database collections `feed` and `user`, and places the data in `g2g`. That is, it takes the feed data, and the user data, and creates the feeds tailored to each individual user. It also includes the tool to compute the similarity of a user's interests and an article's topics.
 
 #### `./dbtools`
 
