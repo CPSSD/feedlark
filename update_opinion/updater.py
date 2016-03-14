@@ -133,9 +133,13 @@ def update_user_model(worker, job):
     user_words = user_data['words']
     for item in feed_data['items']:
         if item['link'] == job_input['article_url']:
+            if not 'topics' in item:
+                log(1, "No topics associated with given article.")
+                break
             topics = item['topics']
             user_words = update_topic_counts(user_words, topics, job_input['positive_opinion'])
             user_data = update_model(user_data, item, job_input["positive_opinion"]) # update the pickled user model
+            break
     
     log(0, "Updating user db with new topic weights")
     user_data['words'] = user_words
