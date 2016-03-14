@@ -76,9 +76,9 @@ def fast_score(article_words, user_words):
     word_sum = sum(article_words.values())
     a_words_norm = {x[0]:(x[1]/word_sum) for x in article_words.items()}
 
-	log("Normalising user_words scores")
-	word_sum = sum(user_words.values())
-	u_words_norm = {x[0]:(x[1]/word_sum) for x in user_words.items()}
+    log("Normalising user_words scores")
+    word_sum = sum(user_words.values())
+    u_words_norm = {x[0]:(x[1]/word_sum) for x in user_words.items()}
 
     total = 0
     total_count = 0
