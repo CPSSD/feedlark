@@ -6,21 +6,49 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col s2">
-          <label>Items per page</label>
-          <select id="page_length" class="browser-default">
+      <form class="row" method="GET" action="/stream">
+        <input type="hidden" name="page" value="0">
+        <div class="input-field col s3">
+          <select name="page_length">
             <option<%= page_length == 5 ? ' selected' : '' %>>5</option>
             <option<%= page_length == 10? ' selected' : '' %>>10</option>
             <option<%= page_length == 20? ' selected' : '' %>>20</option>
             <option<%= page_length == 50? ' selected' : '' %>>50</option>
           </select>
+          <label for="page_length">Items per page</label>
         </div>
-      </div>
+        <div class="input-field col s3">
+          <input name="keywords" placeholder="Enter Key Words" type="text" class="validate" value="<%= keywords %>">
+          <label for="keywords">Key Words</label>
+        </div>
+        <div class="input-field col s3">
+          <select name="source">
+            <option value=""<%= source.length < 1? ' selected' : '' %>>Any</option>
+            <%
+              for (var i = 0; i < subscribed_feeds.length; i++) {
+                var source_name_re = /https?:\/\/([^\/]+)/g;
+                var source_name = source_name_re.exec(subscribed_feeds[i])[1];
+            %>
+            <option value="<%= subscribed_feeds[i] %>"<%= source == subscribed_feeds[i]? ' selected' : '' %>><%= source_name %></option>
+            <% } %>
+          </select>
+          <label for="source">Source</label>
+        </div>
+        <div class="input-field col s3">
+          <button class="btn waves-effect waves-light" type="submit">
+            Filter <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </form>
+
       <ul class="collection">
         <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
         <li class="collection-item">
+          <% if (keywords.length < 1 && source.length < 1) { %>
           <p class="center-align">Failed to load your feeds. No data was received from the server</p>
+          <% } else { %>
+          <p class="center-align">No matches</p>
+          <% } %>
         </div>
         <%
         } else {
@@ -39,8 +67,8 @@
             From: <%= source_name %>
           </p>
           <span class="secondary-content" style="text-align: right;">
-          <a href="/feeds/dislike?url=<%= feeds[i].link %>"><i class="material-icons">thumb_down</i></a>
-          <a href="/feeds/like?url=<%= feeds[i].link %>"><i class="material-icons">thumb_up</i></a>
+          <a href="/streams/dislike?url=<%= feeds[i].link %>&source=<%= feeds[i].feed %>"><i class="material-icons">thumb_down</i></a>
+          <a href="/streams/like?url=<%= feeds[i].link %>&source=<%= feeds[i].feed %>"><i class="material-icons">thumb_up</i></a>
           <br />
           <a href="<%= feeds[i].link %>"><i class="material-icons">send</i></a>
           </span>
@@ -49,12 +77,14 @@
         <% } } %>
       </ul>
 
-      <% if (page != 0) { %>
       <div class="row">
-        <div class="col s6 offset-s3 center-align">
-          <a class="btn-large wave-effect waves-light" href="/stream/<%= page_length %>/<%= page %>">Load more</a>
+        <div class="col s12 center-align">
+          <% if (page > 0) { %>
+            <a class="btn-large wave-effect waves-light" onclick="change_page(<%= page-1 %>);">Prev page</a>
+          <% } %>
+          <% if (next_page > 0) { %>
+            <a class="btn-large wave-effect waves-light" onclick="change_page(<%= next_page%>);">Next page</a>
+          <% } %>
         </div>
-      </div>
-      <% } %>
     </div>
 <% include partials/footer.ejs %>
