@@ -96,10 +96,36 @@ def fast_score(article_words, user_words):
     else:
         return 0
 
-def fast_score_gm(worker, job):
+def score_gm(worker, job):
+	word_data = BSON(job.data).decode()
+	try:
+		a_words = word_data['article_words']
+		u_words = word_data['user_words']
+	except:
+		log("Problem with data provided",level=2)
+		return str(BSON.encode({"status":"error","description":"Problem with data provided"}))
 
+	try:
+		a_score = score(a_words,u_words)
+	except:
+		log("Problem when scoring, is the data in the right format?")
+		return str(BSON.encode({"status":"error","description":"Problem when scoring, is the data in the right format?"}))
+
+	return str(BSON.encode({"status":"ok","score":a_score}))
+
+
+
+def fast_score_gm(worker, job):
+	return
 
 if __name__ == '__main__':
 	log("Starting Gearman worker")
 	gm_worker = gearman.GearmanWorker(['localhost:4730'])
+	gm_worker.set_client_id('kw-scoring')
+	
+	log("Registering tasks")
+	gm_worker.register_task('fast_score', fast_score_gm)
+	gm_worker.register_task('score', score_gm)
+
+	gm_worker.work()
 
