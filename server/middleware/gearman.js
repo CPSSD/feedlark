@@ -18,12 +18,12 @@ client.on('timeout', () => {
 
 module.exports = {
   startJob: (job_name, job_data, job_options, next) => {
-	/*
-	  Start a Gearman Job.
+    /*
+      Start a Gearman Job.
 
-	  job_data is expected to be standard javascript objects, which will be
-	  sereliazed to bson.
-	*/
+      job_data is expected to be standard javascript objects, which will be
+      serialized to bson.
+    */
     if (!job_options) {
       job_options = {
         background: true,
