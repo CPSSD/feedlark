@@ -16,7 +16,7 @@ and permissions.
 
 Example Document
 ----------------
-		password = "ilovegnuhurd", 8 rounds
+
 
 ```js
 {
@@ -29,3 +29,7 @@ Example Document
 	"tokens": {"add15f620657bb3fd8ce7fa9611f1aaba8717559295706a6d80f9e8cf58e81d7":true}
 }
 ```
+
+The above document uses the following data to generate the hashed password:
+
+		password = "ilovegnuhurd", 8 rounds
