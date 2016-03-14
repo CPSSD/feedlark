@@ -1,4 +1,10 @@
 from datetime import datetime
+from spacy.en import English
+from bson import BSON
+import gearman
+
+#This is outside a function so it runs only once, on import.
+nlp = English()
 
 def log(*message, **kwargs):
     '''
@@ -17,6 +23,48 @@ def log(*message, **kwargs):
 
 
 def score(article_words, user_words):
+	'''
+	Scores articles based on the keywords in the article and the ones the user likes.
+
+	This function is O(N*M) where N and M are the lengths of article_words and user_words
+	'''
+	if not (article_words and user_words):
+		#If either are empty then score is 0
+		return 0
+
+	log("Tokenising article_words and user_words")
+	a_tokens = nlp(u' '.join(article_words.keys()))
+	u_tokens = nlp(u' '.join(user_words.keys()))
+	
+	log("Normalising article_words scores")
+	word_sum = sum(article_words.values())
+	a_words_norm = {x[0]:(x[1]/word_sum) for x in article_words.items()}
+
+	log("Normalising user_words scores")
+	word_sum = sum(user_words.values())
+	u_words_norm = {x[0]:(x[1]/word_sum) for x in user_words.items()}
+
+	total = 0.0
+	for a in a_tokens:
+		best_sim = 0
+		best_word = ''
+		for u in u_tokens:
+			u_a_sim = a.similarity(u)
+			if u_a_sim > best_sim:
+				best_sim = u_a_sim
+				best_word = str(u).strip()
+
+		article_word = str(a).strip()
+		log("Best match for '",article_word,"' is '",best_word,"', similarity: ",best_sim)
+		total += a_words_norm[article_word] * u_words_norm[best_word] * best_sim
+
+	log("Total: ",total,", total count: ",len(article_words))
+	return total/len(article_words)
+
+
+
+
+def fast_score(article_words, user_words):
     '''
     Scores articles based on the keywords in the article and the ones the user likes.
 
@@ -29,6 +77,10 @@ def score(article_words, user_words):
     log("Normalising article_words scores")
     word_sum = sum(article_words.values())
     a_words_norm = {x[0]:(x[1]/word_sum) for x in article_words.items()}
+
+    log("Normalising user_words scores")
+    word_sum = sum(user_words.values())
+    u_words_norm = {x[0]:(x[1]/word_sum) for x in user_words.items()}
 
     total = 0
     total_count = 0
@@ -43,3 +95,51 @@ def score(article_words, user_words):
         return total/float(total_count)
     else:
         return 0
+
+def score_gm(worker, job):
+	word_data = BSON(job.data).decode()
+	try:
+		a_words = word_data['article_words']
+		u_words = word_data['user_words']
+	except:
+		log("Problem with data provided",level=2)
+		return str(BSON.encode({"status":"error","description":"Problem with data provided"}))
+
+	try:
+		a_score = score(a_words,u_words)
+	except:
+		log("Problem when scoring, is the data in the right format?")
+		return str(BSON.encode({"status":"error","description":"Problem when scoring, is the data in the right format?"}))
+
+	return str(BSON.encode({"status":"ok","score":a_score}))
+
+
+def fast_score_gm(worker, job):
+	word_data = BSON(job.data).decode()
+	try:
+		a_words = word_data['article_words']
+		u_words = word_data['user_words']
+	except:
+		log("Problem with data provided",level=2)
+		return str(BSON.encode({"status":"error","description":"Problem with data provided"}))
+
+	try:
+		a_score = fast_score(a_words,u_words)
+	except:
+		log("Problem when scoring, is the data in the right format?")
+		return str(BSON.encode({"status":"error","description":"Problem when scoring, is the data in the right format?"}))
+
+	return str(BSON.encode({"status":"ok","score":a_score}))
+
+
+if __name__ == '__main__':
+	log("Starting Gearman worker")
+	gm_worker = gearman.GearmanWorker(['localhost:4730'])
+	gm_worker.set_client_id('kw-scoring')
+	
+	log("Registering tasks")
+	gm_worker.register_task('fast_score', fast_score_gm)
+	gm_worker.register_task('score', score_gm)
+
+	gm_worker.work()
+
