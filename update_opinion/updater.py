@@ -10,6 +10,7 @@ def log(level, message):
     print(str(time) + " " + levels[level] + " " + str(message))
 
 def update_topic_counts(old_topics, changes, is_positive):
+    """modify the user topic weights to reflect the new data"""
     diff = 1 if is_positive else -1
     for change in changes:
         if change in old_topics:
@@ -19,11 +20,13 @@ def update_topic_counts(old_topics, changes, is_positive):
     return old_topics
 
 def add_update_to_db(data):
+    """log the given user opinion to the vote db collection"""
     req_data = {"database":"feedlark", "collection":"vote", "data":data}
     bson_req = bson.BSON.encode(req_data)
     gearman_client.submit_job('db-add', str(bson_req))
 
 def get_user_data(username):
+    """Get the data of user from database"""
     req_data = {"database":"feedlark", "collection":"user", "query":{"username":username}, "projection":{}}
     bson_req = bson.BSON.encode(req_data)
     bson_result = bson.BSON(gearman_client.submit_job('db-get', str(bson_req)).result)
@@ -38,7 +41,21 @@ def get_user_data(username):
     if len(result["docs"]) == 0:
         log(2, "No docs returned for user " + str(username))
         return None
-    return result["docs"]
+    return result["docs"][0]
+
+def get_feed_data(feed_url):
+    """Get the data of a given feed"""
+    req_data = {"database":"feedlark", "collection":"feed", "query":{"url":feed_url}, "projection":{}}
+    bson_req = bson.BSON.encode(req_data)
+    bson_result = bson.BSON(gearman_client.submit_job('db-get', str(bson_req)).result)
+    result = bson.BSON.decode(bson_result)
+    if result[u"status"] != u"ok":
+        log(2, "Error getting database entry for feed " + str(feed_url))
+        return None
+    if not "docs" in result or len(result["docs"]) == 0:
+        log(2, "No docs returned for feed " + str(feed_url))
+        return None
+    return result["docs"][0]
 
 def update_user_model(worker, job):
     bson_input = bson.BSON(job.data)
@@ -50,6 +67,19 @@ def update_user_model(worker, job):
         response = {"status":"error", "description":"Missing field in input."}
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
+
+    user_data = get_user_data(input["username"])
+    if user_data is None:
+        response = {"status":"error", "description":"No user data received from db for user " + str(input["username"])}
+        bson_response = bson.BSON.encode(response)
+        return str(bson_response)
+    
+    feed_data = get_feed_data(input["feed_url"])
+    if feed_data is None:
+        response = {"status":"error", "description":"No feed data receieved from db for feed " + str(input["feed_url"])}
+        bson_response = bson.BSON.encode(response)
+        return str(bson_response)
+
     response = {"status":"ok"}
     bson_response = bson.BSON.encode(response)
     return str(bson_response)
