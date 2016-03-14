@@ -39,7 +39,9 @@ def update_model(user_data, article_data, is_positive):
 
     log(0, "Training model with new data")
     topic_crossover = 0 # a comparison of how close the articles are in terms of topic, taken from the worker in /aggregator
-    score_data = bson.BSON.decode(bson.BSON(gearman_client.submit_job('score', str(bson.BSON.encode({'article_words':user_data['words'], 'user_words':article_data['topics']}))).result))
+    log(0, str(user_data['words']))
+    log(0, str(article_data['topics']))
+    score_data = bson.BSON.decode(bson.BSON(gearman_client.submit_job('fast_score', str(bson.BSON.encode({'article_words':user_data['words'], 'user_words':article_data['topics']}))).result))
     if score_data['status'] == 'ok':
         topic_crossover = score_data['score']
     else:
