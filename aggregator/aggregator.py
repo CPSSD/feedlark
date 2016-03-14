@@ -39,6 +39,7 @@ class Aggregator:
             'projection':{
                 'username':1,
                 'subscribed_feeds':1,
+                'words':1,
                 },
             })
 
@@ -87,11 +88,21 @@ class Aggregator:
                             'feed':feed_url,
                             'name':item['name'],
                             'link':item['link'],
+                            'word_crossover':score(item['topics'], user['words'])
                             'pub_date':item['pub_date'],
                         })
-                    
+
+            print "Normaising dates"
+            oldest = min(user_g2g['feeds'], key=lambda x:x['pub_date'])
+            newest = max(user_g2g['feeds'], key=lambda x:x['pub_date'])
+            normalised_items = []
+            for item in user_g2g['feeds']:
+                item['norm_date'] = (item['pub_date']-oldest)/float(newest-oldest)
+                normalised_items.append(item)
+            user_g2g['feeds'] = normalised_items
+                        
             print "Sorting items"
-            user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'],reverse=True)
+            user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date']*x['word_crossover'],reverse=True)
             print "Putting items in 'g2g' database"
             self.put_g2g(user['username'], user_g2g)
             print "Completed"
