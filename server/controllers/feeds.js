@@ -70,7 +70,11 @@ module.exports = {
       return res.redirect(302, "/stream");
     }
     var url = req.query.url.toLowerCase();
-    req.session.msg = "Showing interest in " + req.query.feed;
+    req.session.msg = "Showing interest in " + req.query.url;
+
+	// Call gearman
+	gearman.startJob('update-single-feed', url, undefined, () => {});
+
     return res.redirect(302, "/stream");
   },
 
@@ -81,7 +85,11 @@ module.exports = {
       return res.redirect(302, "/stream");
     }
     var url = req.query.url.toLowerCase();
-    req.session.msg = "Showing disinterest in " + url;
+    req.session.msg = "Showing disinterest in " + req.query.url;
+	// session.username
+	// Call gearman
+	gearman.startJob('update-single-feed', url, undefined, () => {});
+
     return res.redirect(302, "/stream");
   }
 };
