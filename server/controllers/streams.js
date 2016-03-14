@@ -25,7 +25,6 @@ module.exports = {
     if (typeof req.query.keywords != "undefined" && req.query.keywords.length > 1) {
       keywords = req.query.keywords.split(" ").map(val => val.toLowerCase());
     }
-    console.log(keywords);
 
     getFeeds(req.session.username, feeds => {
 
@@ -44,7 +43,7 @@ module.exports = {
       var pageinated_feeds = _.slice(filtered_feeds, page*page_length, (page+1)*page_length);
 
       var next_page = page + 1;
-      if ((page + 1) * page_length > pageinated_feeds.length) next_page = 0;
+      if (next_page * page_length > filtered_feeds.length) next_page = 0;
 
       res.status(200).render("stream_index", {
         feeds: pageinated_feeds,
