@@ -1,7 +1,6 @@
+spacy
 feedparser
 beautifulsoup4
 requests
 pymongo
 gearman
-virtualenv
-spacy
