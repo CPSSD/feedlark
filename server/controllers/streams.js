@@ -52,8 +52,8 @@ module.exports = {
         next_page: next_page,
         page_length: page_length,
         subscribed_feeds: req.session.subscribed_feeds,
-        keywords: req.query.keywords,
-        source: req.query.source
+        keywords: req.query.keywords || "",
+        source: req.query.source || ""
       });
     });
   },
