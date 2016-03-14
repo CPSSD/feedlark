@@ -17,6 +17,7 @@
           </select>
         </div>
       </div>
+
       <ul class="collection">
         <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
         <li class="collection-item">
@@ -52,7 +53,7 @@
       <% if (page != 0) { %>
       <div class="row">
         <div class="col s6 offset-s3 center-align">
-          <a class="btn-large wave-effect waves-light" href="/stream/<%= page_length %>/<%= page %>">Load more</a>
+          <a class="btn-large wave-effect waves-light" href="/stream?page_length=<%= page_length %>&page=<%= page %>">Load more</a>
         </div>
       </div>
       <% } %>

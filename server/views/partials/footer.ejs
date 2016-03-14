@@ -11,7 +11,7 @@
 
     <% if (typeof page_length != "undefined") { %>
     $("#page_length").change(_ => {
-      window.location.href = "/stream/" + $("#page_length").val() + "/<%= page - 1 > 0? page - 1 : 0 %>";
+      window.location.href = "/stream?page_length=" + $("#page_length").val() + "page=<%= page - 1 > 0? page - 1 : 0 %>";
     });
     <% } %>
   });
