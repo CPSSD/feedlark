@@ -3,9 +3,11 @@
 //  like express and the auth middleware aren't imported N times
 
 const router = require("express").Router();
+
 const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
+
 
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
@@ -40,7 +42,7 @@ router.get("/user/login", (req, res) => {
 });
 
 // Profile
-router.get("/user", isAuthed, (req, res) => { res.render("profile"); });
+router.get("/user", isAuthed, userController.profile);
 
 // Feeds pages
 
@@ -57,7 +59,14 @@ router.get("/feeds/remove", isAuthed, feedController.remove);
 router.get("/feeds", isAuthed, feedController.index);
 
 // Stream
-router.get("/stream/:page_length/:page", isAuthed, streamController.index);
+router.get("/stream", isAuthed, streamController.index);
+
+// Tokens (for API stuff!)
+router.get("/token/add", isAuthed, userController.addToken);
+router.get("/token/remove", isAuthed, userController.removeToken);
+
+// Plaintext Endpoint
+router.get("/plaintext", userController.validToken, streamController.plaintext);
 
 // Home/Index
 router.get("/", (req, res) => {

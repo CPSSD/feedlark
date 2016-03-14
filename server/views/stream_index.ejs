@@ -50,12 +50,19 @@
         <% } } %>
       </ul>
 
-      <% if (page != 0) { %>
       <div class="row">
-        <div class="col s6 offset-s3 center-align">
-          <a class="btn-large wave-effect waves-light" href="/stream?page_length=<%= page_length %>&page=<%= page %>">Load more</a>
+        <div class="col s3 offset-s3 center-align">
+          <% if (page > 0) { %>
+            <a class="btn-large wave-effect waves-light" href="/stream?page_length=<%= page_length %>&page=<%=page-1%>">Prev page</a>
+          <% } %>
         </div>
+        <% if (page > 0) { %>
+          <div class="col s3 center-align">
+        <% } else { %>
+           <div class="col s3 offset-s6 center-align">
+         <% } %>
+            <a class="btn-large wave-effect waves-light" href="/stream?page_length=<%= page_length %>&page=<%=next_page%>">Load more</a>
+          </div>
       </div>
-      <% } %>
     </div>
 <% include partials/footer.ejs %>

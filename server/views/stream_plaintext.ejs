@@ -1,5 +1,3 @@
-// feedlark plaintext
-
 <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
 // failed to load your feeds. No data was received from the server.
 <%
@@ -11,10 +9,8 @@
     var source_name_re = /https?:\/\/([^\/]+)/g;
     var source_name = source_name_re.exec(feeds[i].feed)[1];
 %>
-
 title      <%= feeds[i].name %>
 url        <%= feeds[i].link %>
 published  <%= date %>
 from       <%= source_name %>
-
 <% } } %>
