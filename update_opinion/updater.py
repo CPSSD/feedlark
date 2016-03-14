@@ -19,7 +19,7 @@ def update_topic_counts(old_topics, changes, is_positive):
     return old_topics
 
 def add_update_to_db(data):
-    req_data = {"database":"feedlark", "collection":"votes", "data":data}
+    req_data = {"database":"feedlark", "collection":"vote", "data":data}
     bson_req = bson.BSON.encode(req_data)
     gearman_client.submit_job('db-add', str(bson_req))
 
@@ -28,7 +28,7 @@ def update_user_model(worker, job):
     input = bson_input.decode()
     add_update_to_db(input)
     log(0, 'update-user-model called with data ' + str(input))
-    if not ("username" in input and "feed_url" in input and "article_url" in input):
+    if not ("username" in input and "feed_url" in input and "article_url" in input "positive_opinion" in input):
         log(1, 'Missing field in input: ' + str(input))
         response = {"status":"error", "description":"Missing field in input."}
         bson_response = bson.BSON.encode(response)

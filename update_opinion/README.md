@@ -24,11 +24,13 @@ The worker is called `update-user-model`, and takes the following Gearman data:
 {
 	"username": "iandioch",
 	"feed_url": "http://news.ycombinator.com/rss",
-	"article_url": "http://example.com/article"
+	"article_url": "http://example.com/article",
+	"positive_opinion": true
 }
 ```
 
-`username` should be the name of the user who just voted on an article. `feed_url` should be the url of the feed that article was taken from. `article_url` should be the link to that specific article.
+`username` should be the name of the user who just voted on an article. `feed_url` should be the url of the feed that article was taken from. `article_url` should be the link to that specific article. `positive_opinion` should be `true` if a user upvoted an article, and `false` if they downvoted it.
+
 
 The worker just responds with the following:
 
