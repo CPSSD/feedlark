@@ -104,7 +104,7 @@ Vagrant.configure(2) do |config|
     chown -R mongodb:mongodb /home/vagrant/.mongodb
     sudo mv /etc/mongod.conf /etc/mongod.conf.orig
     sudo rm -f /etc/mongod.conf
-    sudo cp /vagrant/script/vagrant/mongod.conf /etc/mongod.conf
+    sudo cp /vagrant/script/mongodb/mongod.conf /etc/mongod.conf
     sudo systemctl enable mongod
     sudo systemctl start mongod
     sudo systemctl enable gearman-job-server
