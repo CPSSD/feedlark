@@ -14,10 +14,6 @@ mkdir -p backend-scraper
 cd backend-scraper
 screen -dmLS backend-scraper python /vagrant/scraper/scraper.py
 cd ..
-mkdir -p backend-update-opinion
-cd backend-update-opinion
-screen -dmLS backend-update-opinion python /vagrant/update_opinion/updater.py
-cd ..
 mkdir -p backend-topics
 cd backend-topics
 screen -dmLS backend-topics python /vagrant/topics/topics.py
