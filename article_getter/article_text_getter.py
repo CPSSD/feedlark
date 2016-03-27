@@ -77,7 +77,7 @@ def get_single_feed_db_data(url):
 
 
 def update_article_text(worker, job):
-	log(0, "'update-all-article-text' initiated")
+	log(0, "'article-text-getter' initiated")
 	try:
 		bson_job_obj = bson.BSON.decode(bson.BSON(job.data))["url"]
 		log(0, "Retrieving data from " + bson_job_obj + " item in db")
@@ -89,43 +89,44 @@ def update_article_text(worker, job):
 			"status": "error",
 			"error-description": str(e)
 		}))
-		
+
 	log(0, "db get complete")
 	updated_item_list = []
 	for db_item in feed_db_data['items']:
-		if db_item['article_text'] != "":
-			# If item in db already has article_text
-			updated_item_list.append(db_item)
-			continue
-		else:
-			# Runs if loop doesn't break, implying new item
-			article_text = get_article_text(db_item['link'])
-			updated_item_list.append({
-				'name': db_item['name'],
-				'pub_date': db_item['pub_date'],
-				'link': db_item['link'],
-				'article_text': article_text
-			})
-			bson_data = {
-					"article": article_text,
-					"_id": feed_db_data['_id'],
-					"link": db_item["link"]
-				}
-			log(0,"Starting 'get-topics' worker")
-			update_response = None
-			try:
-				update_response = gm_client.submit_job('get-topics', str(bson.BSON.encode(bson_data)), background=True)
-			except Exception as e:
-				log(2, e)
-				return str(bson.BSON.encode({
-					"status": "error",
-					"error-description": str(e)
-				}))
-			log(0, "update response: " + str(update_response))
+		if "article_text" in db_item:
+			if db_item['article_text'] != "":
+				# If item in db already has article_text
+				updated_item_list.append(db_item)
+				continue
+
+		# Runs if loop doesn't break, implying new item
+		article_text = get_article_text(db_item['link'])
+		updated_item_list.append({
+			'name': db_item['name'],
+			'pub_date': db_item['pub_date'],
+			'link': db_item['link'],
+			'article_text': article_text
+		})
+		bson_data = {
+			"article": article_text,
+			"_id": feed_db_data['_id'],
+			"link": db_item["link"]
+		}
+		'''log(0, "Starting 'get-topics' worker")
+		update_response = None
+		try:
+			update_response = gm_client.submit_job('get-topics', str(bson.BSON.encode(bson_data)), background=True)
+		except Exception as e:
+			log(2, e)
+			return str(bson.BSON.encode({
+				"status": "error",
+				"error-description": str(e)
+			}))
+		log(0, "update response: " + str(update_response))'''
 
 	bson_data = None
 	try:
-		bson_data = bsonify_update_data(feed_db_data['_id'], feed_db_data['url'], updated_item_list)
+		bson_data = bsonify_update_data(feed_db_data['_id'],feed_db_data['url'],updated_item_list)
 	except Exception as e:
 		log(2, e)
 		return str(bson.BSON.encode({
@@ -151,8 +152,8 @@ def update_article_text(worker, job):
 	}))
 
 if __name__ == "__main__":
-		# make the gearman worker to update feeds or add a new feed(adding not
-		# done yet). Make the client to allow adder and getter job calls.
+	# make the gearman worker to update feeds or add a new feed(adding not
+	# done yet). Make the client to allow adder and getter job calls.
 	log(0, "Initiating gearman worker")
 	gm_worker = gearman.GearmanWorker(['localhost:4730'])
 	log(0, "Initiating Client")
