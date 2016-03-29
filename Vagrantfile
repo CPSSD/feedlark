@@ -113,6 +113,6 @@ Vagrant.configure(2) do |config|
   SHELL
 
   # Setup Python
-  config.vm.provision "shell", path: "script/vagrant/setup_python.sh"
+  config.vm.provision "shell", path: "script/python/install.sh"
 
 end
