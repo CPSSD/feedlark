@@ -7,7 +7,7 @@
 
 export WORKING_DIR=${1:-"/home/python"}
 
-# Check Requirements
+# If virtualenv fails, install it with apt get and try again
 virtualenv $WORKING_DIR || { apt-get -y update; apt-get -y install python-virtualenv; virtualenv $WORKING_DIR; }
 
 source $WORKING_DIR/bin/activate
