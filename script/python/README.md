@@ -19,4 +19,4 @@ This may change between environments however, so please use
 `/vagrant/script/python/env` which, after installation, is a symbolic link to
 the virtual environment.
 
-[virtualenv]:(https://virtualenv.pypa.io/en/latest/)
+[virtualenv]:https://virtualenv.pypa.io/en/latest/
