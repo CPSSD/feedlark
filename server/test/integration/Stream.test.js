@@ -13,11 +13,6 @@ describe('StreamController', _ => {
   }
 
   describe('#index()', _ => {
-    it("Stream is unavailable to users logged out", done => {
-      agent
-        .get('/stream')
-        .expect(403, done);
-    });
     it('User can login', done => {
       agent
         .post('/user/login')
@@ -25,9 +20,10 @@ describe('StreamController', _ => {
         .send(user_details_base)
         .expect(302, done);
     });
+    // TODO: Make sure the right page is returned based on the content
     it("Stream is available to users", done => {
       agent
-        .get('/stream')
+        .get('/')
         .expect(200, done);
     });
   });
