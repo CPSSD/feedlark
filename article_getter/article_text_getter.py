@@ -28,7 +28,6 @@ def log(level, message):
 	levels = ['INFO:', 'WARNING:', 'ERROR:']
 	time = str(datetime.now()).replace('-', '/')[:-7]
 	print time, levels[level], message
-	pass
 
 # convert given data to bson in valid format for db-update
 
