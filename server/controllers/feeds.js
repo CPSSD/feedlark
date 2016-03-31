@@ -10,6 +10,18 @@ const feedModel = require("../models/feed");
 const _ = require("lodash");
 const gearman = require("../middleware/gearman");
 
+function valid_interest_arguments(req, res, cb) {
+  res.type(".txt");
+  const feed = req.body.feed;
+  const url = req.body.url;
+  if (! (_.isString(feed) || _.isString(url)) ) {
+    return res.status(403).send("Invalid URL provided, oops!");
+  }
+  else {
+    cb(feed, url);
+  }
+}
+
 module.exports = {
 
   index: (req, res) => {
@@ -66,47 +78,40 @@ module.exports = {
   },
 
   like: (req, res) => {
-	res.type(".txt");
-
-	if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
-	  return res.status(200).send("Invalid URL provided, oops!");
-	}
-	var url = req.query.url.toLowerCase();
-	var jobData = {
-	  "username": req.session.username,
-	  "feed_url": req.query.feed.toLowerCase(),
-	  "article_url": url,
-	  "positive_opinion": true
-  	};
-
-    // Call gearman
-	try{
-      gearman.startJob('update-user-model', jobData, undefined, () => {
-		  return res.status(200).send("Showing interest in " + url);
-	  });
-  	} catch(err){ console.log(err); }
+    try {
+      valid_interest_arguments(req, res, (feed, url) => {
+        var jobData = {
+          "username": req.session.username,
+          "feed_url":  feed.toLowerCase(),
+          "article_url": url.toLowerCase(),
+          "positive_opinion": true
+        };
+        gearman.startJob('update-user-model', jobData, undefined, () => {
+          return res.status(200).send("Showing interest in " + url);
+        });
+      });
+    }
+    catch(err) {
+      console.log(err);
+    }
   },
 
   dislike: (req, res) => {
-	res.type(".txt");
-    if (!_.isString(req.query.url) || !_.isArray(req.query.url.match(/https?:\/\/[^\/]+/g))) {
-	  return res.status(200).send("Invalid URL provided, oops!");
+    try {
+      valid_interest_arguments(req, res, (feed, url) => {
+        var jobData = {
+          "username": req.session.username,
+          "feed_url": req.query.feed.toLowerCase(),
+          "article_url": url,
+          "positive_opinion": false
+        };
+        gearman.startJob('update-user-model', jobData, undefined, () => {
+  		      return res.status(200).send("Showing disinterest in " + url);
+    	  });
+      });
     }
-
-    var url = req.query.url.toLowerCase();
-    var jobData = {
-      "username": req.session.username,
-      "feed_url": req.query.feed.toLowerCase(),
-      "article_url": url,
-      "positive_opinion": false
-    };
-
-    // Call gearman
-	try {
-      gearman.startJob('update-user-model', jobData, undefined, () => {
-		  return res.status(200).send("Showing disinterest in " + url);
-	  });
-  	} catch(err){ console.log(err); }
-
+    catch(err) {
+      console.log(err);
+    }
   }
 };

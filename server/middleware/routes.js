@@ -77,10 +77,10 @@ router.get("/token/list", isAuthed, userController.listTokens);
 router.get("/plaintext", userController.validToken, streamController.plaintext);
 
 //Show interest
-router.get("/feeds/like", isAuthed, feedController.like);
+router.post("/feeds/like", isAuthed, feedController.like);
 
 //Show disinterest buttons
-router.get("/feeds/dislike", isAuthed, feedController.dislike);
+router.post("/feeds/dislike", isAuthed, feedController.dislike);
 
 
 module.exports = router;
