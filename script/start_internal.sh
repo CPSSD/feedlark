@@ -1,7 +1,12 @@
 #!/bin/bash
 echo "Starting backend elements in screen sessions"
 cd /vagrant
-# first one should be in log/XYZ, the rest of them then cd to this new log/ dir and create their own subdirs from there
+
+# this includes the python env binaries over system wide ones
+source /vagrant/script/python/env/bin/activate
+
+# first one should be in log/XYZ, the rest of them then cd to this new log/ dir
+# and create their own subdirs from there
 mkdir -p log/backend-db-workers
 cd log/backend-db-workers
 screen -dmLS backend-db-workers go run /vagrant/dbtools/start_workers.go
@@ -13,6 +18,10 @@ cd ..
 mkdir -p backend-scraper
 cd backend-scraper
 screen -dmLS backend-scraper python /vagrant/scraper/scraper.py
+cd ..
+mkdir -p backend-update-opinion
+cd backend-update-opinion
+screen -dmLS backend-update-opinion python /vagrant/update_opinion/updater.py
 cd ..
 mkdir -p backend-topics
 cd backend-topics
@@ -29,6 +38,6 @@ echo "Starting frontend elements in screen sessions"
 cd /vagrant/server
 screen -dmLS frontend-express /usr/bin/npm run start
 echo "Running! Please allow ~20 seconds for everything to initialise"
-echo "Running screens (Should be 6):"
+echo "Running screens:"
 sleep 1
 screen -list

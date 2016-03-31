@@ -58,8 +58,15 @@ router.get("/feeds/remove", isAuthed, feedController.remove);
 // List
 router.get("/feeds", isAuthed, feedController.index);
 
-// Stream
-router.get("/stream", isAuthed, streamController.index);
+// Stream & Landing page
+router.get("/", (req, res, next) => {
+  if (req.session.username) {
+    res.locals.session = req.session;
+    next();
+  } else {
+    res.render('index').end();
+  }
+}, streamController.index);
 
 // Tokens (for API stuff!)
 router.get("/token/add", isAuthed, userController.addToken);
@@ -75,9 +82,5 @@ router.get("/feeds/like", isAuthed, feedController.like);
 //Show disinterest buttons
 router.get("/feeds/dislike", isAuthed, feedController.dislike);
 
-// Home/Index
-router.get("/", (req, res) => {
-  res.render('index');
-});
 
 module.exports = router;
