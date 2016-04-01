@@ -8,5 +8,4 @@ sudo mv /etc/mongod.conf /etc/mongod.conf.orig
 sudo rm -f /etc/mongod.conf
 sudo cp /vagrant/script/vagrant/mongod.conf /etc/mongod.conf
 sudo service mongod start
-sudo service gearman-job-server start
 mongo /vagrant/script/vagrant/create_feed_user_db.js
