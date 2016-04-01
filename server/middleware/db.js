@@ -37,10 +37,9 @@ module.exports = {
 
   update: (db, collection, selector, data, cb) => {
     db.collection(collection).updateOne(selector, {$set: data}, (err, data) => {
-
       if (err) throw err;
 
-      return cb();
+      return cb(data);
     });
   },
 

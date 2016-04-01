@@ -6,3 +6,4 @@
 ./script/aggregator
 ./script/topics
 ./script/article_getter
+./script/update_opinion
