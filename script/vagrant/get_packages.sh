@@ -17,7 +17,6 @@ sudo apt-get install -y git
 sudo apt-get install -y golang
 sudo apt-get install -y nodejs
 sudo apt-get install -y build-essential
-sudo apt-get install -y ruby
 sudo apt-get upgrade -y
 sudo apt-get autoremove
 sudo apt-get clean
