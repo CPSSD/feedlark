@@ -1,4 +1,4 @@
 #!/bin/bash
 
-source /vagrant/script/python/env/bin/activate
+source /home/python/bin/activate
 python /vagrant/scheduler/scheduler.py
