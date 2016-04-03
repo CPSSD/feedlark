@@ -69,12 +69,9 @@ Vagrant.configure(2) do |config|
   #Setup go
   config.vm.provision "shell", path: "script/vagrant/go_install.sh"
 
-  #Setup mongo
-  config.vm.provision "shell", path: "script/vagrant/mongo_install.sh"
-
   # Setup Python
   config.vm.provision "shell", path: "script/python/install.sh"
-  
+
   config.vm.provision "shell", path: "script/mongodb/install.sh"
 
 end
