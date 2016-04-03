@@ -108,7 +108,7 @@ class Aggregator:
                             'pub_date': item['pub_date'],
                         })
 
-            log("Normaising dates")
+            log("Normalising dates")
             oldest = min(user_g2g['feeds'], key=lambda x: x['pub_date'])
             newest = max(user_g2g['feeds'], key=lambda x: x['pub_date'])
             normalised_items = []
