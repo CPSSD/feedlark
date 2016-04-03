@@ -6,7 +6,7 @@ Vagrant.configure(2) do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "ubuntu/wily64"
+  config.vm.box = "ubuntu/trusty64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -60,50 +60,21 @@ Vagrant.configure(2) do |config|
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
+  # documentation for more information about their specific syntax and use.  # Install all the packages required
+  config.vm.provision "shell", path: "script/vagrant/get_packages.sh"
 
-  # Should we move and seperate all this stuff to script/vagrant? -- devoxel
-  config.vm.provision "shell", inline: <<-SHELL
-    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-    curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-    sudo apt-get install -y gcc-4.8 g++-4.8
-    sudo apt-get install -y python-software-properties
-    sudo apt-get install -y python3
-    sudo apt-get install -y python-pip
-    sudo apt-get install -y python-dev
-    sudo apt-get install -y python-sklearn
-    sudo apt-get install -y gearman-job-server
-    sudo apt-get install -y git
-    sudo apt-get install -y golang
-    sudo apt-get install -y nodejs
-    sudo apt-get install -y build-essential
-    sudo apt-get install -y openjdk-7-jdk
-    sudo apt-get install -y scala
-    sudo apt-get install -y ruby
-    sudo apt-get upgrade -y
-    sudo su -c "gem install sass"
-    cd /vagrant/server
-    npm install -y
-    npm dedupe
-    npm cache clean
-    sudo apt-get autoremove
-    sudo apt-get clean
-    echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
-    echo "export PATH=/vagrant/server/node_modules/.bin:$PATH:" >> /home/vagrant/.profile
-    mkdir -p /home/vagrant/.go
-    export GOPATH=/home/vagrant/.go
-    go get github.com/mikespook/gearman-go/worker
-    go get gopkg.in/mgo.v2
-    go get gopkg.in/mgo.v2/bson
-    chown -R vagrant:vagrant /home/vagrant
-    sudo systemctl enable gearman-job-server
-    sudo systemctl start gearman-job-server
-  SHELL
+  #Setup the server
+  config.vm.provision "shell", path: "script/vagrant/server_install.sh"
+
+  #Setup go
+  config.vm.provision "shell", path: "script/vagrant/go_install.sh"
+
+  #Setup mongo
+  config.vm.provision "shell", path: "script/vagrant/mongo_install.sh"
 
   # Setup Python
-  config.vm.provision "shell", path: "script/vagrant/setup_python.sh"
+  config.vm.provision "shell", path: "script/python/install.sh"
+  
   config.vm.provision "shell", path: "script/mongodb/install.sh"
 
 end
