@@ -1,4 +1,6 @@
 import sys
+import gearman
+import bson
 
 def mean(arr):
     if arr is None or len(arr) is 0:
@@ -44,3 +46,27 @@ def median(arr):
         return mean(arr[len(arr)/2-1:len(arr)/2+1])
     else:
         return arr[len(arr)/2]
+
+def add_user_data(all_topics, user_topics):
+    for topic in user_topics:
+        if topic in all_topics:
+            all_topics[topic].append(user_topics[topic])
+        else:
+            all_topics[topic] = [user_topics[topic]]
+
+
+gearman_client = gearman.GearmanClient(['localhost:4730'])
+
+result = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'user', 'query':{}, 'projection':{'words':1}}))).result))
+
+topic_data = {}
+
+if result[u'status'] == u'ok':
+    users = result['docs']
+    print(len(users))
+    for user in users:
+        add_user_data(topic_data, user['words'])
+    print len(topic_data), 0
+else:
+    print('Error getting user data from database')
+    print(result['description'])
