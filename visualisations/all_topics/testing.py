@@ -19,6 +19,7 @@ class TestScraping(unittest.TestCase):
         self.assertRaises(ValueError, topics.mode, [5,4,3,2,1]) # function assumes input is order in ascending order
         self.assertRaises(ValueError, topics.mode, [1,2,2,2,2,4,3])
         self.assertEqual(topics.mode([1,1,1,2,2]), 1)
+        self.assertEqual(topics.mode([7.0, 7.0]), 7.0)
         self.assertEqual(topics.mode([1]), 1)
         self.assertEqual(topics.mode([52,54,56,58]), None)
 

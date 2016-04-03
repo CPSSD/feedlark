@@ -19,7 +19,7 @@ def mode(arr):
     for i in xrange(0, len(arr)):
         if arr[i] < curr_val:
             raise ValueError('Input is not sorted: ' + str(arr[i]) + ' < ' + str(curr_val))
-        if arr[i] is not curr_val: # we've reached a new number
+        if arr[i] != curr_val: # we've reached a new number
             if curr_count > mode_count:
                  mode_count = curr_count
                  curr_mode = curr_val
@@ -50,23 +50,44 @@ def median(arr):
 def add_user_data(all_topics, user_topics):
     for topic in user_topics:
         if topic in all_topics:
-            all_topics[topic].append(user_topics[topic])
+            all_topics[topic].append(float(user_topics[topic]))
         else:
-            all_topics[topic] = [user_topics[topic]]
+            all_topics[topic] = [float(user_topics[topic])]
 
-
-gearman_client = gearman.GearmanClient(['localhost:4730'])
-
-result = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'user', 'query':{}, 'projection':{'words':1}}))).result))
-
-topic_data = {}
-
-if result[u'status'] == u'ok':
-    users = result['docs']
-    print(len(users))
+def get_all_topic_data(users):
+    topic_data = {}
     for user in users:
         add_user_data(topic_data, user['words'])
-    print len(topic_data), 0
-else:
-    print('Error getting user data from database')
-    print(result['description'])
+    return topic_data
+
+def main():
+    if len(sys.argv) != 2:
+        print 'This tool takes 1 command line argument; the number of topics to output data on. See README.md'
+        return
+    num_requested_topics = int(sys.argv[1])
+    gearman_client = gearman.GearmanClient(['localhost:4730'])
+    result = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'user', 'query':{}, 'projection':{'words':1}}))).result))
+    
+    if result[u'status'] == u'ok':
+        users = result['docs']
+        print len(users)
+        topic_data = get_all_topic_data(users)
+        num_output_topics = min(num_requested_topics, len(topic_data))
+        print len(topic_data), num_output_topics
+        sorted_topics = sorted(topic_data, key=lambda x:len(topic_data[x]), reverse=True)
+        for i in xrange(num_output_topics):
+            sorted_values = sorted(topic_data[sorted_topics[i]])
+            mean_val = mean(sorted_values)
+            mode_val = mode(sorted_values)
+            median_val = median(sorted_values)
+
+            if mode_val is None:
+                mode_val = 'X'
+            print sorted_topics[i], len(sorted_values), mean_val, mode_val, median_val
+    else:
+        print('Error getting user data from database')
+        print(result['description'])
+        return
+
+if __name__ == '__main__':
+    main()
