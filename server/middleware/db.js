@@ -3,7 +3,7 @@ const MongoClient = require("mongodb");
 module.exports = {
   // This means that only one connection is created per transaction
   transaction: (next) => {
-    MongoClient.connect("mongodb://localhost:27017/feedlark", (err, db) => {
+    MongoClient.connect("mongodb://localhost:9001/feedlark", (err, db) => {
 
       // Error should be null/undefined normally
       if (err) throw err;

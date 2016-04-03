@@ -108,7 +108,7 @@ func DbAdd(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	response, err := AddDocument("127.0.0.1:27017", data.Database, data.Collection, data.Data)
+	response, err := AddDocument("127.0.0.1:9001", data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
@@ -126,7 +126,7 @@ func DbUpdate(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	response, err := UpdateDocument("127.0.0.1:27017", data.Database, data.Collection, data.Data)
+	response, err := UpdateDocument("127.0.0.1:9001", data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
@@ -143,7 +143,7 @@ func DbUpsert(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	response, err := UpsertDocument("127.0.0.1:27017", data.Database, data.Collection, data.Data)
+	response, err := UpsertDocument("127.0.0.1:9001", data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
