@@ -1,10 +1,16 @@
 const MongoClient = require("mongodb");
 
+if (process.env.ENVIRONMENT == "PRODUCTION") {
+  var MongoURL = "mongodb://feedlark:hackmeplz@127.0.0.1:9001/feedlark"
+}
+else {
+  var MongoURL = "mongodb://127.0.0.1:9001/feedlark"
+}
+
 module.exports = {
   // This means that only one connection is created per transaction
   transaction: (next) => {
-    MongoClient.connect("mongodb://localhost:9001/feedlark", (err, db) => {
-
+    MongoClient.connect(MongoURL, (err, db) => {
       // Error should be null/undefined normally
       if (err) throw err;
 
