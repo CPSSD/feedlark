@@ -26,7 +26,7 @@ app.use(session({
   secret: 'g)o(r)ooodl2z8xh(5qan80517e%35dgh(_03+t%3&1*w$)t9)',
   resave: false,
   saveUninitialized: false,
-  store: new MongoStore({ url: 'mongodb://localhost:27017/feedlark' })
+  store: new MongoStore({ url: 'mongodb://localhost:9001/feedlark' })
 }));
 
 // Load all the routing

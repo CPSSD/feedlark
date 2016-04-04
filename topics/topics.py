@@ -20,7 +20,7 @@ def update_article_data(old_data, link, modifications):
                 item[k] = modifications[k]
             break
     return old_data
-        
+
 
 def limit_dict(d, num):
     # returns a dict of max length num, with the elements of d that had the highest values
@@ -61,7 +61,7 @@ def get_topics(article):
 
 def get_topics_gearman(worker, job):
     bson_obj = bson.BSON(job.data)
-    data = bson_obj.decode() 
+    data = bson_obj.decode()
     if "article" not in data:
         return str(bson.BSON.encode({"status":"error", "description":"No article supplied"}))
 
@@ -74,17 +74,18 @@ def get_topics_gearman(worker, job):
     try:
         log(0, 'got topics, sending to db')
         log(0, '_id:' + str(bson.ObjectId(data['_id'])))
-        db_resp = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'feed', 'query':{u'_id':data[u'_id']}, 'projection':{'_id':1, 'items':1}}))).result))
+        db_resp = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'feed', 'query':{u'_id':data[u'_id']}, 'projection':{'_id':1, 'items':1, "url":1}}))).result))
         if len(db_resp['docs']) == 0:
              raise Exception('No documents returned with given query.')
         old_data = db_resp['docs'][0]
         modifications = {"topics":topics}
         link = data['link']
         new_data = update_article_data(old_data, link, modifications)
+        log(0,new_data)
         r = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-update', str(bson.BSON.encode({'database':'feedlark', 'collection': 'feed', 'data':{'selector':{'_id':data['_id']}, 'updates':new_data}}))).result))
     except Exception as e:
-	log(2, str(e))
-        response = {"status":"error", "description": str(e)}        
+        log(2, str(e))
+        response = {"status":"error", "description": str(e)}
 
     bson_response = bson.BSON.encode(response)
     return str(bson_response)

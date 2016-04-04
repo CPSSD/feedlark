@@ -3,8 +3,14 @@ set -xe
 
 cd dbtools
 go run start_workers.go &
+
 cd adder
 go test
 cd ../
+
+cd dbconf
+go test
+cd ../
+
 python dbtools_test.py
 cd ..
