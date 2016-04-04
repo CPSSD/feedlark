@@ -113,3 +113,6 @@ This contains the tool to parse an article and pick out the topics it relates to
 
 This contains the tool that is called whenever a user votes on an article. It updates the list of topics they have opinions on in the database, and updates that user's machine learning model with the new data.
 
+#### ./visualisations
+
+This contains the tools that are used to visualise the data in the databases in a more friendly and useful way, to let us see what we have and improve our methods.
