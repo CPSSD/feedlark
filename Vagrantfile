@@ -74,6 +74,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y python3
     sudo apt-get install -y python-pip
     sudo apt-get install -y python-dev
+    sudo apt-get install -y python-sklearn
     sudo apt-get install -y gearman-job-server
     sudo apt-get install -y git
     sudo apt-get install -y golang
@@ -83,22 +84,18 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y scala
     sudo apt-get install -y ruby
     sudo apt-get upgrade -y
-    sudo apt-get autoremove
-    sudo apt-get clean
-    sudo pip install -r /vagrant/script/requirements.txt
-    sudo apt-get install build-essential python-dev
-    sudo pip install spacy
-    sudo python -m spacy.en.download
     sudo su -c "gem install sass"
     cd /vagrant/server
     npm install -y
     npm dedupe
     npm cache clean
+    sudo apt-get autoremove
+    sudo apt-get clean
     echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
     echo "export PATH=/vagrant/server/node_modules/.bin:$PATH:" >> /home/vagrant/.profile
     mkdir -p /home/vagrant/.go
     export GOPATH=/home/vagrant/.go
-    go get github.com/mikespook/gearman-go/worker 
+    go get github.com/mikespook/gearman-go/worker
     go get gopkg.in/mgo.v2
     go get gopkg.in/mgo.v2/bson
     mkdir -p /home/vagrant/.mongodb
@@ -114,5 +111,8 @@ Vagrant.configure(2) do |config|
     sudo systemctl start gearman-job-server
     mongo /vagrant/script/vagrant/create_feed_user_db.js
   SHELL
+
+  # Setup Python
+  config.vm.provision "shell", path: "script/python/install.sh"
 
 end

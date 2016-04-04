@@ -2,4 +2,4 @@
 log/
 server/screenlog.0
 *.pyc
-
+script/python/env
