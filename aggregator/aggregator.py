@@ -6,7 +6,7 @@ class Aggregator:
     def __init__(self, gm_client):
         self.gm_client = gm_client
 
-    
+
     def get_feed_items(self, feed_url):
         '''
         This takes a url and returns the matching document in the feeds database.
@@ -89,7 +89,7 @@ class Aggregator:
                             'link':item['link'],
                             'pub_date':item['pub_date'],
                         })
-                    
+
             print "Sorting items"
             user_g2g['feeds'] = sorted(user_g2g['feeds'],key=lambda x:x['pub_date'],reverse=True)
             print "Putting items in 'g2g' database"
