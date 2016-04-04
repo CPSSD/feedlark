@@ -37,7 +37,10 @@ class TestScraping(unittest.TestCase):
     def test_add_user_data(self):
         self.assertEqual(topics.add_user_data({}, {}), {})
         self.assertEqual(topics.add_user_data({}, {'help':7.0, 'nope':-3.0}), {'help':[7.0], 'nope':[-3.0]})
-        self.assertEqual(topics.add_user_data({'help': [7.0], 'nope': [-3.0]}, {'help':3.8, 'banana':6.0}), {'help':[7.0, 3.8], 'nope':[-3.0], 'banana':[6.0]})
+        expected_output = {'help': [7.0, 3.8], 'nope':[-3.0], 'banana':[6.0]}
+        prev_data = {'help':[7.0], 'nope': [-3.0]}
+        new_data = {'help': 3.8, 'banana': 6.0}
+        self.assertEqual(topics.add_user_data(prev_data, new_data), expected_output)
 
 if __name__ == '__main__':
     unittest.main()

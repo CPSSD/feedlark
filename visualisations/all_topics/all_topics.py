@@ -37,7 +37,7 @@ def mode(arr):
 
 def median(arr):
     # requires input to be sorted, raises ValueError if it isn't.
-    for i in range(1, len(arr)):
+    for i in xrange(1, len(arr)):
         if arr[i] < arr[i-1]:
             raise ValueError('Input is not sorted: ' + str(arr[i]) + ' < ' + str(arr[i-1]))
     if arr is None or len(arr) == 0:
@@ -67,7 +67,14 @@ def main():
         return
     num_requested_topics = int(sys.argv[1])
     gearman_client = gearman.GearmanClient(['localhost:4730'])
-    result = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'user', 'query':{}, 'projection':{'words':1}}))).result))
+    result = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({
+        'database':'feedlark',
+        'collection':'user',
+        'query':{},
+        'projection':{
+            'words':1
+        }
+    }))).result))
     
     if result[u'status'] == u'ok':
         users = result['docs']
