@@ -34,5 +34,10 @@ class TestScraping(unittest.TestCase):
         self.assertRaises(ValueError, topics.median, [5,4,3,2,1])
         self.assertRaises(ValueError, topics.median, [1,2,2,2,2,4,3])
 
+    def test_add_user_data(self):
+        self.assertEqual(topics.add_user_data({}, {}), {})
+        self.assertEqual(topics.add_user_data({}, {'help':7.0, 'nope':-3.0}), {'help':[7.0], 'nope':[-3.0]})
+        self.assertEqual(topics.add_user_data({'help': [7.0], 'nope': [-3.0]}, {'help':3.8, 'banana':6.0}), {'help':[7.0, 3.8], 'nope':[-3.0], 'banana':[6.0]})
+
 if __name__ == '__main__':
     unittest.main()

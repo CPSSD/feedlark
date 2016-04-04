@@ -53,6 +53,7 @@ def add_user_data(all_topics, user_topics):
             all_topics[topic].append(float(user_topics[topic]))
         else:
             all_topics[topic] = [float(user_topics[topic])]
+    return all_topics
 
 def get_all_topic_data(users):
     topic_data = {}
