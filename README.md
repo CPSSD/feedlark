@@ -64,7 +64,7 @@ Pip dependencies will also be downloaded.
 - `192.168.2.2`: All services
 - `3000`: ExpressJS Web Server
 - `4730`: Gearman Job Server
-- `27017`: MongoDB
+- `9001`: MongoDB
 
 #### Symbolic Links
 
@@ -112,4 +112,3 @@ This contains the tool to parse an article and pick out the topics it relates to
 #### `./update_opinion`
 
 This contains the tool that is called whenever a user votes on an article. It updates the list of topics they have opinions on in the database, and updates that user's machine learning model with the new data.
-
