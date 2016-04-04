@@ -14,6 +14,10 @@ Tokens represents the randomly generated API tokens. Currently they point to a
 true value but this could be modified such that each token had validation date
 and permissions.
 
+The `model` field holds a pickled scikit-learn `SGDClassifier`, ie. the
+classification model of that user. It is compiled from the data in the other
+fields, and is updated by the `update-user-model` Gearman worker.
+
 Example Document
 ----------------
 
