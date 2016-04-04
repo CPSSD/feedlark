@@ -7,3 +7,4 @@
 ./script/topics
 ./script/article_getter
 ./script/update_opinion
+./script/visualisations
