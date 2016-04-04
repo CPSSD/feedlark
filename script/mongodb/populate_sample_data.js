@@ -1,4 +1,4 @@
-conn = new Mongo("localhost:27017");
+conn = new Mongo("localhost:9001");
 db = conn.getDB("feedlark");
 print("all dbs", db.adminCommand('listDatabases'));
 print("removing old feed,user and g2g dbs and replacing with sample data.")
@@ -6,7 +6,7 @@ db.feed.drop()
 db.user.drop()
 db.g2g.drop()
 
-db.feed.insert([{ 
+db.feed.insert([{
   "url": "https://news.ycombinator.com/rss",
   "items": [
       {
