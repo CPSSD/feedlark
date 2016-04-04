@@ -77,7 +77,7 @@ db.user.insert([
 	email: "ross@feedlark.com",
 	hashed_password: "IjZAgcfl7p92ldGxad68LJZdL17lhWy",
 	password_salt: "N9qo8uLOickgx2ZMRZoMye",
-	subscribed_feeds: ["https://news.ycombinator.com/rss", "http://spritesmods.com/rss.php","http://dave.cheney.net/feed"]
+	subscribed_feeds: ["https://news.ycombinator.com/rss", "http://spritesmods.com/rss.php"]
 },
 {
 	username: "theotherguys",
