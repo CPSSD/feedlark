@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"../dbconf"
 	"github.com/mikespook/gearman-go/worker"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -108,7 +109,8 @@ func DbAdd(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	response, err := AddDocument("127.0.0.1:9001", data.Database, data.Collection, data.Data)
+	url := dbconf.GetURL()
+	response, err := AddDocument(url, data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
@@ -126,7 +128,8 @@ func DbUpdate(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	response, err := UpdateDocument("127.0.0.1:9001", data.Database, data.Collection, data.Data)
+	url := dbconf.GetURL()
+	response, err := UpdateDocument(url, data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
@@ -143,7 +146,8 @@ func DbUpsert(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	response, err := UpsertDocument("127.0.0.1:9001", data.Database, data.Collection, data.Data)
+	url := dbconf.GetURL()
+	response, err := UpsertDocument(url, data.Database, data.Collection, data.Data)
 	if err != nil {
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))
