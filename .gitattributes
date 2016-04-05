@@ -1,4 +1,0 @@
-* text eol=lf
-*.png -crlf
-/server/assets/** binary
-
