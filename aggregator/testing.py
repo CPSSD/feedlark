@@ -25,8 +25,7 @@ class TestAggregation(unittest.TestCase):
                 u'username': u'sully',
                 u'subscribed_feeds': [
                     u'https://news.ycombinator.com/rss',
-                    u'http://spritesmods.com/rss.php',
-                    u'http://dave.cheney.net/feed'
+                    u'http://spritesmods.com/rss.php'
                     ],
             },
             {
@@ -80,7 +79,7 @@ class TestAggregation(unittest.TestCase):
 
         a_words2 = {'pancakes':0.2,'syrup':0.1}
         trip_to_canada = fast_score(a_words2, u_words)
-        
+
         self.assertTrue(sticky_marxism < trip_to_canada)
 
     def test_score(self):

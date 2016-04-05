@@ -82,8 +82,8 @@ module.exports = {
       valid_interest_arguments(req, res, (feed, url) => {
         var jobData = {
           "username": req.session.username,
-          "feed_url":  feed.toLowerCase(),
-          "article_url": url.toLowerCase(),
+          "feed_url":  feed,
+          "article_url": url,
           "positive_opinion": true
         };
         gearman.startJob('update-user-model', jobData, undefined, () => {
@@ -101,7 +101,7 @@ module.exports = {
       valid_interest_arguments(req, res, (feed, url) => {
         var jobData = {
           "username": req.session.username,
-          "feed_url": req.query.feed.toLowerCase(),
+          "feed_url": feed,
           "article_url": url,
           "positive_opinion": false
         };

@@ -41,13 +41,15 @@ def update_model(user_data, article_data, is_positive):
     topic_crossover = 0 # a comparison of how close the articles are in terms of topic, taken from the worker in /aggregator
     log(0, str(user_data['words']))
     log(0, str(article_data['topics']))
+	### FAILING HERE
     score_data = bson.BSON.decode(bson.BSON(gearman_client.submit_job('fast_score', str(bson.BSON.encode({'article_words':user_data['words'], 'user_words':article_data['topics']}))).result))
+    log(2, "he")
     if score_data['status'] == 'ok':
         topic_crossover = score_data['score']
     else:
         log(2, "Error getting crossover score: " + str(score_data['description']))
     age = (datetime.now() - article_data['pub_date']).total_seconds()*1000 # get the number of millis in difference
-
+    log(2,"here")
     inputs = [topic_crossover, age]
     output = 0 if is_positive else 1
     log(0, str(inputs) + " " + str(output))
@@ -55,15 +57,15 @@ def update_model(user_data, article_data, is_positive):
         model.partial_fit([inputs], [output], classes=[0, 1])
     except Exception as e:
         log(2, "Could not train model: " + str(e))
-    
+
     log(0, "Repickling model")
     try:
         user_data['model'] = pickle.dumps(model)
     except Exception as e:
         log(2, "Error pickling model: " + str(e))
     return user_data
-    
-        
+
+
 
 def add_update_to_db(data):
     """log the given user opinion to the vote db collection"""
@@ -128,7 +130,7 @@ def update_user_model(worker, job):
         response = {"status":"error", "description":"No user data received from db for user " + str(job_input["username"])}
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
-    
+
     log(0, "Getting feed data from db")
     feed_data = get_feed_data(job_input["feed_url"])
     if feed_data is None:
@@ -137,17 +139,24 @@ def update_user_model(worker, job):
         return str(bson_response)
 
     log(0, "Updating topic weights")
-    user_words = user_data['words']
+    if "words" in user_data:
+        user_words = user_data['words']
+    else:
+        user_words = {}
+
     for item in feed_data['items']:
+
         if item['link'] == job_input['article_url']:
+            log(0, "found feed")
             if not 'topics' in item:
                 log(1, "No topics associated with given article.")
                 break
             topics = item['topics']
             user_words = update_topic_counts(user_words, topics, job_input['positive_opinion'])
             user_data = update_model(user_data, item, job_input["positive_opinion"]) # update the pickled user model
+            log(2,user_data)
             break
-    
+
     log(0, "Updating user db with new topic weights")
     user_data['words'] = user_words
     update_user_data(job_input['username'], user_data)
