@@ -7,7 +7,7 @@ const router = require("express").Router();
 const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
-
+const updater = require("./updater");
 
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
@@ -77,19 +77,6 @@ router.get("/token/list", isAuthed, userController.listTokens);
 router.get("/plaintext", userController.validToken, streamController.plaintext);
 
 // Repo updater
-// Yes, the auth token is part of the URL
-// It's just a really handy way to make sure it's github doing the job :P
-router.get("/pull/d8db76806cd5a6f825200d5da204d3fc22d2b96d4832b3519ee2759b23ee7324", (req, res) => {
-  var exec = require("child_process").exec;
-  var cmd = "/bin/bash -c ../script/update.sh";
-  exec(cmd, (error, stdout, stderr) => {
-    if (error) {
-    	console.log(require("strftime")("%H:%M %d/%m/%y") + " ERROR: Repo update failed!\n" + stderr);
-    	return res.status(500).send('{"status": "failure", "error": "' + stderr + '"}');
-    }
-    return res.status(200).send('{"status": "success"}');
-    console.log(require("strftime")("%H:%M %d/%m/%y") + " INFO: Repo updated");
-  });
-});
+router.get("/pull/:token", updater.check, updater.run);
 
 module.exports = router;
