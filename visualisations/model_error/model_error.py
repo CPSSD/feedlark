@@ -53,6 +53,8 @@ def main():
     # map each article url to 1 or 0, if the user liked or disliked it
     article_opinions = {}
     for article in articles:
+        if not ('article_url' in article and 'positive_opinion' in article):
+            continue
         url = article['article_url']
         vote = 1 if article['positive_opinion'] else 0
         article_opinions[url] = vote
@@ -66,7 +68,8 @@ def main():
             feeds[article['feed_url']] = [article['article_url']]
 
     # get a set of the unique article urls
-    article_url_set = set([a['article_url'] for a in articles])
+    #article_url_set = set([a['article_url'] for a in articles])
+    article_url_set = set(article_opinions.keys())
     print len(article_url_set), 'unique articles in set'
 
     if len(article_url_set) < 0:
@@ -93,8 +96,8 @@ def main():
     user_words = user_data['words']
 
     # the inputs and outputs we have for the prediction
-    data_x = []
-    data_y = []
+    data_x = [[10.0], [0.0]]
+    data_y = [1, 0]
 
     for feed in feeds:
         db_result = db_get('feed', {
@@ -106,6 +109,10 @@ def main():
             print 'Error'
             print 'Could not get data from feed collection'
             print db_result['description']
+            return
+        if 'docs' not in db_result or len(db_result['docs']) < 1:
+            print 'Error'
+            print 'No feed returned for url', feed
             return
 
         items = db_result['docs'][0]['items']
