@@ -72,6 +72,7 @@ func GetDocuments(dbUrl, database, collection string, query bson.M, projection b
 		b, _ := bson.Marshal(bson.M{"status": "error", "description": err.Error()})
 		return b, err
 	}
+    coll.Database.Session.Close()
 	return bsonResponse, err
 }
 
