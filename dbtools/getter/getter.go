@@ -1,12 +1,12 @@
 package getter
 
 import (
-	"fmt"
-	"time"
 	"../dbconf"
+	"fmt"
 	"github.com/mikespook/gearman-go/worker"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 func log(level int, s string) {
@@ -72,7 +72,7 @@ func GetDocuments(dbUrl, database, collection string, query bson.M, projection b
 		b, _ := bson.Marshal(bson.M{"status": "error", "description": err.Error()})
 		return b, err
 	}
-    coll.Database.Session.Close()
+	coll.Database.Session.Close()
 	return bsonResponse, err
 }
 
