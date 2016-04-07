@@ -41,6 +41,11 @@ cd backend-art-getter
 screen -dmLS backend-art-getter /bin/bash /vagrant/script/startup/article_getter.sh
 cd ..
 
+mkdir -p backend-score
+cd backend-score
+screen -dmLS backend-score /bin/bash /vagrant/script/startup/score.sh
+cd ..
+
 echo "Starting frontend elements in screen sessions"
 cd /vagrant/server
 screen -dmLS frontend-express /bin/bash /vagrant/script/startup/frontend.sh

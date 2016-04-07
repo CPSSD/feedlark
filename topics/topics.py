@@ -78,10 +78,12 @@ def get_topics_gearman(worker, job):
         if len(db_resp['docs']) == 0:
              raise Exception('No documents returned with given query.')
         old_data = db_resp['docs'][0]
-        modifications = {"topics":topics}
+
+        ### maybe modifications loses it?
+
+        modifications = {"topics":topics, "article_text": article}
         link = data['link']
         new_data = update_article_data(old_data, link, modifications)
-        log(0,new_data)
         r = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-update', str(bson.BSON.encode({'database':'feedlark', 'collection': 'feed', 'data':{'selector':{'_id':data['_id']}, 'updates':new_data}}))).result))
     except Exception as e:
         log(2, str(e))
