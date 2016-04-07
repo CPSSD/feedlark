@@ -10,7 +10,7 @@ module.exports = {
 
     // Check the ref
     if (req.query.ref != ref) {
-      // return res.status(400).send('{"status": "bad request", "error": "Wrong ref."}');
+      return res.status(400).send('{"status": "bad request", "error": "Wrong ref."}');
     }
 
     // Load the token
