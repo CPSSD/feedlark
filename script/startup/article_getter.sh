@@ -1,4 +1,4 @@
 #!/bin/bash
 
-source /vagrant/script/python/env/bin/activate
-python /vagrant/article_getter/gman_art_getter.py
+source /home/python/bin/activate
+python /vagrant/article_getter/article_text_getter.py

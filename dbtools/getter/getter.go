@@ -1,12 +1,12 @@
 package getter
 
 import (
+	"../dbconf"
 	"fmt"
-	"time"
-
 	"github.com/mikespook/gearman-go/worker"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 func log(level int, s string) {
@@ -72,6 +72,7 @@ func GetDocuments(dbUrl, database, collection string, query bson.M, projection b
 		b, _ := bson.Marshal(bson.M{"status": "error", "description": err.Error()})
 		return b, err
 	}
+	coll.Database.Session.Close()
 	return bsonResponse, err
 }
 
@@ -83,7 +84,8 @@ func DBGet(job worker.Job) ([]byte, error) {
 		log(2, err.Error())
 		return nil, err
 	}
-	response, err := GetDocuments("127.0.0.1:27017", data.Database, data.Collection, data.Query, data.Projection)
+	url := dbconf.GetURL()
+	response, err := GetDocuments(url, data.Database, data.Collection, data.Query, data.Projection)
 	if err != nil {
 		log(1, err.Error())
 		job.SendWarning([]byte("\"error\":\"" + err.Error() + "\""))

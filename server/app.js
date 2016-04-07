@@ -10,12 +10,13 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+// Return the .ico in images when feedlark.com/favicon.ico is requested
+app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 // express-session
 //  https://github.com/expressjs/session
@@ -26,7 +27,7 @@ app.use(session({
   secret: 'g)o(r)ooodl2z8xh(5qan80517e%35dgh(_03+t%3&1*w$)t9)',
   resave: false,
   saveUninitialized: false,
-  store: new MongoStore({ url: 'mongodb://localhost:27017/feedlark' })
+  store: new MongoStore({ url: 'mongodb://localhost:9001/feedlark' })
 }));
 
 // Load all the routing
