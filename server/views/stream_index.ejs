@@ -57,9 +57,9 @@
             date = date.toLocaleDateString();
             var url = feeds[i].feed.match(/https?:\/\/[^\/]+/g)[0];
             var source_name_re = /https?:\/\/([^\/]+)/g;
-			var link_name_re = /(https?:\/\/[^\/]+\/)/g;
+            var link_name_re = /(https?:\/\/[^\/]+\/)/g;
             var source_name = source_name_re.exec(feeds[i].feed)[1];
-			var link_name = link_name_re.exec(feeds[i].link)[1];
+            var link_name = link_name_re.exec(feeds[i].link)[1];
         %>
         <li class="collection-item avatar">
           <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
