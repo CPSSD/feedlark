@@ -1,7 +1,9 @@
 * text=auto
+
 *.py text
 *.js text
+
 *.png binary
 *.jpg binary
-/server/public/** binary
+*.ico binary
 
