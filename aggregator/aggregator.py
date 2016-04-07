@@ -86,6 +86,21 @@ class Aggregator:
 
         return
 
+    def get_score(self, topic, words):
+        request = bson.BSON.encode({
+            'user_words': words,
+            'article_words': topic,
+            })
+
+        gm_job = self.gm_client.submit_job('score', str(request))
+        result = bson.BSON(gm_job.result).decode()
+        if result['status'] != 'ok':
+            log("Scoring article failed", level=1)
+            log('Description:' + result['description'])
+            return 0
+
+        return result['score']
+
     def aggregate(self, gearman_worker, gearman_job):
         log("Job recieved")
         log("Loading users from 'user' database")
@@ -98,29 +113,43 @@ class Aggregator:
             for feed_url in user['subscribed_feeds']:
                 log("--> ", feed_url)
                 for item in self.get_feed_items(feed_url):
+                    word_crossover = 0
+                    if 'topics' in item and 'words' in user:
+                        word_crossover = self.get_score(
+                            item['topics'],
+                            user['words'],
+                            )
+
                     user_g2g['feeds'].append(
                         {
                             'feed': feed_url,
                             'name': item['name'],
                             'link': item['link'],
-                            'word_crossover':
-                                score(item['topics'], user['words']),
+                            'word_crossover': word_crossover,
                             'pub_date': item['pub_date'],
                         })
 
-            log("Normalising dates")
-            oldest = min(user_g2g['feeds'], key=lambda x: x['pub_date'])
-            newest = max(user_g2g['feeds'], key=lambda x: x['pub_date'])
-            normalised_items = []
-            for item in user_g2g['feeds']:
-                item['norm_date'] = (item['pub_date']-oldest)/float(newest-oldest)
-                normalised_items.append(item)
-            user_g2g['feeds'] = normalised_items
+            try:
+                log("Normalising dates")
+                oldest = min(user_g2g['feeds'], key=lambda x: x['pub_date'])
+                oldest = float(oldest['pub_date'].strftime('%s'))
+                newest = max(user_g2g['feeds'], key=lambda x: x['pub_date'])
+                newest = float(newest['pub_date'].strftime('%s'))
+
+                normalised_items = []
+                for item in user_g2g['feeds']:
+                    item_seconds = float(item['pub_date'].strftime('%s'))
+                    item['norm_date'] = (item_seconds-oldest)/(newest-oldest)
+                    normalised_items.append(item)
+                user_g2g['feeds'] = normalised_items
+            except TypeError:
+                log('Unicode in pub_date??? Skipping user', level=1)
+                continue
 
             log("Sorting items")
             user_g2g['feeds'] = sorted(
                 user_g2g['feeds'],
-                key=lambda x: x['pub_date']+x['word_crossover'],
+                key=lambda x: x['norm_date']+x['word_crossover'],
                 reverse=True)
             log("Putting items in 'g2g' database")
             self.put_g2g(user['username'], user_g2g)
