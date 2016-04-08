@@ -13,6 +13,7 @@ def log(level, message):
 
 def update_article_data(old_data, link, modifications):
     if "items" not in old_data:
+        log(2, "No 'items' entry exists in the document.")
         raise IndexError("No 'items' entry exists in the document")
     for item in old_data["items"]:
         if item["link"] == link:
@@ -63,25 +64,25 @@ def get_topics_gearman(worker, job):
     bson_obj = bson.BSON(job.data)
     data = bson_obj.decode()
     if "article" not in data:
+        log(1, "No article supplied")
         return str(bson.BSON.encode({"status":"error", "description":"No article supplied"}))
 
     article = data["article"]
     topics = get_topics(article)
     if(len(topics) > 10):
-        log(0, "More than 10 topic words, returning only most frequent 10")
         topics = limit_dict(topics, 10)
     response = {"status":"ok", "topics":topics}
     try:
-        log(0, 'got topics, sending to db')
+        log(0, 'Got topics, sending to db')
         log(0, '_id:' + str(bson.ObjectId(data['_id'])))
         db_resp = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'feed', 'query':{u'_id':data[u'_id']}, 'projection':{'_id':1, 'items':1, "url":1}}))).result))
         if len(db_resp['docs']) == 0:
-             raise Exception('No documents returned with given query.')
+            log(2, 'No topics returned with given query')
+            raise Exception('No documents returned with given query.')
         old_data = db_resp['docs'][0]
         modifications = {"topics":topics}
         link = data['link']
         new_data = update_article_data(old_data, link, modifications)
-        log(0,new_data)
         r = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-update', str(bson.BSON.encode({'database':'feedlark', 'collection': 'feed', 'data':{'selector':{'_id':data['_id']}, 'updates':new_data}}))).result))
     except Exception as e:
         log(2, str(e))
