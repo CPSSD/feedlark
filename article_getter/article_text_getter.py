@@ -134,7 +134,7 @@ def update_article_text(worker, job):
         }))
     log(0, "ready to db-update")
     update_response = None
-    '''try:
+    try:
         update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
     except Exception as e:
         log(2, e)
@@ -143,7 +143,7 @@ def update_article_text(worker, job):
             "error-description": str(e)
         }))
     log(0, "update response: " + str(update_response))
-    '''
+    
     log(0, "'update-all-article-text' finished")
     return str(bson.BSON.encode({
         "status": "ok",

@@ -53,20 +53,6 @@ describe('FeedModel', _ => {
         .expect(302, done);
     });
   });
-  describe('#like()', _ => {
-    var liked_feed = {
-      route: "/feeds/like",
-      url: "http://www.reddit.com/r/mildlyinteresting/comments/4cnixq/my_friend_found_a_large_pile_of_potatoes_while/",
-      feed: "http://www.reddit.com/.rss"
-    };
-    it('User can like a feed', done => {
-      agent
-        .post('/feeds/like')
-        .type('application/json')
-        .send(liked_feed)
-        .expect(200, done);
-    });
-  });
   describe('#remove()', _ => {
     it('User cant use blank', done => {
       agent
