@@ -1,8 +1,8 @@
 package adder
 
 import (
-	"fmt"
 	"../dbconf"
+	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	//"strconv"
 	"testing"
