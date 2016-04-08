@@ -25,7 +25,8 @@ class TestAggregation(unittest.TestCase):
                 u'username': u'sully',
                 u'subscribed_feeds': [
                     u'https://news.ycombinator.com/rss',
-                    u'http://spritesmods.com/rss.php'
+                    u'http://spritesmods.com/rss.php',
+					u'http://dave.cheney.net/feed'
                     ],
             },
             {
