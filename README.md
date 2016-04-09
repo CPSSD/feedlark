@@ -13,7 +13,7 @@ The front end uses [express.js](http://expressjs.com/), an MVC framework in Node
 
 Setting up the Vagrant VM for the first time is very very slow (potentially upwards of 30 minutes), as there are a lot of dependencies. In particular, `spacy`, the tool we are using for Python natural language processing, requires a 500mb download of its English NLP model. However, once this initial setup has been completed, the VM can be booted in less than a minute.
 
-The whole virtual machine will currently be no larger than 6Gb on disc.
+The whole virtual machine will currently be no larger than 6Gb on disc. It will use at max 3GB of RAM.
 
 
 Dependencies
