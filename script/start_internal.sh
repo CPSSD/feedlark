@@ -1,4 +1,11 @@
 #!/bin/bash
+if [ $# != '1' ]
+    then
+        echo "Please pass in a secret key as an argument"
+        exit
+fi
+export SECRETKEY=$1
+
 echo "Starting backend elements in screen sessions"
 cd /vagrant
 
