@@ -7,8 +7,8 @@ fi
 
 grep -q -F 'ENVIRONMENT="PRODUCTION"' /etc/environment || echo  'ENVIRONMENT="PRODUCTION"' >> /etc/environment
 
+# mongo has to be installed manually
 sudo ./script/vagrant/get_packages.sh
 sudo ./script/vagrant/server_install.sh
 sudo ./script/vagrant/go_install.sh
-sudo ./script/vagrant/mongo_install.sh
 sudo ./script/python/install.sh

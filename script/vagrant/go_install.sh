@@ -3,7 +3,7 @@
 if [ "$ENVIRONMENT" = "PRODUCTION" ]; then
   echo "export GOPATH=/home/feedling/.go" > /home/vagrant/.profile
   mkdir -p /home/feedling/.go
-  export GOPATH=/home/vagrant/.go
+  export GOPATH=/home/feedling/.go
 else
   echo "export GOPATH=/home/vagrant/.go" > /home/vagrant/.profile
   echo "export PATH=/vagrant/server/node_modules/.bin:$PATH:" >> /home/vagrant/.profile
