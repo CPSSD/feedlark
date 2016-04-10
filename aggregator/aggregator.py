@@ -1,6 +1,8 @@
 from datetime import datetime
 import gearman
 import bson
+import traceback
+from os import getenv
 
 
 def log(*message, **kwargs):
@@ -21,8 +23,9 @@ def log(*message, **kwargs):
 
 class Aggregator:
 
-    def __init__(self, gm_client):
+    def __init__(self, gm_client, key):
         self.gm_client = gm_client
+        self.key = key
 
     def get_feed_items(self, feed_url):
         '''
@@ -30,6 +33,7 @@ class Aggregator:
         database.
         '''
         request = bson.BSON.encode({
+            'key': self.key,
             'database': 'feedlark',
             'collection': 'feed',
             'query': {
@@ -50,6 +54,7 @@ class Aggregator:
         The documents returned contain only the username and subscribed_feeds.
         '''
         request = bson.BSON.encode({
+            'key': self.key,
             'database': 'feedlark',
             'collection': 'user',
             'query': {},
@@ -69,6 +74,7 @@ class Aggregator:
         Adds sorted items to g2g database for a given user.
         '''
         request = bson.BSON.encode({
+            'key': self.key,
             'database': 'feedlark',
             'collection': 'g2g',
             'data': {
@@ -88,6 +94,7 @@ class Aggregator:
 
     def get_score(self, topic, words):
         request = bson.BSON.encode({
+            'key': self.key,
             'user_words': words,
             'article_words': topic,
             })
@@ -103,6 +110,17 @@ class Aggregator:
 
     def aggregate(self, gearman_worker, gearman_job):
         log("Job recieved")
+        if self.key is not None:
+            log("Checking secret key")
+            request = bson.BSON(gearman_job.data).decode()
+            if 'key' not in request or self.key != request['key']:
+                log('Secret key mismatch', 2)
+                response = bson.BSON.encode({
+                    'status': 'error',
+                    'description': 'Secret key mismatch',
+                    })
+                return response
+
         log("Loading users from 'user' database")
         user_data = self.get_users()
 
@@ -158,7 +176,8 @@ class Aggregator:
         return str(bson.BSON.encode({'status': 'ok'}))
 
 if __name__ == '__main__':
-    agg = Aggregator(gearman.GearmanClient(['localhost:4730']))
+    key = getenv('SECRETKEY')
+    agg = Aggregator(gearman.GearmanClient(['localhost:4730']), key)
 
     gm_worker = gearman.GearmanWorker(['localhost:4730'])
     gm_worker.set_client_id('aggregator')
