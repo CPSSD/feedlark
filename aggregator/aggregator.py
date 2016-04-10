@@ -1,7 +1,6 @@
 from datetime import datetime
 import gearman
 import bson
-import traceback
 from os import getenv
 
 
