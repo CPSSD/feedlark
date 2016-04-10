@@ -22,7 +22,6 @@ Dependencies
 - Vagrant
 - VirtualBox
 
-
 Vagrant
 -------------
 
@@ -33,10 +32,21 @@ $ vagrant ssh # gain ssh (on a POSIX system)
 $ vagrant halt # stop
 ```
 
-For windows users, `vagrant ssh` doesn't always work unless you have an ssh binary.
-Please read
+#### Windows Issues
+
+-  `vagrant ssh` doesn't always work unless you have an ssh binary.
+  Please read
 [this](https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY)
 to setup putty.
+
+- `CRLF` line endings may appear in your files. This will make the scripts error. 
+  To fix this run these commands inside your host repository:
+  ```
+  git config core.eol lf
+  git config core.autocrlf input
+  git checkout-index --force --all
+  ```
+  Note that you'll need a text editor that supports `LF` to edit the files now on Windows.
 
 #### Running the whole application stack
 
