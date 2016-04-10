@@ -62,6 +62,7 @@ func AddDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte, e
 		response = bson.M{"status": "error", "error": err.Error()}
 	}
 	bson, _ := bson.Marshal(response)
+	coll.Database.Session.Close()
 	return bson, err
 }
 
@@ -76,6 +77,7 @@ func UpdateDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte
 		response = bson.M{"status": "error", "error": err.Error()}
 	}
 	bson, _ := bson.Marshal(response)
+	coll.Database.Session.Close()
 	return bson, err
 }
 
@@ -91,6 +93,7 @@ func UpsertDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte
 		response = bson.M{"status": "error", "error": err.Error()}
 	}
 	bson, _ := bson.Marshal(response)
+	coll.Database.Session.Close()
 	return bson, err
 }
 
