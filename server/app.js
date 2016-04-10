@@ -3,7 +3,7 @@ const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-
+const MongoURL =  require("./middleware/db").MongoURL;
 const app = express();
 
 // view engine setup
@@ -27,7 +27,7 @@ app.use(session({
   secret: 'g)o(r)ooodl2z8xh(5qan80517e%35dgh(_03+t%3&1*w$)t9)',
   resave: false,
   saveUninitialized: false,
-  store: new MongoStore({ url: 'mongodb://localhost:9001/feedlark' })
+  store: new MongoStore({ url: MongoURL })
 }));
 
 // Load all the routing

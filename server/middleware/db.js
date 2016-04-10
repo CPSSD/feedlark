@@ -8,6 +8,8 @@ else {
 }
 
 module.exports = {
+  MongoURL,
+  
   // This means that only one connection is created per transaction
   transaction: (next) => {
     MongoClient.connect(MongoURL, (err, db) => {
