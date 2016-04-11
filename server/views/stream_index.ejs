@@ -45,7 +45,9 @@
         <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
         <li class="collection-item">
           <% if (keywords.length < 1 && source.length < 1) { %>
-          <p class="center-align">Failed to load your feeds. No data was received from the server</p>
+          <p class="center-align">We have no articles for you yet! Make sure you
+            add some feeds to your profile!<br>
+            Give us a few minutes to figure things out!</p>
           <% } else { %>
           <p class="center-align">No matches</p>
           <% } %>
@@ -57,10 +59,12 @@
             date = date.toLocaleDateString();
             var url = feeds[i].feed.match(/https?:\/\/[^\/]+/g)[0];
             var source_name_re = /https?:\/\/([^\/]+)/g;
+            var link_name_re = /(https?:\/\/[^\/]+\/)/g;
             var source_name = source_name_re.exec(feeds[i].feed)[1];
+            var link_name = link_name_re.exec(feeds[i].link)[1];
         %>
         <li class="collection-item avatar">
-          <img src="<%= url %>/favicon.ico" alt="favicon" class="circle">
+          <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
           <span class="title"><%= feeds[i].name %></span>
           <p>
             Published: <%= date %> <br />

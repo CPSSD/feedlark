@@ -18,4 +18,4 @@ while True:
 
     # Once scraper is done aggregate
     gm_client.submit_job('aggregate', str(request))
-    time.sleep(30)
+    time.sleep(300)

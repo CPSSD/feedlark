@@ -1,4 +1,4 @@
 #!/bin/bash
-
+# should be run by start_internal, otherwise this relative path is wrong.
 source /home/python/bin/activate
-python /vagrant/scraper/scraper.py
+python ../../scraper/scraper.py
