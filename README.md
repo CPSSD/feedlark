@@ -11,13 +11,16 @@ Feedlark is using [MongoDB](http://mongodb.org) for its data storage. There are 
 
 The front end uses [express.js](http://expressjs.com/), an MVC framework in Node.js.
 
+Setting up the Vagrant VM for the first time is very very slow (potentially upwards of 30 minutes), as there are a lot of dependencies. In particular, `spacy`, the tool we are using for Python natural language processing, requires a 500mb download of its English NLP model. However, once this initial setup has been completed, the VM can be booted in less than a minute.
+
+The whole virtual machine will currently be no larger than 6Gb on disc. It will use at max 3GB of RAM.
+
 
 Dependencies
 ------------
 
 - Vagrant
 - VirtualBox
-
 
 Vagrant
 -------------
@@ -29,10 +32,21 @@ $ vagrant ssh # gain ssh (on a POSIX system)
 $ vagrant halt # stop
 ```
 
-For windows users, `vagrant ssh` doesn't always work unless you have an ssh binary.
-Please read
+#### Windows Issues
+
+-  `vagrant ssh` doesn't always work unless you have an ssh binary.
+  Please read
 [this](https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Connect-to-Your-Vagrant-Virtual-Machine-with-PuTTY)
 to setup putty.
+
+- `CRLF` line endings may appear in your files. This will make the scripts error. 
+  To fix this run these commands inside your host repository:
+  ```
+  git config core.eol lf
+  git config core.autocrlf input
+  git checkout-index --force --all
+  ```
+  Note that you'll need a text editor that supports `LF` to edit the files now on Windows.
 
 #### Running the whole application stack
 
@@ -60,7 +74,7 @@ Pip dependencies will also be downloaded.
 - `192.168.2.2`: All services
 - `3000`: ExpressJS Web Server
 - `4730`: Gearman Job Server
-- `27017`: MongoDB
+- `9001`: MongoDB
 
 #### Symbolic Links
 
@@ -75,7 +89,7 @@ Project Directory Overview
 
 #### `./aggregator`
 
-This is the code that coalesces the database collections `feed` and `user`, and places the data in `g2g`. That is, it takes the feed data, and the user data, and creates the feeds tailored to each individual user.
+This is the code that coalesces the database collections `feed` and `user`, and places the data in `g2g`. That is, it takes the feed data, and the user data, and creates the feeds tailored to each individual user. It also includes the tool to compute the similarity of a user's interests and an article's topics.
 
 #### `./dbtools`
 
@@ -100,3 +114,11 @@ This is where we keep the scripts and configs related to the project. For exampl
 #### `./server`
 
 This is where we keep the server, which routes HTTP and renders responses.
+
+#### `./topics`
+
+This contains the tool to parse an article and pick out the topics it relates to.
+
+#### `./update_opinion`
+
+This contains the tool that is called whenever a user votes on an article. It updates the list of topics they have opinions on in the database, and updates that user's machine learning model with the new data.

@@ -2,8 +2,7 @@
 set -xe
 
 #Dependencies
-mongo localhost:27017/feedlark script/vagrant/create_feed_user_db.js
-python dbtools/getter/getter.py &
+mongo localhost:9001/feedlark script/mongodb/populate_sample_data.js
 go run dbtools/start_workers.go &
 
 #Unit tests

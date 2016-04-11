@@ -14,22 +14,72 @@ module.exports = {
 
     // Get & verify the page length & number
     // This Lo-Dash function is lovely
-    var page_length = _.toSafeInteger(req.params.page_length);
-    var page = _.toSafeInteger(req.params.page);
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length <= 0) {
+      page_length = 20; // Default Page Length = 20
+    }
+    var page = _.toSafeInteger(req.query.page); // defaults to 0 if undefined
+
+    // Sort out the filters
+    var keywords = [];
+    if (typeof req.query.keywords != "undefined" && req.query.keywords.length > 1) {
+      keywords = req.query.keywords.split(" ").map(val => val.toLowerCase());
+    }
 
     getFeeds(req.session.username, feeds => {
 
-      // Get a page worth of feeds
-      var pageinated_feeds = [];
-      for (var i = page * page_length; i < (page + 1) * page_length && i < feeds.length; i++) {
-        pageinated_feeds.push(feeds[i]);
-      }
+      // Filter the feeds
+      var filtered_feeds = feeds.filter((feed, index, src) => {
 
-      // Work out the next page number now, because Lo-Dash sorted out the param already
+        // Match with the filters
+        return (typeof req.query.source == "undefined" || req.query.source.length < 1 || feed.feed == req.query.source) &&
+               (keywords.length < 1 || keywords.every(val => feed.name.toLowerCase().includes(val)));
+      });
+
+      // Make sure the page number is less than the max available feeds
+      while (page > filtered_feeds / page_length) page -= 1;
+
+      // Take a page worth of feeds
+      var pageinated_feeds = _.slice(filtered_feeds, page*page_length, (page+1)*page_length);
+
+      var next_page = page + 1;
+      if (next_page * page_length > filtered_feeds.length) next_page = 0;
+
+      res.status(200).render("stream_index", {
+        feeds: pageinated_feeds,
+        page: page,
+        next_page: next_page,
+        page_length: page_length,
+        subscribed_feeds: req.session.subscribed_feeds || {},
+        keywords: req.query.keywords || "",
+        source: req.query.source || ""
+      });
+    });
+  },
+
+  plaintext: (req, res) => {
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length <= 0) {
+      page_length = 20; // Default Page Length = 20
+    }
+    var page = _.toSafeInteger(req.query.page);
+
+
+    var username = req.query.username;
+    res.type('.txt');
+
+    getFeeds(username, feeds => {
+
+      var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
       var next_page = page + 1;
       if ((page + 1) * page_length > feeds.length) next_page = 0;
 
-      res.status(200).render("stream_index", {feeds: pageinated_feeds, page: next_page, page_length: page_length});
+      res.status(200).render("stream_plaintext", {
+        feeds: pageinated_feeds,
+        page: page,
+        next_page: next_page,
+        page_length: page_length
+      });
     });
   }
 };

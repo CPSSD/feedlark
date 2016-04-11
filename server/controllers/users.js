@@ -7,6 +7,7 @@
 
 const bcrypt = require("bcrypt-nodejs");
 const userModel = require("../models/user");
+const crypto = require("crypto");
 const _ = require("lodash");
 
 module.exports = {
@@ -30,6 +31,7 @@ module.exports = {
 
           // Set session vars and redirect
           req.session.username = user.username;
+          req.session.subscribed_feeds = user.subscribed_feeds;
           req.session.msg = "Successfully logged in.";
           return res.redirect(302, "/user");
         });
@@ -69,6 +71,79 @@ module.exports = {
         return res.redirect(302, "/user");
       });
     });
+  },
 
+  // Render the user profile
+  profile: (req, res) => {
+    userModel.findByUsername(req.session.username, user => {
+      res.status(200).render("profile", {
+        user: user
+      });
+    });
+  },
+
+  addToken: (req, res) => {
+    const username = req.session.username;
+    // TODO: add per token permissions
+
+    // Get the user's details from the DB
+    crypto.randomBytes(32, (err, buf) => {
+      if (err) return res.status(400).render("/user", {err: "Oops, something broke."});
+      const token = buf.toString('hex');
+      userModel.addToken(username, token, status => {
+
+        if (typeof status == "undefined" || status == "err") {
+          return res.redirect(400 , "/user");
+        }
+        else {
+          return res.redirect(302, "/user");
+        }
+      });
+    });
+  },
+
+  removeToken: (req, res) => {
+    const username = req.session.username;
+    const token = req.query.token;
+    // TODO: add per token permissions
+    userModel.removeToken(username, token, (data) => {
+      return res.redirect(302, "/user");
+    });
+  },
+
+  listTokens: (req, res) => {
+    const username = req.session.username;
+    userModel.findByUsername(username, user => {
+      if ( user ) {
+        if (user.tokens) {
+          return res.status(200).send(user.tokens);
+        }
+        else {
+          res.status(403).end();
+        }
+      }
+      else {
+        res.status(403).end();
+      }
+    });
+  },
+
+  validToken: (req, res, next) => {
+    const username = req.query.username;
+    const token = req.query.token;
+    userModel.findByUsername(username, user => {
+      if ( user ) {
+        if (user.tokens[token]) {
+          next();
+        }
+        else {
+          res.status(403).end();
+        }
+      }
+      else {
+        res.status(403).end();
+      }
+    });
   }
+
 };

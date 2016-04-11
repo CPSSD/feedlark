@@ -3,8 +3,6 @@ html, body {
   height: 100%;
 }
 
-.brand-logo { padding-left: 1em !important; }
-
 .homepage-wrapper p { padding-left: 1em; }
 
 .parallax-container { height: 500px; }
