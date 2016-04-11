@@ -74,6 +74,7 @@ def get_topics_gearman(worker, job):
                 "status": "error",
                 "description": "Secret key mismatch",
                 }))
+            
 
     if "article" not in data:
         log(1, "No article supplied")
@@ -87,15 +88,39 @@ def get_topics_gearman(worker, job):
     try:
         log(0, 'Got topics, sending to db')
         log(0, '_id:' + str(bson.ObjectId(data['_id'])))
-        db_resp = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({'database':'feedlark', 'collection':'feed', 'query':{u'_id':data[u'_id']}, 'projection':{'_id':1, 'items':1, "url":1}}))).result))
+        db_request = bson.BSON.encode({
+            'key': key
+            'database': 'feedlark',
+            'collection': 'feed',
+            'query': {
+                u'_id': data[u'_id'],
+                },
+            'projection': {
+                '_id': 1,
+                'items': 1,
+                "url": 1,
+                },
+            })
+        db_resp = bson.BSON(gearman_client.submit_job('db-get', str(db_request)).result).decode()
         if len(db_resp['docs']) == 0:
             log(2, 'No topics returned with given query')
             raise Exception('No documents returned with given query.')
         old_data = db_resp['docs'][0]
-        modifications = {"topics":topics}
+        modifications = {"topics": topics}
         link = data['link']
         new_data = update_article_data(old_data, link, modifications)
-        r = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-update', str(bson.BSON.encode({'database':'feedlark', 'collection': 'feed', 'data':{'selector':{'_id':data['_id']}, 'updates':new_data}}))).result))
+        db_request = bson.BSON.encode({
+            'key': key,
+            'database': 'feedlark',
+            'collection': 'feed',
+            'data': {
+                'selector': {
+                    '_id': data['_id'],
+                    },
+                'updates': new_data,
+                },
+            })
+        r = bson.BSON(gearman_client.submit_job('db-update', str(db_request)).result).decode()
     except Exception as e:
         log(2, str(e))
         response = {"status":"error", "description": str(e)}
