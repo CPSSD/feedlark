@@ -15,7 +15,10 @@ virtualenv --system-site-packages -p python2 $WORKING_DIR || {
 
 source $WORKING_DIR/bin/activate
 
-pip2 install --ignore-installed -r /vagrant/script/python/requirements.txt
+# if the initial install fails we attempt to use a relative path. this ensures
+# it installs correctly on the production server.
+pip2 install --ignore-installed -r /vagrant/script/python/requirements.txt ||
+  pip2 install --ignore-installed -r ./script/python/requirements.txt
 python2 -m spacy.en.download
 
 deactivate  # this is added to the path when activate is sourced
