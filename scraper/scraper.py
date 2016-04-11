@@ -1,9 +1,8 @@
 import sys
 import requests
 import feedparser
-from datetime import datetime
+import datetime
 from bs4 import BeautifulSoup
-from datetime import datetime
 import bson
 import gearman
 
@@ -23,12 +22,17 @@ def get_feed_data(rss_url):
     feed = feedparser.parse(rss_url)
     items_list = []
     for item in feed['entries']:
-        date = item['published_parsed'] if 'published_parsed' in item else item[
-            'updated_parsed']
+        if 'published_parsed' in item:
+            date = item['published_parsed']
+        elif 'updated_parsed' in item:
+            date = item['updated_parsed']
+        else:
+            date = datetime.date.today().timetuple()
+
         items_list.append({
             'name': item['title'],
             'link': item['link'],
-            'pub_date': datetime(*date[:6]),
+            'pub_date': datetime.datetime(*date[:6]),
         })
     return items_list
 
@@ -36,7 +40,7 @@ def get_feed_data(rss_url):
 def log(level, message):
     """Log information as specified in feedlark specs"""
     levels = ['INFO:', 'WARNING:', 'ERROR:']
-    time = str(datetime.now()).replace('-', '/')[:-7]
+    time = str(datetime.datetime.now()).replace('-', '/')[:-7]
     print time, levels[level], message
 
 
