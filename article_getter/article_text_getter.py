@@ -81,12 +81,10 @@ def get_single_feed_db_data(url, key=None):
 def update_article_text(worker, job):
     log(0, "'article-text-getter' initiated")
     bson_job_obj = bson.BSON(job.data).decode()
-    
+
     key = getenv('SECRETKEY')
     if key is not None:
         log(0, "Checking secret key")
-        log(0, key)
-        log(0, bson_job_obj[key])
         if 'key' not in bson_job_obj or bson_job_obj['key'] != key:
             log(2, "Secret key mismatch")
             response = bson.BSON.encode({
