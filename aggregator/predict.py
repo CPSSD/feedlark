@@ -12,8 +12,8 @@ class Classification:
         self.model = linear_model.SGDClassifier(loss="log")
 
     def predict(self, x):
-        """expects a single flat list, x, the inputs for the prediction.
-        outputs a single float, how likely it is the article will be in 'liked' category"""
+        """expects a list of lists representing each of the sets of inputs to be classified.
+        outputs a list of floats, with how likely it is the given input set will be in 'liked' category"""
 
         print x
 
@@ -37,8 +37,10 @@ class Classification:
 
 if __name__ == '__main__':
     c = Classification()
-    c.train([[1, 5], [2, -5], [2, 7], [1, -3], [1,0]], [0, 1, 0, 1, 0])
-    print c.predict([[1, 10]])
-    print c.predict([[2, 4]])
-    print c.predict([[3, -10]])
-    print c.predict([[-1, 11]])
+    c.train([[1., 5.], [2., -5.], [2., 7.], [1., -3.], [1.,0.], [1.0, -0.1]], [0, 1, 0, 1, 0, 1])
+    print c.predict([[1., 10.]])
+    print c.predict([[2., 4.]])
+    print c.predict([[3., -10.]])
+    print c.predict([[-1., 1.1]])
+    print c.predict([[1.0, -3.0]])
+    print c.predict([[1.2, -2.1]])
