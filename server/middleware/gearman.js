@@ -7,6 +7,7 @@
 
 const gearman = require("gearman");
 const client = new gearman.Gearman("localhost", 4730 , {timeout: 3000});
+const BSON = new require("bson").BSONPure.BSON();
 
 // TODO: remove timeout messages when client isn't connected
 client.on('timeout', () => {
@@ -23,7 +24,8 @@ module.exports = {
       };
     }
     client.connect( () => {
-      client.submitJob( job_name, data=job_data, options=job_options);
+      bson_data = BSON.serialize(job_data, false, true, false);
+      client.submitJob( job_name, data=bson_data, options=job_options);
       next();
     });
   }
