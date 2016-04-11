@@ -47,6 +47,7 @@
     $(document).ready(_ => {
       $('.parallax').parallax();
       $("select").material_select();
+      $(".button-collapse").sideNav(); // init sidenav bar for mobile
     });
   </script>
   <% if (typeof session != "undefined" && typeof session.msg != "undefined") { %>
