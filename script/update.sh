@@ -11,6 +11,14 @@ echo "INFO: Starting update" > $logfile
 
 git pull > $gitlog
 
+# Make sure that went well
+if [ $? -ne 0 ]; then
+	echo "ERROR: Git pull failed!" >> $logfile
+	exit 1
+fi
+
+echo "INFO: Git pull successful" >> $logfile
+
 # Check if the branch updated
 grep up-to-date $gitlog
 if [ $? -eq 0 ]; then
@@ -20,14 +28,6 @@ fi
 
 echo "INFO: Stopping processes" >> $logfile
 script/stop_internal.sh
-
-# Make sure that went well
-if [ $? -ne 0 ]; then
-	echo "ERROR: Git pull failed!" >> $logfile
-	exit 1
-fi
-
-echo "INFO: Git pull successful" >> $logfile
 
 # Check if NPM needs reinstalling
 grep package.json $gitlog
