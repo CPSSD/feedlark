@@ -4,6 +4,7 @@ import feedparser
 from datetime import datetime
 from bs4 import BeautifulSoup
 from datetime import datetime
+from os import getenv
 import bson
 import gearman
 
@@ -186,8 +187,20 @@ def update_single_feed(worker, job):
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_feeds(worker, job):
     log(0, "'update-all-feeds' initiated")
-    log(0, "Retrieving data from feed db")
 
+    key = getenv('SECRETKEY')
+    if key is not None:
+        log(0, "Checking secret key")
+        request = bson.BSON(job.data).decode()
+        if 'key' not in request or request['key'] != key:
+            log(2, "Secret key mismatch")
+            response = bson.BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                })
+            return response
+
+    log(0, "Retrieving data from feed db")
     feed_db_data = get_all_feed_docs()
 
     try:
