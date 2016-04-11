@@ -2,6 +2,7 @@ import gearman
 import bson
 import pickle
 from datetime import datetime
+from os import getenv
 
 from sklearn import linear_model
 
@@ -114,6 +115,18 @@ def get_feed_data(feed_url):
 def update_user_model(worker, job):
     bson_input = bson.BSON(job.data)
     job_input = bson_input.decode()
+
+    key = getenv('SECRETKEY')
+    if key is not None:
+        log(0, "Checking secret key")
+        if 'key' not in job_input or job_input['key'] != key:
+            log(2, "Secret key mismatch")
+            response = bson.BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                })
+            return str(response)
+
     add_update_to_db(job_input)
     log(0, 'update-user-model called with data ' + str(job_input))
     if not ("username" in job_input and "feed_url" in job_input and "article_url" in job_input and "positive_opinion" in job_input):
