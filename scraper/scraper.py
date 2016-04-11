@@ -162,7 +162,16 @@ def update_database(doc, updated_item_list):
 
 def update_single_feed(worker, job):
     log(0, "'update-single-feed' initiated")
-    url = str(job.data)
+
+    try:
+        request = bson.BSON(job.data).decode()
+        url = request['url']
+    except:
+        log(2, "Invalid parameters provided")
+        return str(bson.BSON.encode({
+            'status': 'error',
+            'error-description': 'Invalid parameters',
+            }))
 
     try:
         feed = get_single_feed_doc(url)
