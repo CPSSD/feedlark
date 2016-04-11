@@ -25,6 +25,9 @@ module.exports = {
       };
     }
     client.connect( () => {
+      if ('SECRETKEY' in process.env) {
+        job_data['key'] = process.env['SECRETKEY'];
+      }
       var bson_data = BSON.serialize(job_data, false, true, false);
       client.submitJob(job_name, data=bson_data, options=job_options);
       next();
