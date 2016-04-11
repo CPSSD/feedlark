@@ -45,7 +45,9 @@
         <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
         <li class="collection-item">
           <% if (keywords.length < 1 && source.length < 1) { %>
-          <p class="center-align">Failed to load your feeds. No data was received from the server</p>
+          <p class="center-align">We have no articles for you yet! Make sure you
+            add some feeds to your profile!<br>
+            Give us a few minutes to figure things out!</p>
           <% } else { %>
           <p class="center-align">No matches</p>
           <% } %>

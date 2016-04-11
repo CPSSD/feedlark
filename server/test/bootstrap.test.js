@@ -1,8 +1,7 @@
-const MongoClient = require("mongodb");
+const dbFuncs = require("../middleware/db");
 
 function removeTestUser(done) {
-  MongoClient.connect("mongodb://localhost:9001/feedlark", (err, db) => {
-    if (err) throw err;
+  dbFuncs.transaction(db => {
 
     db.collection("user").remove({"$or": [{username: "rmss"}, {username: "heyzeus"}]}, err => {
       if (err) throw err;

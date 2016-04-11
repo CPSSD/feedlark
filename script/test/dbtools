@@ -8,7 +8,7 @@ cd adder
 go test
 cd ../
 
-cd dbconf
+cd dbhelp
 go test
 cd ../
 

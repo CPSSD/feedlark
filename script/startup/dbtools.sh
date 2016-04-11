@@ -1,2 +1,3 @@
 #!/bin/bash
-go run /vagrant/dbtools/start_workers.go
+# should be run by start_internal, otherwise this relative path is wrong.
+go run ../../dbtools/start_workers.go
