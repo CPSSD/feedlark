@@ -1,15 +1,15 @@
 package dbhelp
 
 import (
-  "os"
-  "time"
-  "fmt"
+	"fmt"
+	"os"
+	"time"
 
 	"gopkg.in/mgo.v2"
 )
 
 func GetURL() string {
-  return "127.0.0.1:9001"
+	return "127.0.0.1:9001"
 }
 
 func Log(level int, s string) {
@@ -23,15 +23,15 @@ func Log(level int, s string) {
 }
 
 func CreateSession(url string, database string, collection string) *mgo.Collection {
-  session, err := mgo.Dial(url)
+	session, err := mgo.Dial(url)
 	if err != nil {
 		Log(2, err.Error())
 		panic(err.Error())
 	}
 
-  if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
-    session.DB(database).Login("feedlark", "hackmeplz")
-  }
+	if os.Getenv("ENVIRONMENT") == "PRODUCTION" {
+		session.DB(database).Login("feedlark", "hackmeplz")
+	}
 
-  return session.DB(database).C(collection)
+	return session.DB(database).C(collection)
 }

@@ -29,7 +29,6 @@ func Create() error {
 	return nil
 }
 
-
 func AddDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte, error) {
 	// Add a document to the specified db & collection with the given data
 	dbhelp.Log(0, "Adding document to db "+database+" collection "+collection)
