@@ -118,7 +118,7 @@ class Aggregator:
                     'status': 'error',
                     'description': 'Secret key mismatch',
                     })
-                return response
+                return str(response)
 
         log("Loading users from 'user' database")
         user_data = self.get_users()

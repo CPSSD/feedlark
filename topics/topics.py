@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 import gearman, bson
 from spacy.en import English
+from os import getenv
 
 nlp = English()
 gearman_client = None
@@ -63,6 +64,17 @@ def get_topics(article):
 def get_topics_gearman(worker, job):
     bson_obj = bson.BSON(job.data)
     data = bson_obj.decode()
+
+    key = getenv('SECRETKEY')
+    if key is not None:
+        log(0, 'Checking secret key')
+        if 'key' not in data or data['key'] != key:
+            log(2, 'Secret key mismatch')
+            return str(bson.BSON.encode({
+                "status": "error",
+                "description": "Secret key mismatch",
+                }))
+
     if "article" not in data:
         log(1, "No article supplied")
         return str(bson.BSON.encode({"status":"error", "description":"No article supplied"}))

@@ -198,7 +198,7 @@ def update_all_feeds(worker, job):
                 'status': 'error',
                 'description': 'Secret key mismatch',
                 })
-            return response
+            return str(response)
 
     log(0, "Retrieving data from feed db")
     feed_db_data = get_all_feed_docs()
