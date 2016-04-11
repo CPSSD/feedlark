@@ -1,4 +1,4 @@
 #!/bin/bash
-
+# should be run by start_internal, otherwise this relative path is wrong.
 source /home/python/bin/activate
-python /vagrant/aggregator/kw_score.py
+python ../../aggregator/kw_score.py

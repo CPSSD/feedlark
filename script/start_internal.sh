@@ -43,7 +43,7 @@ cd ..
 
 mkdir -p backend-score
 cd backend-score
-screen -dmLS backend-score /bin/bash /vagrant/script/startup/score.sh
+screen -dmLS backend-score /bin/bash ../../script/startup/score.sh
 cd ..
 
 echo "Starting frontend elements in screen sessions"
