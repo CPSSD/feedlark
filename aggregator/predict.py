@@ -9,7 +9,7 @@ class Classification:
 
     def __init__(self):
         # loss="log" makes it use logistic regression
-        self.model = linear_model.SGDClassifier(loss="log")
+        self.model = linear_model.SGDClassifier(loss="log", n_iter=5)
 
     def predict(self, x):
         """expects a list of lists representing each of the sets of inputs to be classified.
@@ -23,8 +23,10 @@ class Classification:
 
         print probabilities
 
-        #get how likely each input will match class 0, ie. a 'like'
-        probabilities_of_like = [a[0] for a in probabilities]
+        print 'predict', self.model.predict(x)
+
+        #get how likely each input will match the second class (index 1), ie. a 'like'
+        probabilities_of_like = [a[1] for a in probabilities]
         
         print probabilities_of_like
         return probabilities_of_like
@@ -33,7 +35,7 @@ class Classification:
         self.model = pickle.loads(pickled_model) 
         
     def train(self, x, y):
-        self.model.partial_fit(x, y, classes=[0, 1])
+        self.model.fit(x, y)#, classes=[-1, 1])
 
 if __name__ == '__main__':
     c = Classification()
