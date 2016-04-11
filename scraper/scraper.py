@@ -180,6 +180,16 @@ def update_single_feed(worker, job):
             'error-description': 'Invalid parameters',
             }))
 
+    if key is not None:
+        log(0, "Checking secret key")
+        if 'key' not in request or request['key'] != key:
+            log(2, "Secret key mismatch")
+            response = bson.BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                })
+            return str(response)
+
     try:
         feed = get_single_feed_doc(url)
         updated_feeds = gather_updates(feed[0])
