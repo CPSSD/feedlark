@@ -89,7 +89,7 @@ def get_topics_gearman(worker, job):
         log(0, 'Got topics, sending to db')
         log(0, '_id:' + str(bson.ObjectId(data['_id'])))
         db_request = bson.BSON.encode({
-            'key': key
+            'key': key,
             'database': 'feedlark',
             'collection': 'feed',
             'query': {
