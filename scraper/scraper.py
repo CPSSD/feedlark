@@ -162,7 +162,7 @@ def update_database(doc, updated_item_list):
 
 def update_single_feed(worker, job):
     log(0, "'update-single-feed' initiated")
-
+    
     try:
         request = bson.BSON(job.data).decode()
         url = request['url']

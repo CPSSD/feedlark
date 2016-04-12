@@ -76,5 +76,11 @@ router.get("/token/list", isAuthed, userController.listTokens);
 // Plaintext Endpoint
 router.get("/plaintext", userController.validToken, streamController.plaintext);
 
+//Show interest
+router.post("/feeds/like", isAuthed, feedController.like);
+
+//Show disinterest buttons
+router.post("/feeds/dislike", isAuthed, feedController.dislike);
+
 
 module.exports = router;
