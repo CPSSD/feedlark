@@ -63,30 +63,33 @@
             var source_name = source_name_re.exec(feeds[i].feed)[1];
             var link_name = link_name_re.exec(feeds[i].link)[1];
         %>
-        <li class="collection-item avatar">
-          <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
-          <span class="title"><%= feeds[i].name %></span>
-          <p>
-            Published: <%= date %> <br />
-            From: <%= source_name %>
-          </p>
-          <span class="secondary-content" style="text-align: right;">
-          <a class="ajax-link" data-route="/feeds/dislike"
-                               data-url="<%= feeds[i].link %>"
-                               data-feed="<%= feeds[i].feed %>"
-                               style="cursor: pointer;">
-                               <i class="material-icons">thumb_down</i>
-          </a>
-          <a class="ajax-link" data-route="/feeds/like"
-                               data-url="<%= feeds[i].link %>"
-                               data-feed="<%= feeds[i].feed %>"
-                               style="cursor: pointer;">
-                               <i class="material-icons">thumb_up</i>
-          </a>
-          <br />
-          <a href="<%= feeds[i].link %>"><i class="material-icons">send</i></a>
-          </span>
-        </li>
+          <li class="collection-item avatar">
+            <a href="<%= feeds[i].link %>" target="_blank" class="collection-item-link">
+              <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
+              <span class="title"><%= feeds[i].name %></span>
+              <p>
+                Published: <%= date %> <br />
+                From: <%= source_name %>
+              </p>
+
+              <div class="secondary-content">
+                <a class="ajax-link" data-route="/feeds/like"
+                                     data-url="<%= feeds[i].link %>"
+                                     data-feed="<%= feeds[i].feed %>"
+                                     style="cursor: pointer;">
+                                     <i class="material-icons">thumb_up</i>
+                </a>
+                <br>
+                <a class="ajax-link" data-route="/feeds/dislike"
+                                     data-url="<%= feeds[i].link %>"
+                                     data-feed="<%= feeds[i].feed %>"
+                                     style="cursor: pointer;">
+                                     <i class="material-icons">thumb_down</i>
+                </a>
+              </div>
+
+            </a>
+          </li>
 
         <% } } %>
       </ul>
