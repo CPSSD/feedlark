@@ -1,6 +1,6 @@
 #!/bin/bash
 # Pulls the site onto the production server
-cd /home/feedling/repo
+cd /home/feedling/feedlark
 
 mkdir -p log/updater
 curdate=$(date +'%H:%M_%d\%m\%Y')
