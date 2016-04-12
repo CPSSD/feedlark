@@ -12,7 +12,7 @@ module.exports = {
 	res.type("json");
 
     // Check the ref
-    if (req.query.ref != ref) {
+    if (req.body.ref != ref) {
       return res.status(304).send('{"status": "not modified", "error": "Wrong ref."}');
     }
 
