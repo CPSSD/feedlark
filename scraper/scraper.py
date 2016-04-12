@@ -116,10 +116,12 @@ def get_single_feed_doc(url):
 
 def gather_updates(doc):
     """Expects a doc as returned by get_feed"""
+    log(0, "=====================================")
     log(0, "Loading items in feed: " + doc['url'])
     updated_item_list = []
+    log(0, "Parsing feed")
     result = get_feed_data(doc['url'])  # list of item dicts
-    log(0, "Parsed feed " + doc['url'])
+    log(0, "Gathering list of new items to add")
     for item in result:
         for db_item in doc['items']:
             if item['link'] == db_item['link']:
@@ -134,7 +136,6 @@ def gather_updates(doc):
                 'link': item['link'],
                 'article_text': '',
             })
-    log(0, "Gathered list of items to update for: " + doc['url'])
     return updated_item_list
 
 
@@ -150,7 +151,7 @@ def update_database(doc, updated_item_list):
             "error-description": str(e)
         }))
 
-    log(0, "ready to db-update")
+    log(0, "Updating feed database")
     update_response = None
     try:
         update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
@@ -160,7 +161,6 @@ def update_database(doc, updated_item_list):
             "status": "error",
             "error-description": str(e)
         }))
-    log(0, "update response: " + str(update_response))
 
     log(0, "Submitting items for scraping")
     # Submit items for scraping
@@ -174,7 +174,6 @@ def update_database(doc, updated_item_list):
             "status": "error",
             "error-description": str(e)
         }))
-    log(0, "article-text-getter update response: " + str(update_response))
 
 
 def update_single_feed(worker, job):
@@ -193,10 +192,10 @@ def update_single_feed(worker, job):
     try:
         feed = get_single_feed_doc(url)
         updated_feeds = gather_updates(feed[0])
-        log(0, "'update-single-feed' finished gathering updates, applying")
         update_database(feed[0], updated_feeds)
     except Exception as e:
         log(2, "'update-single-feed' failed")
+        log(2, str(e))
         return str(bson.BSON.encode({
             "status": "error",
             "error-description": str(e)
@@ -245,7 +244,7 @@ if __name__ == "__main__":
 
     log(0, "Registering task 'update-all-feeds'")
     gm_worker.register_task('update-all-feeds', update_all_feeds)
-    log(0, "Registering task 'update-singlefeed'")
+    log(0, "Registering task 'update-single-feed'")
     gm_worker.register_task('update-single-feed', update_single_feed)
 
     gm_worker.work()
