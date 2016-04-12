@@ -77,6 +77,6 @@ router.get("/token/list", isAuthed, userController.listTokens);
 router.get("/plaintext", userController.validToken, streamController.plaintext);
 
 // Repo updater
-router.get("/pull/:token", updater.check, updater.run);
+router.post("/pull/:token", updater.check, updater.run);
 
 module.exports = router;
