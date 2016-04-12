@@ -143,7 +143,11 @@ def update_database(doc, updated_item_list):
     """Updates the database, given a doc and updated_item_list"""
     bson_data = None
     try:
-        bson_data = bsonify_update_data(doc['_id'], doc['url'], updated_item_list)
+        bson_data = bsonify_update_data(
+            doc['_id'],
+            doc['url'],
+            updated_item_list
+            )
     except Exception as e:
         log(2, str(e))
         return str(bson.BSON.encode({
@@ -154,7 +158,11 @@ def update_database(doc, updated_item_list):
     log(0, "Updating feed database")
     update_response = None
     try:
-        update_response = gm_client.submit_job('db-update', str(bson_data), background=True)
+        update_response = gm_client.submit_job(
+            'db-update',
+            str(bson_data),
+            background=True
+            )
     except Exception as e:
         log(2, str(e))
         return str(bson.BSON.encode({
