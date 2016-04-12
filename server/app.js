@@ -4,6 +4,8 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const mongoURL =  require("./middleware/db").mongoURL;
+const compression = require('compression');
+const minify = require('express-minify');
 const app = express();
 
 // view engine setup
@@ -14,6 +16,9 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(compression());
+app.use(minify());
 app.use(express.static(path.join(__dirname, 'public')));
 // Return the .ico in images when feedlark.com/favicon.ico is requested
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
