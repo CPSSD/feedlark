@@ -22,18 +22,24 @@ def get_feed_data(rss_url):
     feed = feedparser.parse(rss_url)
     items_list = []
     for item in feed['entries']:
-        if 'published_parsed' in item:
-            date = item['published_parsed']
-        elif 'updated_parsed' in item:
-            date = item['updated_parsed']
-        else:
-            date = datetime.date.today().timetuple()
+        try:
+            if 'published_parsed' in item:
+                date = item['published_parsed']
+            elif 'updated_parsed' in item:
+                date = item['updated_parsed']
+            else:
+                date = datetime.date.today().timetuple()
 
-        items_list.append({
-            'name': item['title'],
-            'link': item['link'],
-            'pub_date': datetime.datetime(*date[:6]),
-        })
+            items_list.append({
+                'name': item['title'],
+                'link': item['link'],
+                'pub_date': datetime.datetime(*date[:6]),
+            })
+        except:
+            log(1, "Item couldn't be added, skipping")
+            if 'title' in item:
+                log(1, "Problem item: " + str(item['title']))
+
     return items_list
 
 
