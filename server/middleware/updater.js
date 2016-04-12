@@ -44,11 +44,13 @@ module.exports = {
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
         console.log(require("strftime")("%H:%M %d/%m/%y") + " ERROR: Repo update failed!\n" + stderr);
-        return res.status(500).send('{"status": "failure", "error": "' + stderr + '"}');
+        return;
       }
 
       console.log(require("strftime")("%H:%M %d/%m/%y") + " INFO: Repo updated");
-      return res.status(200).send('{"status": "success"}');
     });
+
+    // Return immediately. The script could take a while to run.
+    return res.status(200).send('{"status": "success"}').end();
   }
 };
