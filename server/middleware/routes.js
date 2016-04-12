@@ -7,7 +7,7 @@ const router = require("express").Router();
 const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
-
+const updater = require("./updater");
 
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
@@ -46,6 +46,12 @@ router.get("/user", isAuthed, userController.profile);
 
 // Feeds pages
 
+// Show interest
+router.post("/feeds/like", isAuthed, feedController.like);
+
+// Show disinterest buttons
+router.post("/feeds/dislike", isAuthed, feedController.dislike);
+
 // Add
 router.get("/feeds/add", isAuthed, (req, res) => { res.render("feeds_add"); });
 
@@ -76,11 +82,7 @@ router.get("/token/list", isAuthed, userController.listTokens);
 // Plaintext Endpoint
 router.get("/plaintext", userController.validToken, streamController.plaintext);
 
-//Show interest
-router.post("/feeds/like", isAuthed, feedController.like);
-
-//Show disinterest buttons
-router.post("/feeds/dislike", isAuthed, feedController.dislike);
-
+// Repo updater
+router.post("/pull/:token", updater.check, updater.run);
 
 module.exports = router;
