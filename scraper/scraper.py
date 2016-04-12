@@ -21,7 +21,7 @@ def get_feed_data(rss_url):
 
     try:
         feed = feedparser.parse(rss_url)
-        assert type(feed) == dict
+        assert type(feed) == feedparser.FeedParserDict
         assert 'entries' in feed
     except:
         log(1, "Problem reqesting feed! URL: " + rss_url)
