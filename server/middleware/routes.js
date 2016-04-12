@@ -46,6 +46,12 @@ router.get("/user", isAuthed, userController.profile);
 
 // Feeds pages
 
+// Show interest
+router.post("/feeds/like", isAuthed, feedController.like);
+
+// Show disinterest buttons
+router.post("/feeds/dislike", isAuthed, feedController.dislike);
+
 // Add
 router.get("/feeds/add", isAuthed, (req, res) => { res.render("feeds_add"); });
 

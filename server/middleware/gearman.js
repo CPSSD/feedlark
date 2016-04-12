@@ -16,8 +16,19 @@ client.on('timeout', () => {
   client.close();
 });
 
+client.on('WORK_COMPLETE', (job) => {
+    console.log('job completed, result:', job.payload.toString());
+    client.close();
+});
+
 module.exports = {
   startJob: (job_name, job_data, job_options, next) => {
+    /*
+      Start a Gearman Job.
+
+      job_data is expected to be standard javascript objects, which will be
+      serialized to bson.
+    */
     if (!job_options) {
       job_options = {
         background: true,
@@ -26,8 +37,9 @@ module.exports = {
     }
     client.connect( () => {
       var bson_data = BSON.serialize(job_data, false, true, false);
-      client.submitJob(job_name, data=bson_data, options=job_options);
+      client.submitJob( job_name, data=bson_data , options=job_options);
       next();
+      client.close();
     });
   }
 };
