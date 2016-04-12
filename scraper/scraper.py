@@ -19,7 +19,14 @@ def get_feed_data(rss_url):
     if type(rss_url) != str and type(rss_url) != unicode:
         raise TypeError('URL must be a string')
 
-    feed = feedparser.parse(rss_url)
+    try:
+        feed = feedparser.parse(rss_url)
+        assert type(feed) == dict
+        assert 'entries' in feed
+    except:
+        log(1, "Problem reqesting feed! URL: " + rss_url)
+        return []
+
     items_list = []
     for item in feed['entries']:
         try:
