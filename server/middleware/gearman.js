@@ -17,8 +17,8 @@ client.on('timeout', () => {
 });
 
 client.on('WORK_COMPLETE', (job) => {
-	console.log('job completed, result:', job.payload.toString());
-	client.close();
+    console.log('job completed, result:', job.payload.toString());
+    client.close();
 });
 
 module.exports = {
@@ -36,9 +36,9 @@ module.exports = {
       };
     }
     client.connect( () => {
-      var data = BSON.serialize(job_data, false, true, false);
-      client.submitJob( job_name, data , options=job_options);
-	  client.close();
+      var bson_data = BSON.serialize(job_data, false, true, false);
+      client.submitJob( job_name, data=bson_data , options=job_options);
+      client.close();
     });
   }
 };

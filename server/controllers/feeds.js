@@ -47,7 +47,10 @@ module.exports = {
       // Add to current user
       userModel.addFeed(db, req.session.username, url, subscribed_feeds => {
         // Call gearman
-        gearman.startJob('update-single-feed', {"url":url}, undefined, () => {});
+        var request_data = {
+          'url': url,
+        };
+        gearman.startJob('update-single-feed', request_data, undefined, () => {});
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";
@@ -106,8 +109,8 @@ module.exports = {
           "positive_opinion": false
         };
         gearman.startJob('update-user-model', jobData, undefined, () => {
-  		      return res.status(200).send("Showing disinterest in " + url);
-    	  });
+                return res.status(200).send("Showing disinterest in " + url);
+          });
       });
     }
     catch(err) {
