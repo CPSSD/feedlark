@@ -41,7 +41,11 @@ def update_model(user_data, article_data, is_positive):
     topic_crossover = 0 # a comparison of how close the articles are in terms of topic, taken from the worker in /aggregator
     log(0, str(user_data['words']))
     log(0, str(article_data['topics']))
-    score_data = bson.BSON.decode(bson.BSON(gearman_client.submit_job('score', str(bson.BSON.encode({'article_words':user_data['words'], 'user_words':article_data['topics']}))).result))
+    try:
+        score_data = bson.BSON.decode(bson.BSON(gearman_client.submit_job('score', str(bson.BSON.encode({'article_words':user_data['words'], 'user_words':article_data['topics']}))).result))
+    except:
+        log(2, "broken score")
+        return user_data
     if score_data['status'] == 'ok':
         topic_crossover = score_data['score']
     else:
@@ -153,7 +157,6 @@ def update_user_model(worker, job):
             user_words = update_topic_counts(user_words, topics, job_input['positive_opinion'])
             ## here
             user_data = update_model(user_data, item, job_input["positive_opinion"]) # update the pickled user model
-            log(2,user_data)
             break
 
     log(0, "Updating user db with new topic weights")

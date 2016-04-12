@@ -109,7 +109,7 @@ module.exports = {
           "positive_opinion": false
         };
         gearman.startJob('update-user-model', jobData, undefined, () => {
-                return res.status(200).send("Showing disinterest in " + url);
+          return res.status(200).send("Showing disinterest in " + url);
           });
       });
     }

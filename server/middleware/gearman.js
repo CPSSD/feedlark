@@ -38,6 +38,7 @@ module.exports = {
     client.connect( () => {
       var bson_data = BSON.serialize(job_data, false, true, false);
       client.submitJob( job_name, data=bson_data , options=job_options);
+      next();
       client.close();
     });
   }
