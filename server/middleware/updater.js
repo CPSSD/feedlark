@@ -8,9 +8,12 @@ const ref = "refs/heads/master";
 module.exports = {
   check: (req, res, next) => {
 
+	// Set encoding type
+	res.type("json");
+
     // Check the ref
     if (req.query.ref != ref) {
-      return res.status(400).send('{"status": "bad request", "error": "Wrong ref."}');
+      return res.status(304).send('{"status": "not modified", "error": "Wrong ref."}');
     }
 
     // Load the token
