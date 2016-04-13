@@ -96,7 +96,7 @@ class Aggregator:
         result = bson.BSON(gm_job.result).decode()
         if result['status'] != 'ok':
             log("Scoring article failed", level=1)
-            log('Description:' + result['description'])
+            log('Description: ' + result['description'], level=1)
             return 0
 
         return result['score']
@@ -107,6 +107,7 @@ class Aggregator:
         user_data = self.get_users()
 
         for user in user_data:
+            log('=====================================')
             log("Loading feeds for: ", user['username'])
             user_g2g = {'username': user['username'], 'feeds': []}
 
@@ -129,6 +130,11 @@ class Aggregator:
                             'pub_date': item['pub_date'],
                         })
 
+            if 'feeds' not in user_g2g or user_g2g['feeds'] == []:
+                log('No feed items for user', level=1)
+                log('Completed')
+                continue
+
             try:
                 log("Normalising dates")
                 oldest = min(user_g2g['feeds'], key=lambda x: x['pub_date'])
@@ -142,8 +148,8 @@ class Aggregator:
                     item['norm_date'] = (item_seconds-oldest)/(newest-oldest)
                     normalised_items.append(item)
                 user_g2g['feeds'] = normalised_items
-            except TypeError:
-                log('Unicode in pub_date??? Skipping user', level=1)
+            except:
+                log('Error processing dates (bad date formats?)', level=1)
                 continue
 
             log("Sorting items")
