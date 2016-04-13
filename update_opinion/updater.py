@@ -58,7 +58,6 @@ def update_model(user_data, article_data, is_positive):
     else:
         log(2, "Error getting crossover score: " + str(score_data['description']))
     age = (datetime.now() - article_data['pub_date']).total_seconds()*1000 # get the number of millis in difference
-
     inputs = [topic_crossover, age]
     output = 0 if is_positive else 1
     log(0, str(inputs) + " " + str(output))
@@ -180,7 +179,7 @@ def update_user_model(worker, job):
         response = {"status":"error", "description":"No user data received from db for user " + str(job_input["username"])}
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
-    
+
     log(0, "Getting feed data from db")
     feed_data = get_feed_data(job_input["feed_url"])
     if feed_data is None:
@@ -189,17 +188,25 @@ def update_user_model(worker, job):
         return str(bson_response)
 
     log(0, "Updating topic weights")
-    user_words = user_data['words']
+    if "words" in user_data:
+        user_words = user_data['words']
+    else:
+        user_data['words'] = {}
+        user_words = {}
+
     for item in feed_data['items']:
+
         if item['link'] == job_input['article_url']:
+            log(0, "found feed")
             if not 'topics' in item:
                 log(1, "No topics associated with given article.")
                 break
             topics = item['topics']
             user_words = update_topic_counts(user_words, topics, job_input['positive_opinion'])
+            ## here
             user_data = update_model(user_data, item, job_input["positive_opinion"]) # update the pickled user model
             break
-    
+
     log(0, "Updating user db with new topic weights")
     user_data['words'] = user_words
     update_user_data(job_input['username'], user_data)

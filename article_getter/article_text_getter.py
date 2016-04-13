@@ -158,8 +158,8 @@ def update_article_text(worker, job):
             "status": "error",
             "error-description": str(e)
         }))
-
     log(0, "update response: " + str(update_response))
+    
     log(0, "'update-all-article-text' finished")
     return str(bson.BSON.encode({
         "status": "ok",

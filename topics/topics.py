@@ -106,7 +106,7 @@ def get_topics_gearman(worker, job):
             log(2, 'No topics returned with given query')
             raise Exception('No documents returned with given query.')
         old_data = db_resp['docs'][0]
-        modifications = {"topics": topics}
+        modifications = {"topics": topics, "article_text": article}
         link = data['link']
         new_data = update_article_data(old_data, link, modifications)
         db_request = bson.BSON.encode({
