@@ -55,7 +55,7 @@ Run the following commands inside your user folder or equivalent:
 ```sh
 $ cd <root_of_your_repo>
 $ vagrant up
-$ script/start.sh
+$ script/start.sh SECRET_KEY_HERE
 # if you get errors, ssh to the vagrant box and try:
 $ cd /vagrant && bash script/start_internal.sh
 ```
