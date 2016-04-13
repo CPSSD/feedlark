@@ -130,7 +130,7 @@ class Aggregator:
                             'pub_date': item['pub_date'],
                         })
 
-            if user_g2g['feeds'] == []:
+            if 'feeds' not in user_g2g or user_g2g['feeds'] == []:
                 log('No feed items for user', level=1)
                 log('Completed')
                 continue
