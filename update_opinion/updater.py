@@ -48,8 +48,8 @@ def update_model(user_data, article_data, is_positive):
     log(0, str(article_data['topics']))
     score_request = bson.BSON.encode({
         'key': key,
-        'article_words': user_data['words'],
-        'user_words': article_data['topics'],
+        'article_words': article_data['topics'],
+        'user_words': user_data['words'],
         })
     score_response = gearman_client.submit_job('score', str(score_request))
     score_data = bson.BSON(score_response.result).decode()

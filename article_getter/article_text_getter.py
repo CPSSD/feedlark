@@ -108,12 +108,13 @@ def update_article_text(worker, job):
     for db_item in feed_db_data['items']:
         if "article_text" in db_item:
             if db_item['article_text'] != "":
+
                 # If item in db already has article_text
                 updated_item_list.append(db_item)
                 continue
 
         # Runs if loop doesn't break, implying new item
-        article_text = get_article_text(db_item['link'], key)
+        article_text = get_article_text(db_item['link'])
         updated_item_list.append({
             'name': db_item['name'],
             'pub_date': db_item['pub_date'],
@@ -157,8 +158,7 @@ def update_article_text(worker, job):
             "status": "error",
             "error-description": str(e)
         }))
-    log(0, "update response: " + str(update_response))
-    
+
     log(0, "'update-all-article-text' finished")
     return str(bson.BSON.encode({
         "status": "ok",
