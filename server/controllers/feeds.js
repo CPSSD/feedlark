@@ -80,6 +80,42 @@ module.exports = {
     });
   },
 
+  addbk: (req, res) => {
+	  if (! (_.isString(req.body.url)) ) {
+        return res.status(403).send("Invalid URL provided, oops!");
+      }
+    var url = req.body.url.toLowerCase();
+    var name = req.body.name;
+	var date = req.body.date;
+	var feed = req.body.feed;
+
+
+    // Add to current user
+    userModel.addBookmark(req.session.username, url, subscribed_feeds => {
+      // Post message to stream
+      req.session.subscribed_feeds = subscribed_feeds;
+      return res.status(200).send("Added to your Bookmarks");
+    });
+  },
+
+  removebk: (req, res) => {
+
+    // Only need to remove from user, for now
+    // TODO clean up no longer relevant feeds from the feed collection
+
+	if (! (_.isString(req.body.url)) ) {
+	  return res.status(403).send("Invalid URL provided, oops!");
+	}
+    var url = req.body.url.toLowerCase();
+
+    userModel.removeBookmark(req.session.username, url, subscribed_feeds => {
+
+      // Return to bookmark page
+      req.session.subscribed_feeds = subscribed_feeds;
+      return res.status(200).send("Bookmark removed");
+    });
+  },
+
   like: (req, res) => {
     try {
       valid_interest_arguments(req, res, (feed, url) => {

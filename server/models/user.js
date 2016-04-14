@@ -89,6 +89,46 @@ module.exports = {
     }));
   },
 
+  addBookmark: (username, url, cb) => {
+
+	dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
+
+	  // Check if the user is already subscribed to this feed
+      var index = user.subscribed_feeds.indexOf(url);
+      if (index == -1) return cb();
+
+      // Append and update
+      user.subscribed_feeds.push(url);;
+      dbFuncs.update(
+        db,
+        "user",
+        {username: username},
+        {subscribed_feeds: user.subscribed_feeds},
+        _ => cb(user.subscribed_feeds)
+      );
+    }));
+  },
+//user.subscribed_feeds.push(url);
+  removeBookmark: (username, url, cb) => {
+
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
+
+      // Check if the user is already subscribed to this feed
+      var index = user.subscribed_feeds.indexOf(url);
+      if (index == -1) return cb();
+
+      // Append and update
+      user.subscribed_feeds.splice(index, 1);
+      dbFuncs.update(
+        db,
+        "user",
+        {username: username},
+        {subscribed_feeds: user.subscribed_feeds},
+        _ => cb(user.subscribed_feeds)
+      );
+    }));
+  },
+
   addToken: (username, token, cb) => {
     if (!token || !username) {
       return cb();

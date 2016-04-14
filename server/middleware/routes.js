@@ -44,8 +44,6 @@ router.get("/user/login", (req, res) => {
 // Profile
 router.get("/user", isAuthed, userController.profile);
 
-// Feeds pages
-
 // Show interest
 router.post("/feeds/like", isAuthed, feedController.like);
 
@@ -73,6 +71,16 @@ router.get("/", (req, res, next) => {
     res.render('index').end();
   }
 }, streamController.index);
+
+// Display Bookmarks
+router.get("/bookmarks", isAuthed, streamController.bookmarks);
+
+// Add Bookmark
+router.post("/feeds/addbk", isAuthed, feedController.addbk);
+
+// Delete Bookmark
+router.post("/feeds/removebk", isAuthed, feedController.removebk);
+
 
 // Tokens (for API stuff!)
 router.get("/token/add", isAuthed, userController.addToken);
