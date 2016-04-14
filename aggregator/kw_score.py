@@ -1,6 +1,7 @@
 from datetime import datetime
 from spacy.en import English
 from bson import BSON
+from os import getenv
 import gearman
 
 # This is outside a function so it runs only once, on import.
@@ -104,6 +105,17 @@ def fast_score(article_words, user_words):
 
 def score_gm(worker, job):
     word_data = BSON(job.data).decode()
+
+    key = getenv('SECRETKEY')
+    if key is not None:
+        log("Checking secret key")
+        if 'key' not in word_data or word_data['key'] != key:
+            log("Secret key mismatch")
+            return str(BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                }))
+
     try:
         a_words = word_data['article_words']
         u_words = word_data['user_words']
@@ -135,6 +147,17 @@ def score_gm(worker, job):
 
 def fast_score_gm(worker, job):
     word_data = BSON(job.data).decode()
+
+    key = getenv('SECRETKEY')
+    if key is not None:
+        log("Checking secret key")
+        if 'key' not in word_data or word_data['key'] != key:
+            log("Secret key mismatch")
+            return str(BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                }))
+
     try:
         a_words = word_data['article_words']
         u_words = word_data['user_words']
