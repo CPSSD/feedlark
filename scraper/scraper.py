@@ -205,7 +205,6 @@ def update_single_feed(worker, job):
             }))
 
     if key is not None:
-        log(0, "Checking secret key")
         if 'key' not in request or request['key'] != key:
             log(2, "Secret key mismatch")
             response = bson.BSON.encode({

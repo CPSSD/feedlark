@@ -110,7 +110,6 @@ class Aggregator:
     def aggregate(self, gearman_worker, gearman_job):
         log("Job recieved")
         if self.key is not None:
-            log("Checking secret key")
             request = bson.BSON(gearman_job.data).decode()
             if 'key' not in request or self.key != request['key']:
                 log('Secret key mismatch', 2)

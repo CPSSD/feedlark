@@ -156,7 +156,6 @@ def update_user_model(worker, job):
     job_input = bson_input.decode()
 
     if key is not None:
-        log(0, "Checking secret key")
         if 'key' not in job_input or job_input['key'] != key:
             log(2, "Secret key mismatch")
             response = bson.BSON.encode({

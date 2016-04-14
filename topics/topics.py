@@ -67,7 +67,6 @@ def get_topics_gearman(worker, job):
 
     key = getenv('SECRETKEY')
     if key is not None:
-        log(0, 'Checking secret key')
         if 'key' not in data or data['key'] != key:
             log(2, 'Secret key mismatch')
             return str(bson.BSON.encode({

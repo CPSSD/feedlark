@@ -84,7 +84,6 @@ def update_article_text(worker, job):
 
     key = getenv('SECRETKEY')
     if key is not None:
-        log(0, "Checking secret key")
         if 'key' not in bson_job_obj or bson_job_obj['key'] != key:
             log(2, "Secret key mismatch")
             response = bson.BSON.encode({

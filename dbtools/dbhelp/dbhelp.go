@@ -24,7 +24,6 @@ func Log(level int, s string) {
 
 func CorrectKey(key string) bool {
 	envKey := os.Getenv("SECRETKEY")
-	Log(0, "Checking secret key")
 	if envKey == "" || envKey == key {
 		return true
 	}
