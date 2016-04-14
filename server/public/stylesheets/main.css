@@ -23,3 +23,7 @@ html, body {
 .secondary-content {
   float: right;
 }
+
+.stream-link p, .stream-link span, .stream-link img {
+	cursor: pointer;
+}
