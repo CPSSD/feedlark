@@ -113,19 +113,21 @@ class TestAggregation(unittest.TestCase):
         x = []
         y = []
         print 'Training test model'
+        print (random()*3, random()*3, -random())
         for i in xrange(1000):
-            x.append([random()*3, random()*5, -random()])
+            x.append([random()*3, random()*3, -random()])
             y.append(1)
+        print (random()*5 + 2, random()*2 - 1.5, random())
         for i in xrange(1000):
-            x.append([random()*5 + 2, random()*3 - 1.5, random()])
+            x.append([random()*5 + 2, random()*2 - 1.5, random()])
             y.append(-1)
         c.train(x, y)
-        p = c.predict([[2.1, 3.1, -0.30]])
-
+        p = c.predict([[2.1, 2.1, -0.30]])
+        print 'testing:', p
         #self.assertTrue(p[0] > 0.5)
 
-        q = c.predict([[5.2, -0.5, 0.7]])
-        
+        q = c.predict([[3.2, 0.0, 0.3]])
+        print 'testing:', q
         self.assertTrue(q[0] < 0.5)
 
 

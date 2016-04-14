@@ -35,7 +35,7 @@ class Classification:
         self.model = pickle.loads(pickled_model) 
         
     def train(self, x, y):
-        self.model.fit(x, y)#, classes=[-1, 1])
+        self.model.fit(x, y)
 
 if __name__ == '__main__':
     c = Classification()
