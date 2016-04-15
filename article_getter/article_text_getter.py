@@ -2,11 +2,12 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 from datetime import datetime
+from os import getenv
 import bson
 import gearman
 
 # Ensure the class is used with a recent Python 2.
-assert (2, 5) <= sys.version_info <= (3, 0)
+assert (2, 5) <= sys.version_info < (3, 0)
 
 
 def get_article_text(article_url):
@@ -32,8 +33,9 @@ def log(level, message):
 # convert given data to bson in valid format for db-update
 
 
-def bsonify_update_data(item_id, url, all_data):
+def bsonify_update_data(item_id, url, all_data, key=None):
     items_list = {
+        "key": key,
         "database": "feedlark",
         "collection": "feed",
         "data": {
@@ -51,9 +53,10 @@ def bsonify_update_data(item_id, url, all_data):
 # submits a job to 'db-get' to get all ids and urls of the singular feed
 
 
-def get_single_feed_db_data(url):
+def get_single_feed_db_data(url, key=None):
     # format the request
     to_get_urls_ids = str(bson.BSON.encode({
+        "key": key,
         "database": "feedlark",
         "collection": "feed",
         "query": {"url": url},
@@ -77,10 +80,21 @@ def get_single_feed_db_data(url):
 
 def update_article_text(worker, job):
     log(0, "'article-text-getter' initiated")
+    bson_job_obj = bson.BSON(job.data).decode()
+
+    key = getenv('SECRETKEY')
+    if key is not None:
+        if 'key' not in bson_job_obj or bson_job_obj['key'] != key:
+            log(2, "Secret key mismatch")
+            response = bson.BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                })
+            return str(response)
+
     try:
-        bson_job_obj = bson.BSON.decode(bson.BSON(job.data))["url"]
-        log(0, "Retrieving data from " + bson_job_obj + " item in db")
-        feed_db_data = get_single_feed_db_data(bson_job_obj)[0]
+        log(0, "Retrieving data from " + bson_job_obj['url'] + " item in db")
+        feed_db_data = get_single_feed_db_data(bson_job_obj['url'], key)[0]
 
     except Exception as e:
         log(2, e)
@@ -94,6 +108,7 @@ def update_article_text(worker, job):
     for db_item in feed_db_data['items']:
         if "article_text" in db_item:
             if db_item['article_text'] != "":
+
                 # If item in db already has article_text
                 updated_item_list.append(db_item)
                 continue
@@ -107,6 +122,7 @@ def update_article_text(worker, job):
             'article_text': article_text
         })
         bson_data = {
+            "key": key,
             "article": article_text,
             "_id": feed_db_data['_id'],
             "link": db_item["link"]
@@ -142,8 +158,7 @@ def update_article_text(worker, job):
             "status": "error",
             "error-description": str(e)
         }))
-    log(0, "update response: " + str(update_response))
-    
+
     log(0, "'update-all-article-text' finished")
     return str(bson.BSON.encode({
         "status": "ok",

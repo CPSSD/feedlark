@@ -17,6 +17,7 @@ The `db-add` tool expects you to give it gearman data formatted like this:
 
 ```js
 {
+    "key": "the_crow_flies_at_midnight",
     "database":"feedlark",
     "collection":"feed",
     "data":{
@@ -38,6 +39,7 @@ The `db-update` tool expects you to give it gearman data formatted like this:
 
 ```js
 {
+    "key": "never_gonna_give_u_up",
     "database":"feedlark",
     "collection":"feed",
     "data":{
@@ -63,7 +65,8 @@ The `db-upsert` tool expects this data:
 
 ```js
 {
-    "database":"feedlark"    
+    "key": "upsert_this",
+    "database":"feedlark",    
     "collection":"feed",
     "data":{
         "updates":{

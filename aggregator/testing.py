@@ -9,7 +9,7 @@ class TestAggregation(unittest.TestCase):
 
     def test_get_users(self):
         gm_client = gearman.GearmanClient(['localhost:4730'])
-        agg = Aggregator(gm_client)
+        agg = Aggregator(gm_client, None)
 
         user_data = agg.get_users()
         for i in range(len(user_data)):
@@ -44,7 +44,7 @@ class TestAggregation(unittest.TestCase):
 
     def test_put_g2g(self):
         gm_client = gearman.GearmanClient(['localhost:4730'])
-        agg = Aggregator(gm_client)
+        agg = Aggregator(gm_client, None)
 
 #        add_request = bson.BSON.encode({
 #            'database':'feedlark',
