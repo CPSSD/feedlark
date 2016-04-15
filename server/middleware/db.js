@@ -1,10 +1,10 @@
 const MongoClient = require("mongodb");
 
 if (process.env.ENVIRONMENT == "PRODUCTION") {
-  var mongoURL = "mongodb://feedlark:hackmeplz@127.0.0.1:9001/feedlark"
+  var mongoURL = "mongodb://feedlark:hackmeplz@127.0.0.1:9001/feedlark";
 }
 else {
-  var mongoURL = "mongodb://127.0.0.1:9001/feedlark"
+  var mongoURL = "mongodb://127.0.0.1:9001/feedlark";
 }
 
 module.exports = {
