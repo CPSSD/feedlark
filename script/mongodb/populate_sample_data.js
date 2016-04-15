@@ -5,6 +5,7 @@ print("removing old feed,user and g2g dbs and replacing with sample data.")
 db.feed.drop()
 db.user.drop()
 db.g2g.drop()
+db.bookmark.drop()
 
 db.feed.insert([{
     "url": "https://news.ycombinator.com/rss",
@@ -207,5 +208,17 @@ db.g2g.insert([{
         "link": "http://spritesmods.com/?art=dekatron&amp;f=rss"
     }]
 }]);
+
+db.bookmark.insert([{
+    "username": "iandioch",
+    "bookmarks": []
+}, {
+    "username": "sully",
+    "bookmarks": []
+}, {
+    "username": "theotherguys",
+    "bookmarks": []
+}]);
+
 
 print("all collections", db.getCollectionNames());
