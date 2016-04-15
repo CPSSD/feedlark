@@ -37,6 +37,7 @@ The tool takes in Gearman data in the following format:
 
 ```js
 {
+    "key": "secret_key_abc",
     "article": "lorem ipsum dolor sit amet",
     "_id": ObjectId(000000000000),
     "link": "http://dave.cheney.net/2016/02/06/unhelpful-abstractions"

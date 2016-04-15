@@ -20,7 +20,10 @@ To run the article getter you must submit a job to the gearman article-text-gett
 Below is an example of how to do this.
 
 ```
-text_getter_data = str(bson.BSON.encode({"url": "http://www.feedurltoscrape.com"}))
+text_getter_data = str(bson.BSON.encode({
+    "key": "secret_key_abc",
+    "url": "http://www.feedurltoscrape.com",
+    }))
 gm_client.submit_job('article-text-getter',text_getter_data, background=True)
 ```
 
@@ -28,6 +31,7 @@ This will return a bson string with a status field and a updated_feed or an erro
 * Status "ok" if there are no issues
 ```js
 {
+    "key": "secret_key_abc",
     "status":"ok",
     "updated_feed": feed_db_data['_id'],
 }
@@ -36,8 +40,8 @@ This will return a bson string with a status field and a updated_feed or an erro
 * Status "error" for any issues.
 ```js
 {
-"status":"error",
-"error-description":str(e)
+    "status": "error",
+    "error-description": "Error message",
 }
 ```
 
