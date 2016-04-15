@@ -14,7 +14,7 @@ We are using scikit-learn's `SGDClassifier` class, for which the documentation i
 - A measure of the similarity in topics between the article and the user's interests (from `kw_score.py`)
 - The age of the article
 
-If a user upvotes an article, these inputs are mapped to a value of 0. If they downvote an article, these inputs are mapped to a value of 1. 
+If a user upvotes an article, these inputs are mapped to a value of 1. If they downvote an article, these inputs are mapped to a value of -1. 
 
 When we add some data to the model, it is pickled and put in the `user` db collection. This is done by the `update-user-model` Gearman worker.
 

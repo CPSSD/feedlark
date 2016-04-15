@@ -49,9 +49,9 @@ def update_model(user_data, article_data, is_positive):
     age = (datetime.now() - article_data['pub_date']).total_seconds()*1000 # get the number of millis in difference
 
     inputs = [topic_crossover, age]
-    # if the user likes an article, give it a class of '0'
-    # if the user dislikes an article, give it a class of '1'
-    output = 0 if is_positive else 1
+    # if the user likes an article, give it a class of '1'
+    # if the user dislikes an article, give it a class of '-1'
+    output = 1 if is_positive else -1
     log(0, str(inputs) + " " + str(output))
     try:
         model.partial_fit([inputs], [output], classes=[0, 1])
