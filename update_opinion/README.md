@@ -22,6 +22,7 @@ The worker is called `update-user-model`, and takes the following Gearman data:
 
 ```js
 {
+    "key": "secret_key_abc",
 	"username": "iandioch",
 	"feed_url": "http://news.ycombinator.com/rss",
 	"article_url": "http://example.com/article",

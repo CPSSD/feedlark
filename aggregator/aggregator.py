@@ -1,6 +1,7 @@
 from datetime import datetime
 import gearman
 import bson
+from os import getenv
 from predict import Classification
 
 
@@ -22,8 +23,9 @@ def log(*message, **kwargs):
 
 class Aggregator:
 
-    def __init__(self, gm_client):
+    def __init__(self, gm_client, key):
         self.gm_client = gm_client
+        self.key = key
 
     def get_feed_items(self, feed_url):
         '''
@@ -31,6 +33,7 @@ class Aggregator:
         database.
         '''
         request = bson.BSON.encode({
+            'key': self.key,
             'database': 'feedlark',
             'collection': 'feed',
             'query': {
@@ -51,6 +54,7 @@ class Aggregator:
         The documents returned contain only the username and subscribed_feeds.
         '''
         request = bson.BSON.encode({
+            'key': self.key,
             'database': 'feedlark',
             'collection': 'user',
             'query': {},
@@ -70,6 +74,7 @@ class Aggregator:
         Adds sorted items to g2g database for a given user.
         '''
         request = bson.BSON.encode({
+            'key': self.key,
             'database': 'feedlark',
             'collection': 'g2g',
             'data': {
@@ -89,6 +94,7 @@ class Aggregator:
 
     def get_score(self, topic, words):
         request = bson.BSON.encode({
+            'key': self.key,
             'user_words': words,
             'article_words': topic,
             })
@@ -97,17 +103,28 @@ class Aggregator:
         result = bson.BSON(gm_job.result).decode()
         if result['status'] != 'ok':
             log("Scoring article failed", level=1)
-            log('Description:' + result['description'])
+            log('Description: ' + result['description'], level=1)
             return 0
 
         return result['score']
 
     def aggregate(self, gearman_worker, gearman_job):
         log("Job recieved")
+        if self.key is not None:
+            request = bson.BSON(gearman_job.data).decode()
+            if 'key' not in request or self.key != request['key']:
+                log('Secret key mismatch', 2)
+                response = bson.BSON.encode({
+                    'status': 'error',
+                    'description': 'Secret key mismatch',
+                    })
+                return str(response)
+
         log("Loading users from 'user' database")
         user_data = self.get_users()
 
         for user in user_data:
+            log('=====================================')
             log("Loading feeds for: ", user['username'])
             user_g2g = {'username': user['username'], 'feeds': []}
 
@@ -130,6 +147,11 @@ class Aggregator:
                             'pub_date': item['pub_date'],
                         })
 
+            if 'feeds' not in user_g2g or user_g2g['feeds'] == []:
+                log('No feed items for user', level=1)
+                log('Completed')
+                continue
+
             try:
                 log("Normalising dates")
                 oldest = min(user_g2g['feeds'], key=lambda x: x['pub_date'])
@@ -143,8 +165,8 @@ class Aggregator:
                     item['norm_date'] = (item_seconds-oldest)/(newest-oldest)
                     normalised_items.append(item)
                 user_g2g['feeds'] = normalised_items
-            except TypeError:
-                log('Unicode in pub_date??? Skipping user', level=1)
+            except:
+                log('Error processing dates (bad date formats?)', level=1)
                 continue
 
             if 'model' in user_data:
@@ -177,7 +199,8 @@ class Aggregator:
         return str(bson.BSON.encode({'status': 'ok'}))
 
 if __name__ == '__main__':
-    agg = Aggregator(gearman.GearmanClient(['localhost:4730']))
+    key = getenv('SECRETKEY')
+    agg = Aggregator(gearman.GearmanClient(['localhost:4730']), key)
 
     gm_worker = gearman.GearmanWorker(['localhost:4730'])
     gm_worker.set_client_id('aggregator')
