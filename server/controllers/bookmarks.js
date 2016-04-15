@@ -1,16 +1,15 @@
 /**
- * streams
+ * feeds
  *
- * @description :: Displays feeds from the G2G Database
- * @docs        :: https://github.com/CPSSD/feedlark/blob/master/doc/db/g2g.md
+ * @description :: Server-side logic for managing bookmarks
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
-const getFeeds = require("../models/stream").getFeeds;
+const bookmarkModel = require("../models/bookmark");
 const _ = require("lodash");
 
-// Stream listing
 module.exports = {
-  index: (req, res) => {
+  bookmarks: (req, res) => {
 
     // Get & verify the page length & number
     // This Lo-Dash function is lovely
@@ -45,7 +44,7 @@ module.exports = {
       var next_page = page + 1;
       if (next_page * page_length > filtered_feeds.length) next_page = 0;
 
-      res.status(200).render("stream_index", {
+      res.status(200).render("bookmark_index", {
         feeds: pageinated_feeds,
         page: page,
         next_page: next_page,
@@ -57,29 +56,38 @@ module.exports = {
     });
   },
 
-  plaintext: (req, res) => {
-    var page_length = _.toSafeInteger(req.query.page_length);
-    if (page_length <= 0) {
-      page_length = 20; // Default Page Length = 20
+  addbk: (req, res) => {
+      if (! (_.isString(req.body.url)) ) {
+        return res.status(403).send("Invalid URL provided, oops!");
+      }
+    var url = req.body.url.toLowerCase();
+    var name = req.body.name;
+    var pub_date = req.body.date;
+    var feed = req.body.feed;
+
+
+    // Add to current user
+    bookmarkModel.addBookmark(req.session.username, url, name, pub_date, feed, bookmarks => {
+      // Post message to stream
+      req.session.bookmarks = bookmarks;
+      return res.status(200).send("Added to your Bookmarks");
+    });
+  },
+
+  removebk: (req, res) => {
+
+    // Only need to remove from user, for now
+    // TODO clean up no longer relevant feeds from the feed collection
+
+    if (! (_.isString(req.body.url)) ) {
+      return res.status(403).send("Invalid URL provided, oops!");
     }
-    var page = _.toSafeInteger(req.query.page);
+    var url = req.body.url.toLowerCase();
 
-
-    var username = req.query.username;
-    res.type('.txt');
-
-    getFeeds(username, feeds => {
-
-      var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
-      var next_page = page + 1;
-      if ((page + 1) * page_length > feeds.length) next_page = 0;
-
-      res.status(200).render("stream_plaintext", {
-        feeds: pageinated_feeds,
-        page: page,
-        next_page: next_page,
-        page_length: page_length
-      });
+    bookmarkModel.removeBookmark(req.session.username, url, name, pub_date, feed, bookmarks => {
+      // Post message to stream
+      req.session.bookmarks = bookmarks;
+      return res.status(200).send("Bookmark removed");
     });
   }
 };

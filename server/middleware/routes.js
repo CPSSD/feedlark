@@ -7,6 +7,7 @@ const router = require("express").Router();
 const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
+const bookmarkController = require("../controllers/bookmarks");
 const updater = require("./updater");
 
 // Checks if the client is authenticated
@@ -73,13 +74,13 @@ router.get("/", (req, res, next) => {
 }, streamController.index);
 
 // Display Bookmarks
-router.get("/bookmarks", isAuthed, streamController.bookmarks);
+router.get("/bookmarks", isAuthed, bookmarkController.bookmarks);
 
 // Add Bookmark
-router.post("/feeds/addbk", isAuthed, feedController.addbk);
+router.post("/feeds/addbk", isAuthed, bookmarkController.addbk);
 
 // Delete Bookmark
-router.post("/feeds/removebk", isAuthed, feedController.removebk);
+router.post("/feeds/removebk", isAuthed, bookmarkController.removebk);
 
 
 // Tokens (for API stuff!)
