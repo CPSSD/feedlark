@@ -1,7 +1,9 @@
 import gearman
 import bson
+from os import getenv
+from datetime import datetime
 
-gearman_client = Nine
+gearman_client = None
 key = getenv('SECRETKEY')
 
 def log(level, message):
