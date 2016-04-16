@@ -11,7 +11,8 @@ Example Document
 	"username": "iandioch",
 	"article_url": "http://example.com/article",
 	"feed_url":"https://news.ycombinator.com/rss",
-	"positive_opinion":true
+	"positive_opinion": true,
+	"vote_datetime": ISODate("2014-11-22T23:00:00Z")
 }
 ```
 

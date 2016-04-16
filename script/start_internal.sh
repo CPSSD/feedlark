@@ -26,9 +26,9 @@ cd backend-scraper
 screen -dmLS backend-scraper /bin/bash ../../script/startup/scraper.sh
 cd ..
 
-mkdir -p backend-update-opinion
-cd backend-update-opinion
-screen -dmLS backend-update-opinion /bin/bash ../../script/startup/updater.sh
+mkdir -p backend-register-vote
+cd backend-register-vote
+screen -dmLS backend-register-vote /bin/bash ../../script/startup/updater.sh
 cd ..
 
 mkdir -p backend-topics
