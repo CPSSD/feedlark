@@ -35,15 +35,15 @@ def main():
         sorted_feed = sorted(feed_counts,reverse=True)
 
         #get ouput ready
-        output = ""
-        output += str(len(feed_counts)) + "\n"
-        
+        output = []
+        output.append(str(len(feed_counts)))
+
         if num_requested_feeds > len(sorted_feed):
             num_requested_feeds = len(sorted_feed)
 
         for i in xrange(num_requested_feeds):
-            output += sorted_feed[i] + " " + str(feed_counts[sorted_feed[i]]) + "\n"
-
+            output.append(sorted_feed[i] + " " + str(feed_counts[sorted_feed[i]]))
+        output = "\n".join(output)
         # output to file
         f = open("most_popular_feeds.txt", "w")
         f.write(output)

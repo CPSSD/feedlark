@@ -1,2 +1,4 @@
 3
 https://news.ycombinator.com/rss 3
+http://spritesmods.com/rss.php 2
+http://dave.cheney.net/feed 1

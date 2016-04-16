@@ -8,19 +8,10 @@ Dependencies
 
 - Python 2.7
 
-How to do tests
-------------
-
-The tests are written with the unittest module in python.
-
-Move to this directory, and run `python testing.py` to run the unit tests.
-
-To add unit tests modify the testing.py file.
-Check out the unittest docs for examples and general help.
 
 Usage
 -----
-
+To run this program the dbtools worker must be running to make the gearman calls.
 Run `python popular_feeds.py X`, where X is the number of the most popular feeds you want the program to output data on. If this number is larger than the total number of feeds, the program will output data for every feed in the database.
 
 The first line of the output is the number of feeds in the system. This is followed the top X most popular feeds in descending order in the following format:
