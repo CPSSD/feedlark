@@ -14,18 +14,51 @@ def get_server():
     return server + ':' + port
 
 
-def buid_request(work_class):
-    pass
+def build_arbitrary_dict(indent):
+    print 'Enter dictionary as key: value with a blank line to quit:'
+    print ' '*indent + '{'
+
+    ret_dict = {}
+    inp = raw_input(' '*(indent+4))
+    while inp:
+        eval('ret_dict += {{}}'.format(inp))
+        inp = raw_input(' '*(indent+4))
+    print ' '*indent + '}'
+
+    return ret_dict
+
+
+def buid_request(req_dict, indent=4):
+    request = {}
+    for key in req_dict:
+        if type(req_dict[key]) == dict:
+            print ' '*indent + key + ':'
+            request[key] = buid_request(req_dict[key], indent+4)
+            continue
+
+        if req_dict[key] == dict:
+            print ' '*indent + key + ':'
+            request[key] = build_arbitrary_dict(indent+4)
+            continue
+
+        right_type = False
+        while not right_type:
+            inp = raw_input(' '*indent + key + ': ')
+            try:
+                request[key] = req_dict[key](inp)
+                right_type = True
+            except:
+                print 'Error:', key, 'must be of type', req_dict[key]
+
+    return request
 
 
 def main():
     print 'Welcome to the Feedlark CLI!'
     print '============================'
 
-    # Get a list of all the objects in workers that end in 'Worker'
+    # Make list of all the objects in the workers module that end with 'Worker'
     w_list = [eval('workers.'+x) for x in dir(workers) if x.endswith('Worker')]
-#    # Turn that list into a dict with the worker names as keys
-#    w_dict = {x.NAME: x for x in w_list}
 
     server = get_server()
     try:
@@ -59,6 +92,8 @@ def main():
         else:
             worker = w_list[c]
 
+        print ''
+        print 'Building request:'
         request = buid_request(worker.REQUEST)
         bson_req = str(BSON.encode(request))
 
@@ -72,6 +107,8 @@ def main():
             print worker.get_error(response)
             continue
 
+        print ''
+        print 'Response:'
         worker.print_response(response)
 
 if __name__ == '__main__':

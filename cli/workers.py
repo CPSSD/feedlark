@@ -8,11 +8,11 @@ class WorkerSkeleton:
         return 'No description provided'
 
     @classmethod
-    def print_dict(cls, response, indent=0):
+    def print_dict(cls, response, indent=4):
         for key in response:
             if type(response[key]) == dict:
                 print ' '*indent + str(key) + ': '
-                cls.print_dict(response[key], 4)
+                cls.print_dict(response[key], indent + 4)
                 continue
 
             print ' '*indent + str(key) + ': ' + str(response[key])
