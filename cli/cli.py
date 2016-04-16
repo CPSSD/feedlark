@@ -11,17 +11,19 @@ def get_server():
     port = raw_input('Please enter Gearman port (or blank for 4730): ')
     port = port if port else '4730'
 
-    return server + ':' + port
+    return serv + ':' + port
 
 
 def build_arbitrary_dict(indent):
-    print 'Enter dictionary as key: value with a blank line to quit:'
     print ' '*indent + '{'
 
     ret_dict = {}
     inp = raw_input(' '*(indent+4))
-    while inp:
-        eval('ret_dict += {{}}'.format(inp))
+    while inp != '':
+        key = eval(inp.split(':')[0])
+        val = eval(inp.split(':')[1])
+        ret_dict[key] = val
+
         inp = raw_input(' '*(indent+4))
     print ' '*indent + '}'
 
@@ -100,7 +102,7 @@ def main():
         print ''
         print "Submitting request to '{}'".format(worker.NAME)
         bsond_response = gm_client.submit_job(worker.NAME, bson_req)
-        response = BSON(bsond_response).decode()
+        response = BSON(bsond_response.result).decode()
 
         if worker.is_error(response):
             print "There was an error with the request:"
