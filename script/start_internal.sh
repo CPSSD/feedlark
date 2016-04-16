@@ -51,6 +51,11 @@ cd backend-score
 screen -dmLS backend-score /bin/bash ../../script/startup/score.sh
 cd ..
 
+mkdir -p backend-refresh-model
+cd backend-refresh-model
+screen -dmLS backend-refresh-model /bin/bash ../../script/startup/refresh_model.sh
+cd ..
+
 echo "Starting frontend elements in screen sessions"
 cd ../server
 screen -dmLS frontend-express /bin/bash ../script/startup/frontend.sh

@@ -8,3 +8,4 @@
 ./script/test/article_getter
 ./script/test/register_vote
 ./script/test/visualisations
+./script/test/refresh_model
