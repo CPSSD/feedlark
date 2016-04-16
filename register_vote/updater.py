@@ -226,6 +226,6 @@ if __name__ == '__main__':
     init_gearman_client()
     log(0, "Creating gearman worker 'update-user-model'")
     gearman_worker = gearman.GearmanWorker(['localhost:4730'])
-    gearman_worker.set_client_id('update-user-model')
-    gearman_worker.register_task('update-user-model', update_user_model)
+    gearman_worker.set_client_id('register-vote')
+    gearman_worker.register_task('register-vote', update_user_model)
     gearman_worker.work()
