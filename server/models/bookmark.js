@@ -9,21 +9,25 @@ const dbFuncs = require("../middleware/db");
 
 module.exports = {
 
-  addBookmark: (username, url, name, pub_date, feed, cb) => {
+  addBookmark: (username, url, named, date, feed, cb) => {
 
     dbFuncs.transaction(db => dbFuncs.findOne(db, "bookmark", {username: username}, user => {
       newBookmark = {
           "feed": feed,
-          "name": name,
-          "link":url,
-          "pub_date": pub_date
+          "name": named,
+          "link": url,
+          "date": date
       };
 
       // Check if the user has already bookmarked this article
-      if (user.bookmarks.indexOf(url) > -1) return cb();
+      for (var i = 0; i < user.bookmarks.length; i++) {
+        if (user.bookmarks[i].link == url){
+          return cb()
+        }
+      }
 
       // Append and update
-      user.bookmarks.push(url);;
+      user.bookmarks.push(newBookmark);
       dbFuncs.update(
         db,
         "bookmark",
@@ -37,15 +41,16 @@ module.exports = {
   removeBookmark: (username, url, cb) => {
 
     dbFuncs.transaction(db => dbFuncs.findOne(db, "bookmark", {username: username}, user => {
-      oldBookmark = {
-          "feed": feed,
-          "name": name,
-          "link":url,
-          "pub_date": pub_date
-      };
+
       // Check if the user is already subscribed to this feed
-      var index = user.subscribed_feeds.indexOf(oldBookmark);
-      if (index == -1) return cb();
+      for (var i = 0; i <= user.bookmarks.length; i++) {
+        if (user.bookmarks[i].link == url){
+          var index = i;
+          break;
+        } else if (i == user.bookmarks.length -1){
+          return cb();
+        }
+      }
 
       // Append and update
       user.bookmarks.splice(index, 1);
@@ -60,7 +65,7 @@ module.exports = {
   },
 
   getBookmarks: (username,cb) => {
-	dbFuncs.transaction(db => dbFuncs.findOne(db, "bookmark", {username: username}, data => cb(data.feeds)));
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "bookmark", {username: username}, data => cb(data.bookmarks)));
   }
 
 };

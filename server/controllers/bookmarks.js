@@ -25,10 +25,10 @@ module.exports = {
       keywords = req.query.keywords.split(" ").map(val => val.toLowerCase());
     }
 
-    getFeeds(req.session.username, feeds => {
+    bookmarkModel.getBookmarks(req.session.username, bookmarks => {
 
-      // Filter the feeds
-      var filtered_feeds = feeds.filter((feed, index, src) => {
+      // Filter the bookmarks
+      var filtered_bookmarks = bookmarks.filter((feed, index, src) => {
 
         // Match with the filters
         return (typeof req.query.source == "undefined" || req.query.source.length < 1 || feed.feed == req.query.source) &&
@@ -36,16 +36,16 @@ module.exports = {
       });
 
       // Make sure the page number is less than the max available feeds
-      while (page > filtered_feeds / page_length) page -= 1;
+      while (page > filtered_bookmarks / page_length) page -= 1;
 
-      // Take a page worth of feeds
-      var pageinated_feeds = _.slice(filtered_feeds, page*page_length, (page+1)*page_length);
+      // Take a page worth of bookmarks
+      var pageinated_bookmarks = _.slice(filtered_bookmarks, page*page_length, (page+1)*page_length);
 
       var next_page = page + 1;
-      if (next_page * page_length > filtered_feeds.length) next_page = 0;
+      if (next_page * page_length > filtered_bookmarks.length) next_page = 0;
 
       res.status(200).render("bookmark_index", {
-        feeds: pageinated_feeds,
+        bookmarks: pageinated_bookmarks,
         page: page,
         next_page: next_page,
         page_length: page_length,
@@ -60,14 +60,14 @@ module.exports = {
       if (! (_.isString(req.body.url)) ) {
         return res.status(403).send("Invalid URL provided, oops!");
       }
-    var url = req.body.url.toLowerCase();
-    var name = req.body.name;
-    var pub_date = req.body.date;
+    var url = req.body.url;
+    var named = req.body.named;
+    var date = req.body.date;
     var feed = req.body.feed;
 
 
     // Add to current user
-    bookmarkModel.addBookmark(req.session.username, url, name, pub_date, feed, bookmarks => {
+    bookmarkModel.addBookmark(req.session.username, url, named, date, feed, bookmarks => {
       // Post message to stream
       req.session.bookmarks = bookmarks;
       return res.status(200).send("Added to your Bookmarks");
@@ -84,7 +84,7 @@ module.exports = {
     }
     var url = req.body.url.toLowerCase();
 
-    bookmarkModel.removeBookmark(req.session.username, url, name, pub_date, feed, bookmarks => {
+    bookmarkModel.removeBookmark(req.session.username, url, bookmarks => {
       // Post message to stream
       req.session.bookmarks = bookmarks;
       return res.status(200).send("Bookmark removed");

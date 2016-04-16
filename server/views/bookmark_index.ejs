@@ -42,45 +42,44 @@
       </form>
 
       <ul class="collection">
-        <% if (typeof feeds == "undefined" || feeds.length < 1) { %>
+        <% if (typeof bookmarks == "undefined" || bookmarks.length < 1) { %>
         <li class="collection-item">
           <% if (keywords.length < 1 && source.length < 1) { %>
-          <p class="center-align">We have no articles for you yet! Make sure you
-            add some feeds to your profile!<br>
-            Give us a few minutes to figure things out!</p>
+          <p class="center-align">We have no bookmarks for you yet! Make sure you
+            bookmark some of your favourite articles<br></p>
           <% } else { %>
           <p class="center-align">No matches</p>
           <% } %>
         </div>
         <%
         } else {
-          for (var i = 0; i < feeds.length; i++) {
-            var date = new Date(feeds[i].pub_date);
+          for (var i = 0; i < bookmarks.length; i++) {
+            var date = new Date(bookmarks[i].pub_date);
             date = date.toLocaleDateString();
-            var url = feeds[i].feed.match(/https?:\/\/[^\/]+/g)[0];
+            var url = bookmarks[i].feed.match(/https?:\/\/[^\/]+/g)[0];
             var source_name_re = /https?:\/\/([^\/]+)/g;
             var link_name_re = /(https?:\/\/[^\/]+)/g;
-            var source_name = source_name_re.exec(feeds[i].feed)[1];
-            var link_name = link_name_re.exec(feeds[i].link)[1];
+            var source_name = source_name_re.exec(bookmarks[i].feed)[1];
+            var link_name = link_name_re.exec(bookmarks[i].link)[1];
         %>
         <li class="collection-item avatar">
           <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
-          <span class="title"><%= feeds[i].name %></span>
+          <span class="title"><%= bookmarks[i].name %></span>
           <p>
             Published: <%= date %> <br />
             From: <%= source_name %>
           </p>
           <span class="secondary-content" style="text-align: right;">
-          <a class="ajax-link" data-route="/feeds/removebk"
-                               data-url="<%= feeds[i].link %>"
-                               data-feed="<%= feeds[i].feed %>"
-                               data-title="<%= feeds[i].name %>"
-                               data-date="<%= feeds[i].pub_date %>"
+          <a class="ajax-link" data-route="/bookmarks/removebk"
+                               data-url="<%= bookmarks[i].link %>"
+                               data-feed="<%= bookmarks[i].feed %>"
+                               data-title="<%= bookmarks[i].name %>"
+                               data-date="<%= bookmarks[i].pub_date %>"
                                style="cursor: pointer;">
                                <i class="material-icons">delete</i>
           </a>
           <br />
-          <a href="<%= feeds[i].link %>"><i class="material-icons">send</i></a>
+          <a href="<%= bookmarks[i].link %>"><i class="material-icons">send</i></a>
           </span>
         </li>
 

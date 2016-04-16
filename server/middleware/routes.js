@@ -77,10 +77,10 @@ router.get("/", (req, res, next) => {
 router.get("/bookmarks", isAuthed, bookmarkController.bookmarks);
 
 // Add Bookmark
-router.post("/feeds/addbk", isAuthed, bookmarkController.addbk);
+router.post("/bookmarks/addbk", isAuthed, bookmarkController.addbk);
 
 // Delete Bookmark
-router.post("/feeds/removebk", isAuthed, bookmarkController.removebk);
+router.post("/bookmarks/removebk", isAuthed, bookmarkController.removebk);
 
 
 // Tokens (for API stuff!)
