@@ -43,7 +43,10 @@ def update_model(user_data, article_data, is_positive):
             model = linear_model.SGDClassifier(loss='log')
 
     log(0, "Training model with new data")
-    topic_crossover = 0 # a comparison of how close the articles are in terms of topic, taken from the worker in /aggregator
+
+    # a comparison of how close the articles are in terms of topic
+    # taken from the worker in /aggregator
+    topic_crossover = 0 
     log(0, str(user_data['words']))
     log(0, str(article_data['topics']))
     score_request = bson.BSON.encode({
@@ -57,7 +60,9 @@ def update_model(user_data, article_data, is_positive):
         topic_crossover = score_data['score']
     else:
         log(2, "Error getting crossover score: " + str(score_data['description']))
-    age = (datetime.now() - article_data['pub_date']).total_seconds()*1000 # get the number of millis in difference
+
+    # get the number of millis in difference
+    age = (datetime.now() - article_data['pub_date']).total_seconds()*1000 
     inputs = [topic_crossover, age]
     # if the user likes an article, give it a class of '1'
     # if the user dislikes an article, give it a class of '-1'
@@ -77,7 +82,9 @@ def update_model(user_data, article_data, is_positive):
 
 
 def add_update_to_db(data):
-    """log the given user opinion to the vote db collection"""
+    """
+    log the given user opinion to the vote db collection
+    """
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
@@ -88,7 +95,10 @@ def add_update_to_db(data):
 
 
 def update_user_data(username, updates):
-    """update the db entry of the user with the given username, with the given dict of updates"""
+    """
+    Update the data for the given user in the database,
+    with the given dict of updates
+    """
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
@@ -107,7 +117,9 @@ def update_user_data(username, updates):
 
 
 def get_user_data(username):
-    """Get the data of user from database"""
+    """
+    Get the data of user from database
+    """
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
@@ -153,10 +165,15 @@ def get_feed_data(feed_url):
     return result["docs"][0]
 
 
-def update_user_model(worker, job):
+def register_vote(worker, job):
+    """
+    Gearman entry point
+    """
     bson_input = bson.BSON(job.data)
     job_input = bson_input.decode()
 
+
+    # auth check
     if key is not None:
         if 'key' not in job_input or job_input['key'] != key:
             log(2, "Secret key mismatch")
@@ -166,29 +183,45 @@ def update_user_model(worker, job):
                 })
             return str(response)
 
+    # log the vote
     add_update_to_db(job_input)
-    log(0, 'update-user-model called with data ' + str(job_input))
-    if not ("username" in job_input and "feed_url" in job_input and "article_url" in job_input and "positive_opinion" in job_input):
+
+    required_fields = ['username', 'feed_url', 'article_url', 'positive_opinion']
+    if not (all([x in job_input for x in required_fields])):
         log(1, 'Missing field in input: ' + str(job_input))
-        response = {"status":"error", "description":"Missing field in input."}
+        response = {
+            "status":"error",
+            "description":"Missing field in input."
+        }
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
 
-    log(0, "Getting user data from db")
+    log(0, "'register-vote' called for user '{}' for article {}".format(job_input['username'], job_input['article_url']))
+
+    # fetch that user's info from the database
     user_data = get_user_data(job_input["username"])
     if user_data is None:
-        response = {"status":"error", "description":"No user data received from db for user " + str(job_input["username"])}
+        log(1, "No user data received from db for user " + str(job_input['username']))
+        response = {
+            "status":"error",
+            "description":"No user data received from db for user " + str(job_input["username"])
+        }
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
 
-    log(0, "Getting feed data from db")
+    # fetch that feed's info from the database
     feed_data = get_feed_data(job_input["feed_url"])
     if feed_data is None:
-        response = {"status":"error", "description":"No feed data receieved from db for feed " + str(job_input["feed_url"])}
+        log(1, "No feed data received from db for feed " + str(job_input['feed_url']))
+        response = {
+            "status":"error",
+            "description":"No feed data receieved from db for feed " + str(job_input["feed_url"])
+        }
         bson_response = bson.BSON.encode(response)
         return str(bson_response)
 
-    log(0, "Updating topic weights")
+    # get the user's interest words
+    user_words = None
     if "words" in user_data:
         user_words = user_data['words']
     else:
@@ -204,14 +237,13 @@ def update_user_model(worker, job):
                 break
             topics = item['topics']
             user_words = update_topic_counts(user_words, topics, job_input['positive_opinion'])
-            ## here
-            user_data = update_model(user_data, item, job_input["positive_opinion"]) # update the pickled user model
             break
 
-    log(0, "Updating user db with new topic weights")
+    # put the user's new interest words back into their dict
     user_data['words'] = user_words
+    
+    # put it all back in the database
     update_user_data(job_input['username'], user_data)
-    log(0, "Worker finished.")
     response = {"status":"ok"}
     bson_response = bson.BSON.encode(response)
     return str(bson_response)
@@ -227,5 +259,5 @@ if __name__ == '__main__':
     log(0, "Creating gearman worker 'update-user-model'")
     gearman_worker = gearman.GearmanWorker(['localhost:4730'])
     gearman_worker.set_client_id('register-vote')
-    gearman_worker.register_task('register-vote', update_user_model)
+    gearman_worker.register_task('register-vote', register_vote)
     gearman_worker.work()
