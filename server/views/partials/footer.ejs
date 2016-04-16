@@ -4,6 +4,9 @@
   <!-- Materialize JS -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.js"></script>
 
+
+  <script type="text/javascript" src="/javascript/main.js"></script>
+
   <!-- Selections & ajax link-->
   <script type="text/javascript">
   $(document).ready(_ => {
@@ -14,44 +17,11 @@
       window.location.href = "/stream/" + $("#page_length").val() + "/<%= page - 1 > 0? page - 1 : 0 %>";
     });
     <% } %>
-
-	$(".ajax-link").click(function() {
-		$.post({
-			url: $(this).attr("data-route"),
-      contentType: "application/json; charset=utf-8",
-      data: JSON.stringify({
-        'url': $(this).attr("data-url"),
-        'feed': $(this).attr("data-feed")
-      }),
-			success: function(data, status, jqXHR) {
-				Materialize.toast(data, 5000);
-			},
-      error: function(data, status, jqXHR) {
-        console.log(data.responseText);
-      }
-		});
-	});
   });
   </script>
 
-  <!-- Stream page previous/next buttons -->
-  <script type="text/javascript">
-    function change_page(page) {
-      $("[name='page']").val(page);
-      $("form").submit();
-    }
-  </script>
 
-  <!-- Materialize Stuff -->
-  <script type="text/javascript">
-    $(document).ready(_ => {
-      $('.parallax').parallax();
-      $("select").material_select();
-      $(".button-collapse").sideNav(); // init sidenav bar for mobile
-    });
-  </script>
   <% if (typeof session != "undefined" && typeof session.msg != "undefined") { %>
-
   <!-- Toast display -->
   <script type="text/javascript">
     $(document).ready(function() {
