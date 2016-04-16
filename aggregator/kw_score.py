@@ -49,6 +49,7 @@ def score(article_words, user_words):
     u_words_norm = {x[0]: (x[1]/word_sum) for x in user_words.items()}
 
     total = 0.0
+    words_used = 0
     for a in a_tokens:
         best_sim = 0
         best_word = ''
@@ -59,14 +60,18 @@ def score(article_words, user_words):
                 best_word = str(u).strip()
 
         a_word = str(a).strip()
-        if a != '':
+        if a != '' and best_word != '' and best_sim > 0.6:
+            words_used += 1
             log("Best match for '", a_word,
                 "' is '", best_word,
                 "', similarity: ", best_sim)
             total += a_words_norm[a_word] * u_words_norm[best_word] * best_sim
 
-    log("Total: ", total, ", total count: ", len(article_words))
-    return total/len(article_words)
+    log("Total: ", total, ", words used: ", words_used)
+    if words_used:
+        return total/words_used
+    else:
+        return 0
 
 
 def fast_score(article_words, user_words):
@@ -129,8 +134,9 @@ def score_gm(worker, job):
 
     try:
         a_score = score(a_words, u_words)
-    except:
-        log("Problem when scoring, is the data in the right format?")
+    except Exception as e:
+        log("Problem when scoring, is the data in the right format?", level=2)
+        log(e, level=2)
         return str(BSON.encode(
             {
                 "status": "error",
@@ -171,8 +177,9 @@ def fast_score_gm(worker, job):
 
     try:
         a_score = fast_score(a_words, u_words)
-    except:
-        log("Problem when scoring, is the data in the right format?")
+    except Exception as e:
+        log("Problem when scoring, is the data in the right format?", level=2)
+        log(e, level=2)
         return str(BSON.encode(
             {
                 "status": "error",

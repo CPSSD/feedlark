@@ -181,8 +181,7 @@ def update_database(doc, updated_item_list):
         "url": doc['url'],
         }))
     try:
-        update_response = gm_client.submit_job(
-            'article-text-getter', text_getter_data, background=True)
+        update_response = gm_client.submit_job('article-text-getter', text_getter_data, background=True)
     except Exception as e:
         log(2, str(e))
         return str(bson.BSON.encode({
@@ -193,7 +192,7 @@ def update_database(doc, updated_item_list):
 
 def update_single_feed(worker, job):
     log(0, "'update-single-feed' initiated")
-    
+
     try:
         request = bson.BSON(job.data).decode()
         url = request['url']
