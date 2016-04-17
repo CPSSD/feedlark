@@ -11,7 +11,9 @@ const updater = require("./updater");
 
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
-  if (req.session.username) {
+  if (typeof req.session.token != "boolean") {
+    res.status(200).render("verify_ask");
+  } else if (req.session.username) {
     res.locals.session = req.session;
     next();
   } else {
@@ -40,6 +42,9 @@ router.get("/user/login", (req, res) => {
 
   res.render("login");
 });
+
+// Verification action
+router.get("/user/verify/:token", userController.verify);
 
 // Profile
 router.get("/user", isAuthed, userController.profile);

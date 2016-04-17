@@ -3,7 +3,9 @@ const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const mongoURL =  require("./middleware/db").mongoURL;
+const mongoURL =  require('./middleware/db').mongoURL;
+const mailer = require('express-mailer');
+const mail_auth = require('../script/mail_auth.js');
 const app = express();
 
 // view engine setup
@@ -64,5 +66,14 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// mailing setup
+mailer.extend(app, {
+  from: 'no-reply@feedlark.com',
+  host: 'localhost',
+  secureConnection: true,
+  port: 465,
+  transportMethod: 'SMTP',
+  auth: mail_auth
+});
 
 module.exports = app;

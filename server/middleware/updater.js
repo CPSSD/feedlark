@@ -40,7 +40,7 @@ module.exports = {
   },
 
   // Run the script
-  run: (req, res) => {    
+  run: (req, res) => {
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
         console.log(require("strftime")("%H:%M %d/%m/%y") + " ERROR: Repo update failed!\n" + stderr);

@@ -29,17 +29,22 @@ module.exports = {
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, cb));
   },
 
+  findByToken: (token, cb) => {
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {verified: token}, cb));
+  },
+
   // Returns a user if one exists
   exists: (username, email, cb) => {
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {"$or": [{username: username}, {email: email}]}, cb));
   },
 
-  create: (username, email, password, cb) => {
+  create: (username, email, password, token, cb) => {
 
     // Encrypt the password first
     encrypt(password, new_password => dbFuncs.transaction(db => dbFuncs.insert(db, "user", {
       username: username,
       email: email,
+      verified: token,
       password: new_password,
       subscribed_feeds: []
 
@@ -48,6 +53,16 @@ module.exports = {
       username: username,
       feeds: []
     }, cb))));
+  },
+
+  verify: (token, cb) => {
+    dbFuncs.transaction(db => dbFuncs.update(
+      db,
+      "user",
+      {verified: token},
+      {verified: true},
+      cb
+    ));
   },
 
   addFeed: (db, username, url, cb) => {
