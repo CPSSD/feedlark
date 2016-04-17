@@ -28,6 +28,7 @@ func Create() error {
 
 type DBData struct {
 	// the layout of a supplied document
+	Key        string `bson:"key"`
 	Database   string `bson:"database"`
 	Collection string `bson:"collection"`
 	Query      bson.M `bson:"query"`
@@ -64,6 +65,11 @@ func DBGet(job worker.Job) ([]byte, error) {
 		dbhelp.Log(2, err.Error())
 		return nil, err
 	}
+    if !dbhelp.CorrectKey(data.Key) {
+        dbhelp.Log(2, "Secret key mismatch")
+        b, _ := bson.Marshal(bson.M{"status": "error", "description": "Secret key mismatch"})
+        return b, job.Err()
+    }
 	url := dbhelp.GetURL()
 	response, err := GetDocuments(url, data.Database, data.Collection, data.Query, data.Projection)
 	if err != nil {

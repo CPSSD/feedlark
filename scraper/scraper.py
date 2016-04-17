@@ -3,6 +3,7 @@ import requests
 import feedparser
 import datetime
 from bs4 import BeautifulSoup
+from os import getenv
 import bson
 import gearman
 
@@ -60,6 +61,7 @@ def log(level, message):
 def bsonify_update_data(item_id, url, all_data):
     """Convert given data to bson in valid format for db-update"""
     items_list = {
+        "key": key,
         "database": "feedlark",
         "collection": "feed",
         "data": {
@@ -79,6 +81,7 @@ def get_all_feed_docs():
     """Submits a job to 'db-get' to get all ids and urls of the feeds"""
     # format the request
     to_get_urls_ids = str(bson.BSON.encode({
+        "key": key,
         "database": "feedlark",
         "collection": "feed",
         "query": {},
@@ -97,6 +100,7 @@ def get_all_feed_docs():
 def get_single_feed_doc(url):
     """Submits a job to 'db-get' to a specific feed"""
     to_get_urls_ids = str(bson.BSON.encode({
+        "key": key,
         "database": "feedlark",
         "collection": "feed",
         "query": {
@@ -172,10 +176,12 @@ def update_database(doc, updated_item_list):
 
     log(0, "Submitting items for scraping")
     # Submit items for scraping
-    text_getter_data = str(bson.BSON.encode({"url": doc['url']}))
+    text_getter_data = str(bson.BSON.encode({
+        "key": key,
+        "url": doc['url'],
+        }))
     try:
-        update_response = gm_client.submit_job(
-            'article-text-getter', text_getter_data, background=True)
+        update_response = gm_client.submit_job('article-text-getter', text_getter_data, background=True)
     except Exception as e:
         log(2, str(e))
         return str(bson.BSON.encode({
@@ -186,7 +192,7 @@ def update_database(doc, updated_item_list):
 
 def update_single_feed(worker, job):
     log(0, "'update-single-feed' initiated")
-    
+
     try:
         request = bson.BSON(job.data).decode()
         url = request['url']
@@ -196,6 +202,15 @@ def update_single_feed(worker, job):
             'status': 'error',
             'error-description': 'Invalid parameters',
             }))
+
+    if key is not None:
+        if 'key' not in request or request['key'] != key:
+            log(2, "Secret key mismatch")
+            response = bson.BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                })
+            return str(response)
 
     try:
         feed = get_single_feed_doc(url)
@@ -219,8 +234,19 @@ def update_single_feed(worker, job):
 # updates all of the item fields for all the unique feeds in the feeds db
 def update_all_feeds(worker, job):
     log(0, "'update-all-feeds' initiated")
-    log(0, "Retrieving data from feed db")
 
+    if key is not None:
+        log(0, "Checking secret key")
+        request = bson.BSON(job.data).decode()
+        if 'key' not in request or request['key'] != key:
+            log(2, "Secret key mismatch")
+            response = bson.BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch',
+                })
+            return str(response)
+
+    log(0, "Retrieving data from feed db")
     feed_db_data = get_all_feed_docs()
 
     try:
@@ -241,6 +267,8 @@ def update_all_feeds(worker, job):
     }))
     return str(bson.BSON.encode({"status": "ok"}))
 
+# Get secret key, must be global.
+key = getenv('SECRETKEY')
 
 if __name__ == "__main__":
     log(0, "Initiating gearman worker")

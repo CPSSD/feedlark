@@ -82,6 +82,7 @@ func UpsertDocument(dbUrl, database, collection string, jsonData bson.M) ([]byte
 
 type DbData struct {
 	// the layout of a supplied document
+    Key        string `bson:"key"`
 	Database   string `bson:"database"`
 	Collection string `bson:"collection"`
 	Data       bson.M `bson:"data"`
@@ -95,6 +96,11 @@ func DbAdd(job worker.Job) ([]byte, error) {
 		dbhelp.Log(2, err.Error())
 		return nil, err
 	}
+    if !dbhelp.CorrectKey(data.Key) {
+        dbhelp.Log(2, "Secret key mismatch")
+        b, _ := bson.Marshal(bson.M{"status": "error", "description": "Secret key mismatch"})
+        return b, job.Err()
+    }
 	url := dbhelp.GetURL()
 	response, err := AddDocument(url, data.Database, data.Collection, data.Data)
 	if err != nil {
@@ -114,6 +120,11 @@ func DbUpdate(job worker.Job) ([]byte, error) {
 		dbhelp.Log(2, err.Error())
 		return nil, err
 	}
+    if !dbhelp.CorrectKey(data.Key) {
+        dbhelp.Log(2, "Secret key mismatch")
+        b, _ := bson.Marshal(bson.M{"status": "error", "description": "Secret key mismatch"})
+        return b, job.Err()
+    }
 	url := dbhelp.GetURL()
 	response, err := UpdateDocument(url, data.Database, data.Collection, data.Data)
 	if err != nil {
@@ -132,6 +143,11 @@ func DbUpsert(job worker.Job) ([]byte, error) {
 		dbhelp.Log(2, err.Error())
 		return nil, err
 	}
+    if !dbhelp.CorrectKey(data.Key) {
+        dbhelp.Log(2, "Secret key mismatch")
+        b, _ := bson.Marshal(bson.M{"status": "error", "description": "Secret key mismatch"})
+        return b, job.Err()
+    }
 	url := dbhelp.GetURL()
 	response, err := UpsertDocument(url, data.Database, data.Collection, data.Data)
 	if err != nil {
