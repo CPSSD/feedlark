@@ -54,8 +54,6 @@
         <%
         } else {
           for (var i = 0; i < bookmarks.length; i++) {
-            var date = new Date(bookmarks[i].pub_date);
-            date = date.toLocaleDateString();
             var url = bookmarks[i].feed.match(/https?:\/\/[^\/]+/g)[0];
             var source_name_re = /https?:\/\/([^\/]+)/g;
             var link_name_re = /(https?:\/\/[^\/]+)/g;
@@ -66,15 +64,13 @@
           <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
           <span class="title"><%= bookmarks[i].name %></span>
           <p>
-            Published: <%= date %> <br />
+            Published: <%= bookmarks[i].date %> <br />
             From: <%= source_name %>
           </p>
           <span class="secondary-content" style="text-align: right;">
           <a class="ajax-link" data-route="/bookmarks/removebk"
                                data-url="<%= bookmarks[i].link %>"
                                data-feed="<%= bookmarks[i].feed %>"
-                               data-title="<%= bookmarks[i].name %>"
-                               data-date="<%= bookmarks[i].pub_date %>"
                                style="cursor: pointer;">
                                <i class="material-icons">delete</i>
           </a>

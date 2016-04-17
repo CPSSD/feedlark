@@ -9,6 +9,8 @@ $(document).ready(function() {
       contentType: "application/json; charset=utf-8",
       data: JSON.stringify({
         'url': $(this).attr("data-url"),
+        'named': $(this).attr("data-named"),
+	    'date': $(this).attr("data-date"),
         'feed': $(this).attr("data-feed")
       }),
       success: function(data, status, jqXHR) {
