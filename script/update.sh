@@ -54,6 +54,9 @@ if [ $? -eq 0 ]; then
 fi
 
 print "INFO: Starting processes"
-script/start_internal.sh
+
+# Generate a key too
+key=$(date | md5sum | grep -Eo ^[^[:space:]]+)
+script/start_internal.sh $key
 
 print "INFO: Finished update!"
