@@ -5,7 +5,6 @@ $(document).ready(function() {
 
   // Clicking of most of the stream frame
   $(".feed-item").click(function() {
-    console.log("clonked");
     window.open($(this).attr("data-url"), "_blank");
   });
 
@@ -25,9 +24,4 @@ $(document).ready(function() {
       }
     });
   });
-
-  function change_page(page) {
-    $("[name='page']").val(page);
-    $("form").submit();
-  }
 });
