@@ -11,7 +11,7 @@ const updater = require("./updater");
 
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
-  if (typeof req.session.token != "boolean") {
+  if (process.env.ENVIRONMENT == "PRODUCTION" && typeof req.session.token != "boolean") {
     res.status(200).render("verify_ask");
   } else if (req.session.username) {
     res.locals.session = req.session;
@@ -45,6 +45,9 @@ router.get("/user/login", (req, res) => {
 
 // Verification action
 router.get("/user/verify/:token", userController.verify);
+
+// Verification asker
+router.get("/user/verify", (req, res) => { res.render("verify_ask"); });
 
 // Profile
 router.get("/user", isAuthed, userController.profile);

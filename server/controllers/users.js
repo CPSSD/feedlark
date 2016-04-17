@@ -72,22 +72,28 @@ module.exports = {
         userModel.create(username, email, password, token, _ => {
 
           // Send verification email
-          res.mailer.send(
-            "email_verify",
-            {
-              to: email,
-              subject: "Activate your account",
-              token: token
-            },
-            err => {
-              if err return res.status(500).render("signup", {err: "Failed to send activation email: " + err});
+          if (process.env.ENVIRONMENT == "PRODUCTION") {
+            res.mailer.send(
+              "email_verify",
+              {
+                to: email,
+                subject: "Activate your account",
+                token: token
+              },
+              err => {
+                if (err) return res.status(500).render("signup", {err: "Failed to send activation email: " + err});
 
-              // Send to user page, which will redirect to verify_ask page
-              req.session.username = username;
-              req.session.verified = token;
-              return res.redirect(302, "/user");
-            }
-          );
+                // Send to verify ask page
+                req.session.username = username;
+                req.session.verified = token;
+                return res.redirect(302, "/user");
+              }
+            );
+          } else {
+            req.session.username = username;
+            req.session.verified = true;
+            return res.redirect(302, "/user");
+          }
         });
       });
     });

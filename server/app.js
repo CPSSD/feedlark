@@ -12,6 +12,15 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// mailing setup
+mailer.extend(app, {
+  from: 'no-reply@feedlark.com',
+  host: 'localhost',
+  secureConnection: true,
+  port: 465,
+  transportMethod: 'SMTP',
+  auth: mail_auth
+});
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -64,16 +73,6 @@ app.use(function(err, req, res, next) {
     message: err.message,
     error: {}
   });
-});
-
-// mailing setup
-mailer.extend(app, {
-  from: 'no-reply@feedlark.com',
-  host: 'localhost',
-  secureConnection: true,
-  port: 465,
-  transportMethod: 'SMTP',
-  auth: mail_auth
 });
 
 module.exports = app;
