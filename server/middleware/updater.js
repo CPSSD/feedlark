@@ -1,5 +1,5 @@
 const fs = require("fs");
-const exec = require("child_process").exec;
+const spawn = require("child_process").spawn;
 
 const cmd = "/bin/bash -c ../script/update.sh";
 const token_file = "../script/update_token.key";
@@ -40,14 +40,12 @@ module.exports = {
   },
 
   // Run the script
-  run: (req, res) => {    
-    exec(cmd, (error, stdout, stderr) => {
-      if (error) {
-        console.log(require("strftime")("%H:%M %d/%m/%y") + " ERROR: Repo update failed!\n" + stderr);
-        return;
-      }
+  run: (req, res) => {
+    console.log(require("strftime")("%H:%M %d/%m/%y") + " INFO: Repo update started");
 
-      console.log(require("strftime")("%H:%M %d/%m/%y") + " INFO: Repo updated");
+    spawn(cmd, [], {
+      detached: true,
+      stdio: ["ignore"]
     });
 
     // Return immediately. The script could take a while to run.
