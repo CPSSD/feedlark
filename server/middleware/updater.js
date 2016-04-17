@@ -1,7 +1,7 @@
 const fs = require("fs");
 const spawn = require("child_process").spawn;
 
-const cmd = "/bin/bash -c ../script/update.sh";
+const cmd = "../script/update.sh";
 const token_file = "../script/update_token.key";
 const ref = "refs/heads/master";
 
@@ -44,6 +44,7 @@ module.exports = {
     console.log(require("strftime")("%H:%M %d/%m/%y") + " INFO: Repo update started");
 
     spawn(cmd, [], {
+      shell: true,
       detached: true,
       stdio: ["ignore"]
     });
