@@ -14,19 +14,37 @@ class TestWorkers(unittest.TestCase):
             if isinstance(obj, ClassType):
                 self.assertTrue(
                     obj_str.endswith('Worker'),
-                    msg="All classes in workers.py must end with 'Worker'"
+                    msg="Class "+obj_str+" does not end with 'Worker'"
                     )
 
     def test_classes_have_all_attrs(self):
         w_list = [getattr(cli.workers, x) for x in dir(cli.workers) if x.endswith('Worker')]
 
         for worker_class in w_list:
-            self.assertTrue(hasattr(worker_class, 'NAME'))
-            self.assertTrue(hasattr(worker_class, 'NICENAME'))
-            self.assertTrue(hasattr(worker_class, 'REQUEST'))
-            self.assertTrue(hasattr(worker_class, 'is_error'))
-            self.assertTrue(hasattr(worker_class, 'get_error'))
-            self.assertTrue(hasattr(worker_class, 'print_response'))
+            self.assertTrue(
+                hasattr(worker_class, 'NAME'),
+                msg="Class "+worker_class.__name__+" is missing NAME"
+                )
+            self.assertTrue(
+                hasattr(worker_class, 'NICENAME'),
+                msg="Class "+worker_class.__name__+" is missing NICENAME"
+                )
+            self.assertTrue(
+                hasattr(worker_class, 'REQUEST'),
+                msg="Class "+worker_class.__name__+" is missing REQUEST"
+                )
+            self.assertTrue(
+                hasattr(worker_class, 'is_error'),
+                msg="Class "+worker_class.__name__+" is missing is_error"
+                )
+            self.assertTrue(
+                hasattr(worker_class, 'get_error'),
+                msg="Class "+worker_class.__name__+" is missing get_error"
+                )
+            self.assertTrue(
+                hasattr(worker_class, 'print_response'),
+                msg="Class "+worker_class.__name__+" is missing print_response"
+                )
 
     def test_requests_in_valid_format(self):
         w_list = [getattr(cli.workers, x) for x in dir(cli.workers) if x.endswith('Worker')]
@@ -42,7 +60,10 @@ class TestWorkers(unittest.TestCase):
             return True
 
         for worker_class in w_list:
-            self.assertTrue(dict_of_types(worker_class.REQUEST))
+            self.assertTrue(
+                dict_of_types(worker_class.REQUEST),
+                msg=worker_class.__name__+'.REQUEST must be a dict of types'
+                )
 
 
 if __name__ == '__main__':
