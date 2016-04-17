@@ -131,7 +131,7 @@ class AggregatorWorker:
 @standard_error
 class ScoreWorker:
     NAME = 'score'
-    NICENAME = 'Word crossover score'
+    NICENAME = 'Word Crossover Score'
     REQUEST = {
         'key': str,
         'article_words': dict,
@@ -143,7 +143,7 @@ class ScoreWorker:
 @standard_error
 class FastScoreWorker:
     NAME = 'fast_score'
-    NICENAME = 'Word crossover score (simple)'
+    NICENAME = 'Word Crossover Score (simple)'
     REQUEST = {
         'key': str,
         'article_words': dict,
