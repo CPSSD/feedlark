@@ -4,7 +4,7 @@ from decorators import standard_error, standard_response
 @standard_response
 @standard_error
 class dbaddWorker:
-    NAME = 'dd-add'
+    NAME = 'db-add'
     NICENAME = 'Database Add'
     REQUEST = {
         'key': str,
@@ -79,7 +79,6 @@ class TextGetterWorker:
 
 
 @standard_response
-@standard_error
 class UpdateAllFeedsWorker:
     NAME = 'update-all-feeds'
     NICENAME = 'Update All Feeds'
@@ -88,9 +87,16 @@ class UpdateAllFeedsWorker:
         'url': str,
     }
 
+    @staticmethod
+    def is_error(response):
+        return 'status' not in response or response['status'] == 'error'
+
+    @staticmethod
+    def get_error(response):
+        return response['error-description']
+
 
 @standard_response
-@standard_error
 class UpdateSingleFeedWorker:
     NAME = 'update-single-feed'
     NICENAME = 'Update Single Feed'
@@ -98,6 +104,17 @@ class UpdateSingleFeedWorker:
         'key': str,
         'url': str,
     }
+
+    @staticmethod
+    def is_error(response):
+        return 'status' not in response or response['status'] == 'error'
+
+    @staticmethod
+    def get_error(response):
+        if 'error' in response:
+            return response['error']
+        else:
+            return response['error-description']
 
 
 @standard_response
@@ -131,4 +148,31 @@ class FastScoreWorker:
         'key': str,
         'article_words': dict,
         'user_words': dict,
+    }
+
+
+@standard_response
+@standard_error
+class TopicsWorker:
+    NAME = 'get-topics'
+    NICENAME = 'Get Topics'
+    REQUEST = {
+        'key': str,
+        'article': str,
+        '_id': str,
+        'link': str,
+    }
+
+
+@standard_response
+@standard_error
+class UpdateOpinionWorker:
+    NAME = 'update-user-model'
+    NICENAME = 'Update User Model'
+    REQUEST = {
+        'key': str,
+        'username': str,
+        'feed_url': str,
+        'article_url': str,
+        'positive_opinion': bool,
     }
