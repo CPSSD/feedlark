@@ -128,4 +128,9 @@ module.exports = {
     }));
   },
 
+  getConfig: (username, option_name) => {
+    //do magical db thingsreturn
+    return 20; // woo!s
+  }
+
 };

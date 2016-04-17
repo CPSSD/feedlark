@@ -144,6 +144,14 @@ module.exports = {
         res.status(403).end();
       }
     });
-  }
+  },
 
+  getPageLength: (req, res) => {
+    const username = req.query.username;
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length <= 0) {
+      return userModel.getConfig(username, "page_length") || 20;
+    }
+    return page_length;
+  }
 };

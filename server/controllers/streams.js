@@ -6,6 +6,7 @@
  */
 
 const getFeeds = require("../models/stream").getFeeds;
+const user = require("../controllers/users");
 const _ = require("lodash");
 
 // Stream listing
@@ -13,11 +14,8 @@ module.exports = {
   index: (req, res) => {
 
     // Get & verify the page length & number
-    // This Lo-Dash function is lovely
-    var page_length = _.toSafeInteger(req.query.page_length);
-    if (page_length <= 0) {
-      page_length = 20; // Default Page Length = 20
-    }
+
+    var page_length = user.getPageLength(req, res);
     var page = _.toSafeInteger(req.query.page); // defaults to 0 if undefined
 
     // Sort out the filters
@@ -30,7 +28,6 @@ module.exports = {
 
       // Filter the feeds
       var filtered_feeds = feeds.filter((feed, index, src) => {
-
         // Match with the filters
         return (typeof req.query.source == "undefined" || req.query.source.length < 1 || feed.feed == req.query.source) &&
                (keywords.length < 1 || keywords.every(val => feed.name.toLowerCase().includes(val)));
@@ -58,18 +55,12 @@ module.exports = {
   },
 
   plaintext: (req, res) => {
-    var page_length = _.toSafeInteger(req.query.page_length);
-    if (page_length <= 0) {
-      page_length = 20; // Default Page Length = 20
-    }
-    var page = _.toSafeInteger(req.query.page);
-
-
-    var username = req.query.username;
     res.type('.txt');
 
+    var page_length = user.getPageLength(req, res);
+    var page = _.toSafeInteger(req.query.page);
+    var username = req.query.username;
     getFeeds(username, feeds => {
-
       var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
       var next_page = page + 1;
       if ((page + 1) * page_length > feeds.length) next_page = 0;
