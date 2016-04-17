@@ -103,10 +103,10 @@ module.exports = {
   // This is setup in a way that you can activate your account
   // from your phone without logging in again.
   verify: (req, res) => {
-    if (typeof req.params.token == "undefined") return res.status(400).render("error", {message: "Missing token"});
+    if (typeof req.params.token == "undefined") return res.status(400).render("error", {message: "Missing token", error: {status: "", stack: ""}});
 
     userModel.findByToken(req.params.token, user => {
-      if (!user) return res.status(400).render("error", {message: "Invalid token/Already activated"});
+      if (!user) return res.status(400).render("error", {message: "Invalid token/Already activated", error: {status: "", stack: ""}});
 
       userModel.verify(req.params.token, _ => {
 
