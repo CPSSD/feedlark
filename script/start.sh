@@ -5,4 +5,4 @@ if [ $# != '1' ]
         exit
 fi
 echo "Sending commands to Vagrant..."
-vagrant ssh -c 'cd /vagrant && export SECRETKEY=$1 && script/start_internal.sh'
+vagrant ssh -c "cd /vagrant && script/start_internal.sh $1"
