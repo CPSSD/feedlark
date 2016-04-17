@@ -4,8 +4,9 @@ $(document).ready(function() {
   $(".button-collapse").sideNav(); // init sidenav bar for mobile
 
   // Clicking of most of the stream frame
-  $(".stream-link p, .stream-link img, .stream-link span").click(function() {
-    window.open($(this).parent().attr("data-url"), "_blank");
+  $(".feed-item").click(function() {
+    console.log("clonked");
+    window.open($(this).attr("data-url"), "_blank");
   });
 
   $(".ajax-link").click(function() {

@@ -24,6 +24,6 @@ html, body {
   float: right;
 }
 
-.stream-link p, .stream-link span, .stream-link img {
+.feed-item {
 	cursor: pointer;
 }
