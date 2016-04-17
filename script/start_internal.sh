@@ -1,4 +1,9 @@
 #!/bin/bash
+if [ $# == '1' ]
+    then
+        export SECRETKEY=$1
+fi
+
 echo "Starting backend elements in screen sessions"
 echo "Please run from root of project"
 

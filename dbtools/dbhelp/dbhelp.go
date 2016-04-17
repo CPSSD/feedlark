@@ -22,6 +22,14 @@ func Log(level int, s string) {
 	fmt.Printf("%s %s: %s\n", now, levels[level], s)
 }
 
+func CorrectKey(key string) bool {
+	envKey := os.Getenv("SECRETKEY")
+	if envKey == "" || envKey == key {
+		return true
+	}
+	return false
+}
+
 func CreateSession(url string, database string, collection string) *mgo.Collection {
 	session, err := mgo.Dial(url)
 	if err != nil {
