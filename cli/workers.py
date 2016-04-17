@@ -29,6 +29,17 @@ def standard_response(in_class):
 
 @standard_response
 @standard_error
+class TemplateWorker:
+    NAME = 'gm-worker-name'
+    NICENAME = 'Name For Menu'
+    REQUEST = {
+        'key': str,
+        'url': str,
+    }
+
+
+@standard_response
+@standard_error
 class dbaddWorker:
     NAME = 'dd-add'
     NICENAME = 'Database Add'
@@ -37,6 +48,38 @@ class dbaddWorker:
         'database': str,
         'collection': str,
         'data': dict,
+    }
+
+
+@standard_response
+@standard_error
+class dbupdateWorker:
+    NAME = 'db-update'
+    NICENAME = 'Database Update'
+    REQUEST = {
+        'key': str,
+        'database': str,
+        'collection': str,
+        'data': {
+            'updates': dict,
+            'selector': dict,
+        },
+    }
+
+
+@standard_response
+@standard_error
+class dbupsertWorker:
+    NAME = 'db-upsert'
+    NICENAME = 'Database Upsert'
+    REQUEST = {
+        'key': str,
+        'database': str,
+        'collection': str,
+        'data': {
+            'updates': dict,
+            'selector': dict,
+        },
     }
 
 
@@ -51,6 +94,46 @@ class dbgetWorker:
         'collection': str,
         'query': dict,
         'projection': dict,
+    }
+
+
+@standard_response
+class TextGetterWorker:
+    NAME = 'article-text-getter'
+    NICENAME = 'Article Text Getter'
+    REQUEST = {
+        'key': str,
+        'url': str,
+    }
+
+    @staticmethod
+    def is_error(response):
+        return 'status' not in response or response['status'] == 'error'
+
+    @staticmethod
+    def get_error(response):
+        return response['error-description']
+
+
+@standard_response
+@standard_error
+class UpdateAllFeedsWorker:
+    NAME = 'update-all-feeds'
+    NICENAME = 'Update All Feeds'
+    REQUEST = {
+        'key': str,
+        'url': str,
+    }
+
+
+@standard_response
+@standard_error
+class UpdateSingleFeedWorker:
+    NAME = 'update-single-feed'
+    NICENAME = 'Update Single Feed'
+    REQUEST = {
+        'key': str,
+        'url': str,
     }
 
 
