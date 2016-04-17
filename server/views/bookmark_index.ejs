@@ -60,24 +60,29 @@
             var source_name = source_name_re.exec(bookmarks[i].feed)[1];
             var link_name = link_name_re.exec(bookmarks[i].link)[1];
         %>
-        <li class="collection-item avatar">
-          <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
-          <span class="title"><%= bookmarks[i].name %></span>
-          <p>
-            Published: <%= bookmarks[i].date %> <br />
-            From: <%= source_name %>
-          </p>
-          <span class="secondary-content" style="text-align: right;">
-          <a class="ajax-link" data-route="/bookmarks/remove"
-                               data-url="<%= bookmarks[i].link %>"
-                               data-feed="<%= bookmarks[i].feed %>"
-                               style="cursor: pointer;"
-							   onclick="this.closest('li').remove()">
-                               <i class="material-icons">delete</i>
-          </a>
-          <br />
-          <a href="<%= bookmarks[i].link %>"><i class="material-icons">send</i></a>
-          </span>
+        <li class="collection-item avatar stream-link">
+          <div class="row feed-row">
+            <div class="feed-item col s10" data-url="<%= bookmarks[i].link %>">
+              <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
+              <span class="title"><%= bookmarks[i].name %></span>
+              <p>
+                Published: <%= bookmarks[i].date %> <br />
+                From: <span class="source"><%= source_name %></span>
+              </p>
+              <noscript>
+                <a href="<%= bookmarks[i].link %>" target="_blank">Click here to view</a>
+              </noscript>
+            </div>
+            <div class="secondary-content col s1">
+              <a class="ajax-link" data-route="/bookmarks/remove"
+                                   data-url="<%= bookmarks[i].link %>"
+                                   data-feed="<%= bookmarks[i].feed %>"
+                                   style="cursor: pointer;"
+                                   onclick="this.closest('li').remove()">
+                                   <i class="material-icons">delete</i>
+              </a>
+            </div>
+          </div>
         </li>
 
         <% } } %>

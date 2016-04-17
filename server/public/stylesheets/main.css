@@ -3,6 +3,32 @@ html, body {
   height: 100%;
 }
 
-.homepage-wrapper p { padding-left: 1em; }
+.homepage-wrapper p {
+  padding-left: 1em;
+}
 
-.parallax-container { height: 500px; }
+.parallax-container {
+   height: 500px;
+ }
+
+.collection-item-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.collection-item:hover {
+  background-color: #f2f2f2 !important;
+}
+
+.secondary-content {
+  float: right;
+}
+
+.feed-item {
+  cursor: pointer;
+}
+
+.feed-row {
+  padding-bottom: 0px !important;
+  margin-bottom: 0px !important;
+}
