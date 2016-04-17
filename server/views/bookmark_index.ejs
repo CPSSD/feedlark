@@ -6,7 +6,7 @@
         </div>
       </div>
 
-      <form class="row" method="GET" action="/">
+      <form class="row" method="GET" action="/bookmarks">
         <input type="hidden" name="page" value="0">
         <div class="input-field col s3">
           <select name="page_length">
@@ -68,10 +68,11 @@
             From: <%= source_name %>
           </p>
           <span class="secondary-content" style="text-align: right;">
-          <a class="ajax-link" data-route="/bookmarks/removebk"
+          <a class="ajax-link" data-route="/bookmarks/remove"
                                data-url="<%= bookmarks[i].link %>"
                                data-feed="<%= bookmarks[i].feed %>"
-                               style="cursor: pointer;">
+                               style="cursor: pointer;"
+							   onclick="this.closest('li').remove()">
                                <i class="material-icons">delete</i>
           </a>
           <br />

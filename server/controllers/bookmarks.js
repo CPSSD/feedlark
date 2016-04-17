@@ -56,7 +56,7 @@ module.exports = {
     });
   },
 
-  addbk: (req, res) => {
+  add: (req, res) => {
       if (! (_.isString(req.body.url)) ) {
         return res.status(403).send("Invalid URL provided, oops!");
       }
@@ -74,7 +74,7 @@ module.exports = {
     });
   },
 
-  removebk: (req, res) => {
+  remove: (req, res) => {
 
     // Only need to remove from user, for now
     // TODO clean up no longer relevant feeds from the feed collection
