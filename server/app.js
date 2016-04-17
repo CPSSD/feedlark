@@ -5,7 +5,6 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const mongoURL =  require('./middleware/db').mongoURL;
 const mailer = require('express-mailer');
-const mail_auth = require('../script/mail_auth.js');
 const app = express();
 
 // view engine setup
@@ -16,10 +15,9 @@ app.set('view engine', 'ejs');
 mailer.extend(app, {
   from: 'no-reply@feedlark.com',
   host: 'localhost',
-  secureConnection: true,
-  port: 465,
-  transportMethod: 'SMTP',
-  auth: mail_auth
+  secureConnection: false,
+  port: 25,
+  transportMethod: 'SMTP'
 });
 
 app.use(logger('dev'));
