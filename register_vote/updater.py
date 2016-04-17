@@ -184,7 +184,14 @@ def register_vote(worker, job):
             return str(response)
 
     # log the vote
-    add_update_to_db(job_input)
+    vote_data = {}
+    vote_data['key'] = key
+    vote_data['username'] = job_input['username']
+    vote_data['feed_url'] = job_input['feed_url']
+    vote_data['article_url'] = job_input['article_url']
+    vote_data['positive_opinion'] = job_input['positive_opinion']
+    vote_data['vote_datetime'] = datetime.now()
+    add_update_to_db(vote_data)
 
     required_fields = ['username', 'feed_url', 'article_url', 'positive_opinion']
     if not (all([x in job_input for x in required_fields])):
