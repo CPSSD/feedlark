@@ -11,11 +11,13 @@ const updater = require("./updater");
 
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
-  if (process.env.ENVIRONMENT == "PRODUCTION" && typeof req.session.token != "boolean") {
-    res.status(200).render("verify_ask");
-  } else if (req.session.username) {
-    res.locals.session = req.session;
-    next();
+  if (req.session.username) {
+    if (process.env.ENVIRONMENT == "PRODUCTION" && typeof req.session.token != "boolean") {
+      res.status(200).render("verify_ask");
+    } else {
+      res.locals.session = req.session;
+      next();
+    }
   } else {
     res.status(403).end();
   }
