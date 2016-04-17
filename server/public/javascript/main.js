@@ -3,6 +3,11 @@ $(document).ready(function() {
   $("select").material_select();
   $(".button-collapse").sideNav(); // init sidenav bar for mobile
 
+  // Clicking of most of the stream frame
+  $(".feed-item").click(function() {
+    window.open($(this).attr("data-url"), "_blank");
+  });
+
   $(".ajax-link").click(function() {
     $.post({
       url: $(this).attr("data-route"),
@@ -19,9 +24,4 @@ $(document).ready(function() {
       }
     });
   });
-
-  function change_page(page) {
-    $("[name='page']").val(page);
-    $("form").submit();
-  }
 });
