@@ -56,8 +56,7 @@
         } else {
           for (var i = 0; i < feeds.length; i++) {
             var date = new Date(feeds[i].pub_date);
-            var formatted_date = date.toISOString()
-                                     .substr(0, 10);
+            var formatted_date = date.toISOString().substr(0, 10);
             var url = feeds[i].feed.match(/https?:\/\/[^\/]+/g)[0];
             var source_name_re = /https?:\/\/([^\/]+)/g;
             var link_name_re = /(https?:\/\/[^\/]+)/g;
