@@ -153,7 +153,7 @@ class Aggregator:
                 continue
 
             try:
-                log("Normalising dates")
+                log("Calculating dates")
                 oldest = min(user_g2g['feeds'], key=lambda x: x['pub_date'])
                 oldest = float(oldest['pub_date'].strftime('%s'))
                 newest = max(user_g2g['feeds'], key=lambda x: x['pub_date'])
@@ -163,6 +163,7 @@ class Aggregator:
                 for item in user_g2g['feeds']:
                     item_seconds = float(item['pub_date'].strftime('%s'))
                     item['norm_date'] = (item_seconds-oldest)/(newest-oldest)
+                    item['datetime_diff'] = (datetime.now() - item['pub_date']).total_seconds()
                     normalised_items.append(item)
                 user_g2g['feeds'] = normalised_items
             except:
@@ -177,7 +178,7 @@ class Aggregator:
                 # give the inputs [crossover, date diff] to the classifier
                 sorter = lambda x: classifier.predict([
                     x['word_crossover'],
-                    x['norm_date']])
+                    x['datetime_diff']])
                 user_g2g['feeds'] = sorted(
                     user_g2g['feeds'],
                     key = sorter,
