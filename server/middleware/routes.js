@@ -20,7 +20,7 @@ function isAuthed(req, res, next) {
       next();
     }
   } else {
-    res.status(403).end();
+    res.redirect(302, "/forbidden");
   }
 }
 
@@ -83,7 +83,7 @@ router.get("/", (req, res, next) => {
       next();
     }
   } else {
-    res.render('index').end();
+    res.status(200).render('index');
   }
 }, streamController.index);
 
@@ -106,5 +106,11 @@ router.get("/plaintext", userController.validToken, streamController.plaintext);
 
 // Repo updater
 router.post("/pull/:token", updater.check, updater.run);
+
+// 403 page
+router.get("/forbidden", (req, res) => {
+  res.locals.session = req.session;
+  res.render("403");
+});
 
 module.exports = router;
