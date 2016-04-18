@@ -82,7 +82,6 @@ router.post("/bookmarks/add", isAuthed, bookmarkController.add);
 // Delete Bookmark
 router.post("/bookmarks/remove", isAuthed, bookmarkController.remove);
 
-
 // Tokens (for API stuff!)
 router.get("/token/add", isAuthed, userController.addToken);
 router.get("/token/remove", isAuthed, userController.removeToken);

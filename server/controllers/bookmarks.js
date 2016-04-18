@@ -57,9 +57,9 @@ module.exports = {
   },
 
   add: (req, res) => {
-      if (! (_.isString(req.body.url)) ) {
-        return res.status(403).send("Invalid URL provided, oops!");
-      }
+    if (! (_.isString(req.body.url)) ) {
+      return res.status(403).send("Invalid URL provided, oops!");
+    }
     var url = req.body.url;
     var named = req.body.named;
     var date = req.body.date;
