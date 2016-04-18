@@ -2,6 +2,7 @@ import gearman
 import bson
 from os import getenv
 from datetime import datetime
+from ..aggregator import kw_score, predict
 
 gearman_client = None
 key = getenv('SECRETKEY')
@@ -67,7 +68,7 @@ def get_votes_for_user(username):
     result = bson.BSON(get_response).decode()
     if result['status'] != 'ok':
         log(2, "Error getting votes for user {}".format(username))
-        return
+        return None
     if 'docs' not in result:
         log(1, "No docs returned for user {}".format(username))
         return None
@@ -78,7 +79,35 @@ def get_feed_items(feed_url, item_urls):
     Fetches the data for each article with its url in item_urls,
     From the feed with the url feed_url
     '''
-    return []
+    req_data = bson.BSON.encode({
+        "key": key,
+        "database": "feedlark",
+        "collection": "feed",
+        "query":{
+            "url": feed_url
+        },
+        "projection": {
+            "items": 1
+        }
+    })
+    get_response = gearman_client.submit_job('db-get', str(req_data))
+    result = bson.BSON(get_response).decode()
+    if result['status'] != 'ok':
+        log(2, 'Error getting feed {}'.format(feed_url))
+        return None
+    if 'docs' not in result:
+        log(1, 'No docs returned for feed {}'.format(feed_url))
+        return None
+    
+    item_url_set = set(item_urls)
+    return [d for d in docs if ('link' in d and d['link'] in item_url_set)]
+
+def get_topic_crossover(user_data, article_data):
+    '''
+    Given the user data and article data,
+    returns the crossover according to the 'score' gearman worker
+    '''
+    return 1
 
 def build_model(user_data, votes):
     '''
@@ -109,12 +138,55 @@ def build_model(user_data, votes):
             x.append(inputs)
             y.append(item_opinion[item])
 
+    classification = predict.Classification()
+    classification.train(x, y)
+    new_model = classification.dump_model()
+    return new_model
+
 def refresh_model(worker, job):
     """
     Gearman entry point
     """
     bson_input = bson.BSON(job.data)
     job_input = bson_input.decode()
+
+    if key is not None:
+        if 'key' not in job_input or job_input['key'] != key:
+            log(2, 'Secret key mismatch')
+            return str(bson.BSON.encode({
+                'status': 'error',
+                'description': 'Secret key mismatch'
+                }))
+
+    if 'username' not in job_input:
+        log(2, 'No username supplied')
+        return str(bson.BSON.encode({
+            'status': 'error',
+            'description': 'No username supplied'
+            }))
+
+    username = job_input['username']
+    log(0, 'Refreshing model for user {}'.format(username))
+
+    user_data = get_user_data(username)
+    if user_data is None:
+        log(2, 'No data recieved from db for given username')
+        return str(bson.BSON.encode({
+            'status': 'error',
+            'description': 'No data recieved from db for given username'
+            }))
+
+    votes = get_votes_for_user(username)
+    if votes is None or len(votes) == 0:
+        log(1, 'No vote data found for given username')
+        return str(bson.BSON.encode({
+            'status': 'error',
+            'description': 'No vote data found for given username'
+            }))
+
+    new_model = build_model(user_data, votes)
+    user_data['model'] = new_model
+    update_user_data(username, user_data)
 
 def init_gearman_client():
     global gearman_client

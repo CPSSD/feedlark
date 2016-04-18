@@ -33,6 +33,9 @@ class Classification:
 
     def load_model(self, pickled_model):
         self.model = pickle.loads(pickled_model) 
+    
+    def dump_model(self):
+        return pickle.dumps(self.model)
         
     def train(self, x, y):
         self.model.fit(x, y)
