@@ -9,3 +9,4 @@
 ./script/test/register_vote
 ./script/test/visualisations
 ./script/test/refresh_model
+./script/test/cli
