@@ -50,7 +50,10 @@ router.get("/user/login", (req, res) => {
 router.get("/user/verify/:token", userController.verify);
 
 // Verification asker
-router.get("/user/verify", (req, res) => { res.render("verify_ask"); });
+router.get("/user/verify", (req, res) => {
+  res.locals.session = req.session;
+  res.render("verify_ask");
+});
 
 // Profile
 router.get("/user", isAuthed, userController.profile);
