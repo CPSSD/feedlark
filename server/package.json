@@ -19,6 +19,7 @@
     "express": "~4.13.1",
     "express-mailer": "^0.3.0",
     "express-minify": "^0.2.0",
+    "express-recaptcha": "^2.0.0",
     "express-session": "~1.13.0",
     "gearman": "^1.0.1",
     "lodash": "^4.6.1",
