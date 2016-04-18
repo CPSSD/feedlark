@@ -89,6 +89,7 @@ def get_feed_items(feed_url, item_urls):
     Fetches the data for each article with its url in item_urls,
     From the feed with the url feed_url
     '''
+    log(0, 'Getting feed items for feed {}'.format(feed_url))
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
@@ -118,6 +119,7 @@ def get_topic_crossover(user_data, article_data):
     Given the user data and article data,
     returns the crossover according to the 'score' gearman worker
     '''
+    log(0, 'Getting topic crossover for article {}'.format(article_data['link']))
     req_data = bson.BSON.encode({
         "key": key,
         "article_words": article_data['topics'],
@@ -143,6 +145,7 @@ def build_model(user_data, votes):
     item_opinion = {}
     item_vote_datetime = {}
     if len(votes) == 0:
+        log(0, 'No votes found for user {}, skipping model building'.format(user_data['username']))
         return None
     log(0, 'Building model for user {} with {} votes'.format(user_data['username'], len(votes)))
     for vote in votes:
