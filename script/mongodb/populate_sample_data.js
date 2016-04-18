@@ -221,5 +221,25 @@ db.bookmark.insert([{
     "bookmarks": []
 }]);
 
+db.vote.insert([{
+    "username": "iandioch",
+    "article_url": "http://www.apple.com/customer-letter/",
+    "feed_url": "https://news.ycombinator.com/rss",
+    "positive_opinion": false,
+    "vote_datetime": ISODate("2014-11-22T23:00:00Z")
+}, {
+    "username": "iandioch",
+    "article_url": "http://spritesmods.com/?art=tamasingularity&amp;f=rss",
+    "feed_url": "http://spritesmods.com/rss.php",
+    "positive_opinion": true,
+    "vote_datetime": ISODate("2015-11-22T23:00:00Z"),
+}, {
+    "username": "sully",
+    "article_url": "http://spritesmods.com/?art=tamasingularity&amp;f=rss",
+    "feed_url": "http://spritesmods.com/rss.php",
+    "positive_opinion": false,
+    "vote_datetime": ISODate("2015-12-22T23:10:00Z"),
+}]);
+
 
 print("all collections", db.getCollectionNames());
