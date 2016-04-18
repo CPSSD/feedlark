@@ -12,7 +12,7 @@ As such, we chose to use an off-the-shelf solution. We considered several option
 We are using scikit-learn's `SGDClassifier` class, for which the documentation is [here](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html). We train it with two classes, whether a user is "interested" or "not interested" in that article. The inputs are:
 
 - A measure of the similarity in topics between the article and the user's interests (from `kw_score.py`)
-- The age of the article
+- The number of seconds between the article being published, and the user looking at it (ie. In training, the number of seconds between the article publish and the user vote, in prediction, the number of seconds between the article publish and the current time).
 
 If a user upvotes an article, these inputs are mapped to a value of 1. If they downvote an article, these inputs are mapped to a value of -1. 
 
