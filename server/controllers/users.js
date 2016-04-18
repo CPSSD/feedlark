@@ -52,8 +52,8 @@ module.exports = {
 
     // captcha setup
     const tokens = {secret_key: "nope", site_key: "bees"}
-    if (fs.exists("../../script/captcha_tokens.js")) {
-      tokens = require('../../script/captcha_tokens');
+    if (fs.existsSync("../script/captcha_tokens.js")) {
+      tokens = require('../script/captcha_tokens');
     }
     recaptcha.init(tokens.site_key, tokens.secret_key);
 
@@ -71,43 +71,48 @@ module.exports = {
     if (email.length < 5) return res.status(400).render("signup", {err: "Email Address too short.", captcha: captcha_html});
     if (password.length < 8) return res.status(400).render("signup", {err: "Password too short.", captcha: captcha_html});
     if (username.length < 4) return res.status(400).render("signup", {err: "Username too short.", captcha: captcha_html});
-    if (recaptcha.error && process.env.ENVIRONMENT == "PRODUCTION") return res.status(400).render("signup", {err: "Captcha error: " + recaptcha.error, captcha: captcha_html});
 
-    // Check the user doesn't already exist
-    userModel.exists(username, email, data => {
-      if (data) return res.status(400).render("signup", {err: "Email/Username already taken.", captcha: captcha_html});
+    // Check the captcha
+    // NodeJS is async hell
+    recaptcha.verify(req, err => {
+      if (err && process.env.ENVIRONMENT == "PRODUCTION") return res.status(400).render("signup", {err: "Captcha error: " + recaptcha.error, captcha: captcha_html});
 
-      // Generate a verification token
-      crypto.randomBytes(32, (err, buf) => {
-        if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
-        var token = buf.toString("hex");
+      // Check the user doesn't already exist
+      userModel.exists(username, email, data => {
+        if (data) return res.status(400).render("signup", {err: "Email/Username already taken.", captcha: captcha_html});
 
-        // Add new user to the database
-        userModel.create(username, email, password, token, _ => {
+        // Generate a verification token
+        crypto.randomBytes(32, (err, buf) => {
+          if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
+          var token = buf.toString("hex");
 
-          // Send verification email
-          if (process.env.ENVIRONMENT == "PRODUCTION") {
-            res.mailer.send(
-              "email_verify",
-              {
-                to: email,
-                subject: "Activate your account",
-                token: token
-              },
-              err => {
-                if (err) return res.status(500).render("signup", {err: "Failed to send activation email: " + err, captcha: captcha_html});
+          // Add new user to the database
+          userModel.create(username, email, password, token, _ => {
 
-                // Send to verify ask page
-                req.session.username = username;
-                req.session.verified = token;
-                return res.redirect(302, "/user");
-              }
-            );
-          } else {
-            req.session.username = username;
-            req.session.verified = true;
-            return res.redirect(302, "/user");
-          }
+            // Send verification email
+            if (process.env.ENVIRONMENT == "PRODUCTION") {
+              res.mailer.send(
+                "email_verify",
+                {
+                  to: email,
+                  subject: "Activate your account",
+                  token: token
+                },
+                err => {
+                  if (err) return res.status(500).render("signup", {err: "Failed to send activation email: " + err, captcha: captcha_html});
+
+                  // Send to verify ask page
+                  req.session.username = username;
+                  req.session.verified = token;
+                  return res.redirect(302, "/user");
+                }
+              );
+            } else {
+              req.session.username = username;
+              req.session.verified = true;
+              return res.redirect(302, "/user");
+            }
+          });
         });
       });
     });
