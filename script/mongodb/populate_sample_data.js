@@ -6,6 +6,7 @@ db.feed.drop()
 db.user.drop()
 db.g2g.drop()
 db.bookmark.drop()
+db.vote.drop()
 
 db.feed.insert([{
     "url": "https://news.ycombinator.com/rss",
