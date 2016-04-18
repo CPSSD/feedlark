@@ -14,6 +14,7 @@ def log(level, message):
     print ' '.join([time, levels[level], message])
 
 def get_user_data(username):
+    log(0, 'Getting db doc for user {}'.format(username))
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
@@ -39,6 +40,7 @@ def update_user_data(username, data):
     Update the document for the given user,
     With the dict of updates provided in `data`
     '''
+    log(0, 'Updating db doc for user {}'.format(username))
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
@@ -61,6 +63,7 @@ def get_votes_for_user(username):
     '''
     Get all the votes that this user has cast on articles
     '''
+    log(0, 'Getting votes for user {}'.format(username))
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
