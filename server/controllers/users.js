@@ -5,12 +5,12 @@
  * @docs        :: https://github.com/CPSSD/feedlark/blob/master/doc/db/user.md
  */
 
+const fs = require("fs");
 const _ = require("lodash");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt-nodejs");
 const userModel = require("../models/user");
-const Recaptcha = require("recaptcha").Recaptcha;
-const captcha_tokens = require("../../script/captcha_tokens");
+const recaptcha = require('express-recaptcha');
 
 module.exports = {
   // Login processing
@@ -50,69 +50,64 @@ module.exports = {
   // Signup processing
   signup: (req, res) => {
 
-    // Captcha setup
-    var data = {
-      remoteip:  req.connection.remoteAddress,
-      challenge: req.body.recaptcha_challenge_field,
-      response:  req.body.recaptcha_response_field
-    };
-    var captcha = new Recaptcha(captcha_tokens.public_key, captcha_tokens.private_key, data);
-    var captcha_html = captcha.toHTML();
-
-    // Check if anything actually needs to be done (initial viewing of signup page)
-    if (req.method == "GET") return res.status(200).render("signup", {captcha: captcha_html});
+    // captcha setup
+    const tokens = {secret_key: "nope", site_key: "bees"}
+    if (fs.exists("../script/captcha_tokens.js")) {
+      tokens = require('../script/captcha_tokens');
+    }
+    recaptcha.init(tokens.site_key, tokens.secret_key);
 
     // Import things & load request vars
     var email = req.body.email;
     var password = req.body.password;
     var username = req.body.username;
+    var captcha_html = recaptcha.render();
+
+    // Check if anything actually needs to be done (initial viewing of signup page)
+    if (req.method == "GET") return res.status(200).render("signup", {captcha: captcha_html});
 
     // Verify these details
-    if (!_.isString(email) || !_.isString(password) || !_.isString(username)) return res.status(400).render("signup", {err: "Invalid input data."});
+    if (!_.isString(email) || !_.isString(password) || !_.isString(username)) return res.status(400).render("signup", {err: "Invalid input data.", captcha: captcha_html});
     if (email.length < 5) return res.status(400).render("signup", {err: "Email Address too short.", captcha: captcha_html});
     if (password.length < 8) return res.status(400).render("signup", {err: "Password too short.", captcha: captcha_html});
     if (username.length < 4) return res.status(400).render("signup", {err: "Username too short.", captcha: captcha_html});
+    if (recaptcha.error && process.env.ENVIRONMENT == "PRODUCTION") return res.status(400).render("signup", {err: "Captcha error: " + recaptcha.error, captcha: captcha_html});
 
+    // Check the user doesn't already exist
+    userModel.exists(username, email, data => {
+      if (data) return res.status(400).render("signup", {err: "Email/Username already taken.", captcha: captcha_html});
 
-    captcha.verify((success, error_code) => {
-      if (!success && process.env.ENVIRONMENT == "PRODUCTION") return res.status(400).render("signup", {captcha: captcha_html});
+      // Generate a verification token
+      crypto.randomBytes(32, (err, buf) => {
+        if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
+        var token = buf.toString("hex");
 
-      // Check the user doesn't already exist
-      userModel.exists(username, email, data => {
-        if (data) return res.status(400).render("signup", {err: "Email/Username already taken.", captcha: captcha_html});
+        // Add new user to the database
+        userModel.create(username, email, password, token, _ => {
 
-        // Generate a verification token
-        crypto.randomBytes(32, (err, buf) => {
-          if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
-          var token = buf.toString("hex");
+          // Send verification email
+          if (process.env.ENVIRONMENT == "PRODUCTION") {
+            res.mailer.send(
+              "email_verify",
+              {
+                to: email,
+                subject: "Activate your account",
+                token: token
+              },
+              err => {
+                if (err) return res.status(500).render("signup", {err: "Failed to send activation email: " + err, captcha: captcha_html});
 
-          // Add new user to the database
-          userModel.create(username, email, password, token, _ => {
-
-            // Send verification email
-            if (process.env.ENVIRONMENT == "PRODUCTION") {
-              res.mailer.send(
-                "email_verify",
-                {
-                  to: email,
-                  subject: "Activate your account",
-                  token: token
-                },
-                err => {
-                  if (err) return res.status(500).render("signup", {err: "Failed to send activation email: " + err, captcha: captcha_html});
-
-                  // Send to verify ask page
-                  req.session.username = username;
-                  req.session.verified = token;
-                  return res.redirect(302, "/user");
-                }
-              );
-            } else {
-              req.session.username = username;
-              req.session.verified = true;
-              return res.redirect(302, "/user");
-            }
-          });
+                // Send to verify ask page
+                req.session.username = username;
+                req.session.verified = token;
+                return res.redirect(302, "/user");
+              }
+            );
+          } else {
+            req.session.username = username;
+            req.session.verified = true;
+            return res.redirect(302, "/user");
+          }
         });
       });
     });
