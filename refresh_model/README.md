@@ -18,6 +18,8 @@ The worker is called `refresh-model`, and takes the following Gearman input data
 }
 ```
 
+The `username` field is optional. If it is not supplied, the worker will operate upon all users. 
+
 It outputs either:
 
 ```js
