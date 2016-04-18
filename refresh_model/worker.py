@@ -141,6 +141,7 @@ def build_model(user_data, votes):
     '''
     # create a dict of lsts, mapping each feed to the items to be
     # taken from that feed to create the votes
+    log(0, 'Building model...')
     feed_items = {}
     item_opinion = {}
     item_vote_datetime = {}
@@ -159,15 +160,21 @@ def build_model(user_data, votes):
             feed_items[feed_url] = [article_url]
 
         item_opinion[article_url] = 1 if vote['positive_opinion'] else -1
+        
+    log(0, 'Votes categorised by feed.')
 
     # have to init the model with the two classes
     # cannot be guaranteed the user has both upvoted and downvoted articles
     # so create two classes with extreme inputs
     x = [[0, 20000000], [100, 0]]
     y = [-1, 1]
+    
+    log(0, 'Initiating model')
 
     model = linear_model.SGDClassifier(loss="log", n_iter=5)
-
+    
+    log(0, 'Putting together training data')
+    
     for feed in feed_items:
         for item in get_feed_items(feed, feed_items[feed]):
             inputs = []
@@ -185,8 +192,9 @@ def build_model(user_data, votes):
         log(2, str(x))
         log(2, str(y))
         return None
-
+    log(0, 'Training model')
     model.fit(x, y)
+    log(0, 'Pickling model')
     pickled_model = pickle.dumps(model)
     return pickled_model
 
@@ -196,6 +204,7 @@ def refresh_model(worker, job):
     """
     bson_input = bson.BSON(job.data)
     job_input = bson_input.decode()
+    log(0, 'refresh-model worker called')
 
     if key is not None:
         if 'key' not in job_input or job_input['key'] != key:
