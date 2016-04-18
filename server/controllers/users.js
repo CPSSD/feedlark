@@ -10,7 +10,11 @@ const _ = require("lodash");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt-nodejs");
 const userModel = require("../models/user");
-const recaptcha = require('express-recaptcha');
+const recaptcha = require("express-recaptcha");
+var tokens = {secret_key: "nope", site_key: "bees"}
+if (fs.existsSync("../script/captcha_tokens.js")) {
+  tokens = require("../../script/captcha_tokens");
+}
 
 module.exports = {
   // Login processing
@@ -51,10 +55,6 @@ module.exports = {
   signup: (req, res) => {
 
     // captcha setup
-    const tokens = {secret_key: "nope", site_key: "bees"}
-    if (fs.existsSync("../script/captcha_tokens.js")) {
-      tokens = require('../script/captcha_tokens');
-    }
     recaptcha.init(tokens.site_key, tokens.secret_key);
 
     // Import things & load request vars
