@@ -1,11 +1,11 @@
 Feedlark
 ========
 
-Simple and Sharp RSS Reader.
+Simple and Sharp RSS Aggregator.
 
 Feedlark uses [Vagrant](http://vagrantup.com). Vagrant is a tool to deploy a virtual machine with our required environment fully configured. It requires Virtualbox to host the VM. The Vagrant startup script can be seen in `Vagrantfile`. You can start Vagrant with the instructions in the 'Usage' section below.
 
-Once the environment is set up, Feedlark uses the [Gearman](http://gearman.org) application framework. Gearman allows different modules of the project to be run as separate applications called Workers. These Workers can then be requested to complete their task by a Client. The Gearman Job Server, initiated by Vagrant, handles the communication between each module. All of our Gearman data is transmitted in [BSON](https://en.wikipedia.org/wiki/BSON). The format of the data required by each worker is listed in its individual `README.md` file.
+Once the environment is set up, Feedlark uses the [Gearman](http://gearman.org) messaging system. Gearman allows different modules of the project to be run as separate applications called Workers. These Workers can then be requested to complete their task by a Client. The Gearman Job Server, initiated by Vagrant, handles the communication between each module. All of our Gearman data is transmitted in [BSON](https://en.wikipedia.org/wiki/BSON). The format of the data required by each worker is listed in its individual `README.md` file.
 
 Feedlark is using [MongoDB](http://mongodb.org) for its data storage. There are Gearman workers in the `dbtools` directory to handle most database interactions, so that each individual module doesn't need to re-implement database connections.
 
@@ -21,6 +21,7 @@ Dependencies
 
 - Vagrant
 - VirtualBox
+- An SSH client (if one isn't included on your system)
 
 Vagrant
 -------------
@@ -57,8 +58,11 @@ $ cd <root_of_your_repo>
 $ vagrant up
 $ script/start.sh SECRET_KEY_HERE
 # if you get errors, ssh to the vagrant box and try:
-$ cd /vagrant && bash script/start_internal.sh
+$ cd /vagrant
+$ bash script/start_internal.sh SECRET_KEY_HERE
 ```
+
+You should now be able to browse to `http://192.168.2.2:3000/`.
 
 ### Vagrant Configuration
 
@@ -91,6 +95,14 @@ Project Directory Overview
 
 This is the code that coalesces the database collections `feed` and `user`, and places the data in `g2g`. That is, it takes the feed data, and the user data, and creates the feeds tailored to each individual user. It also includes the tool to compute the similarity of a user's interests and an article's topics.
 
+#### `./article_getter`
+
+The article getter is the Gearman worker that fetches the text from items in RSS feeds. It puts the text of these articles in the database and then calls the topics worker which pulls out the topics of the article.
+
+#### `./cli`
+
+This module is a command line interface to the backend Gearman workers. It is intended to make debugging easier by allowing manual requests to be made.
+
 #### `./dbtools`
 
 The code that provides the Gearman database workers `db-add`, `db-get`, `db-update`, and `db-upsert`. The workers are written in Go.
@@ -122,3 +134,7 @@ This contains the tool to parse an article and pick out the topics it relates to
 #### `./update_opinion`
 
 This contains the tool that is called whenever a user votes on an article. It updates the list of topics they have opinions on in the database, and updates that user's machine learning model with the new data.
+
+#### `./visualisations`
+
+This folder stores the programs that are intended to parse the data in the database and provide meaningfull statistics on things such as what are the most subscribed feeds and what topics a particular user is most interested in.

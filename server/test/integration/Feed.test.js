@@ -85,7 +85,7 @@ describe('FeedModel', _ => {
     it('User can no longer manage feeds', done => {
       agent
         .get('/feeds')
-        .expect(403, done);
+        .expect(302, done);
     });
   });
 });
