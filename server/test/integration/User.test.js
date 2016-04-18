@@ -117,7 +117,7 @@ describe('UserModel', _ => {
     it('User cant view profile when logged out', done => {
       agent
         .get('/user')
-        .expect(403, done);
+        .expect(302, done);
     });
   });
 });
