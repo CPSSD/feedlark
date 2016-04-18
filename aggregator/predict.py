@@ -3,6 +3,7 @@
 import pickle 
 import gearman
 from sklearn import linear_model
+from kw_score import log
 
 class Classification:
     model = None
@@ -32,14 +33,14 @@ class Classification:
         return probabilities_of_like
 
     def load_model(self, pickled_model):
+        log('Loading pickled model.')
         self.model = pickle.loads(pickled_model) 
     
-    def dump_model(self):
-        return pickle.dumps(self.model)
-        
     def train(self, x, y):
+        # not called except in testing, the training actually happens in /refresh_model
+        log('Training model with input {} and output {}'.format(x, y))
         self.model.fit(x, y)
-
+    
 if __name__ == '__main__':
     c = Classification()
     c.train([[1., 5.], [2., -5.], [2., 7.], [1., -3.], [1.,0.], [1.0, -0.1]], [0, 1, 0, 1, 0, 1])
