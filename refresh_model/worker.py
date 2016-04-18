@@ -213,36 +213,56 @@ def refresh_model(worker, job):
                 'status': 'error',
                 'description': 'Secret key mismatch'
                 }))
+    
+    users_data = []
 
     if 'username' not in job_input:
-        log(2, 'No username supplied')
-        return str(bson.BSON.encode({
-            'status': 'error',
-            'description': 'No username supplied'
-            }))
+        log(0, 'No username supplied, refreshing all users.')
+        req_data = bson.BSON.encode({
+            "key": key,
+            "database": "feedlark",
+            "collection": "user",
+            "query": {},
+            "projection": {}
+        })
+        get_response = gearman_client.submit_job('db-get', str(req_data))
+        result = bson.BSON(get_response.result).decode()
+        if not 'docs' in result or len(result['docs']) == 0:
+            log(2, 'No user docs returned from db')
+            return str(bson.BSON.encode({
+                'status': 'error',
+                'description': 'No user docs returned from db'
+                }))
+        users_data = result['docs']
 
-    username = job_input['username']
-    log(0, 'Refreshing model for user {}'.format(username))
+    else:
+        username = job_input['username']
+        user_data = get_user_data(username)
+        if user_data is None:
+            log(2, 'No data recieved from db for given username')
+            return str(bson.BSON.encode({
+                'status': 'error',
+                'description': 'No data recieved from db for given username'
+                }))
+        users_data = [user_data]
 
-    user_data = get_user_data(username)
-    if user_data is None:
-        log(2, 'No data recieved from db for given username')
-        return str(bson.BSON.encode({
-            'status': 'error',
-            'description': 'No data recieved from db for given username'
-            }))
+    for user_data in users_data:
+        log(0, 'Refreshing model for user {}'.format(username))
+        username = user_data['username']
+        votes = get_votes_for_user(username)
+        if votes is None or len(votes) == 0:
+            log(1, 'No vote data found for given username')
+            return str(bson.BSON.encode({
+                'status': 'error',
+                'description': 'No vote data found for given username'
+                }))
 
-    votes = get_votes_for_user(username)
-    if votes is None or len(votes) == 0:
-        log(1, 'No vote data found for given username')
-        return str(bson.BSON.encode({
-            'status': 'error',
-            'description': 'No vote data found for given username'
-            }))
-
-    new_model = build_model(user_data, votes)
-    user_data['model'] = new_model
-    update_user_data(username, user_data)
+        new_model = build_model(user_data, votes)
+        user_data['model'] = new_model
+        update_user_data(username, user_data)
+    return str(bson.BSON.encode({
+        'status': 'ok'
+        }))
 
 def init_gearman_client():
     global gearman_client
