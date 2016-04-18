@@ -2,7 +2,8 @@ import gearman
 import bson
 from os import getenv
 from datetime import datetime
-from ..aggregator import kw_score, predict
+from sklearn import linear_model
+import pickle
 
 gearman_client = None
 key = getenv('SECRETKEY')
@@ -48,7 +49,7 @@ def update_user_data(username, data):
                 "username": username
             }
         }
-    }
+    })
     update_response = gearman_client.submit_job('db-update', str(req_data))
     result = bson.BSON(update_response.result).decode()
     if result['status'] != 'ok':
@@ -70,12 +71,12 @@ def get_votes_for_user(username):
         "projection": {}
     })
     get_response = gearman_client.submit_job('db-get', str(req_data))
-    result = bson.BSON(get_response).decode()
+    result = bson.BSON(get_response.result).decode()
     if result['status'] != 'ok':
         log(2, "Error getting votes for user {}".format(username))
         log(2, result['description'])
         return None
-    if 'docs' not in result:
+    if 'docs' not in result or len(result['docs']) == 0:
         log(1, "No docs returned for user {}".format(username))
         return None
     return result['docs']
@@ -97,17 +98,17 @@ def get_feed_items(feed_url, item_urls):
         }
     })
     get_response = gearman_client.submit_job('db-get', str(req_data))
-    result = bson.BSON(get_response).decode()
+    result = bson.BSON(get_response.result).decode()
     if result['status'] != 'ok':
         log(2, 'Error getting feed {}'.format(feed_url))
         log(2, result['description'])
         return None
-    if 'docs' not in result:
+    if 'docs' not in result or len(result['docs']) == 0:
         log(1, 'No docs returned for feed {}'.format(feed_url))
         return None
-    
     item_url_set = set(item_urls)
-    return [d for d in docs if ('link' in d and d['link'] in item_url_set)]
+    response = [d for d in result['docs'][0]['items'] if ('link' in d and d['link'] in item_url_set)]
+    return response
 
 def get_topic_crossover(user_data, article_data):
     '''
@@ -138,6 +139,10 @@ def build_model(user_data, votes):
     feed_items = {}
     item_opinion = {}
     item_vote_datetime = {}
+    if len(votes) == 0:
+        return None
+    log(0, 'Building model for user {} with {} votes'.format(user_data['username'], len(votes)))
+    log(0, str(votes))
     for vote in votes:
         feed_url = vote['feed_url']
         article_url = vote['article_url']
@@ -150,24 +155,32 @@ def build_model(user_data, votes):
 
         item_opinion[article_url] = 1 if vote['positive_opinion'] else -1
 
+    log(0, '{}\n{}\n{}'.format(feed_items, item_opinion, item_vote_datetime))
     x = []
     y = []
+
+    model = linear_model.SGDClassifier(loss="log", n_iter=5)
 
     for feed in feed_items:
         for item in get_feed_items(feed, feed_items[feed]):
             inputs = []
             # inputs[0] should be the topic crossover
-            inputs.append(get_topic_crossover(user_data, item['topics']))
+            inputs.append(get_topic_crossover(user_data, item))
             # inputs[1] should be the diff between
             # the vote datetime and the article datetime
             inputs.append(item_vote_datetime[item['link']] - item['pub_date'])
             x.append(inputs)
             y.append(item_opinion[item])
 
-    classification = predict.Classification()
-    classification.train(x, y)
-    new_model = classification.dump_model()
-    return new_model
+    if len(x) != len(y):
+        log(2, 'Mismatch in input and output length:')
+        log(2, str(x))
+        log(2, str(y))
+        return None
+
+    model.fit(x, y)
+    pickled_model = pickle.dumps(model)
+    return pickled_model
 
 def refresh_model(worker, job):
     """

@@ -1,5 +1,6 @@
 import unittest
 from worker import *
+from datetime import datetime
 
 class TestRefreshModel(unittest.TestCase):
     def test_get_votes(self):
@@ -28,6 +29,16 @@ class TestRefreshModel(unittest.TestCase):
         self.assertFalse('model' in user_data)
 
         votes = []
+        model = build_model(user_data, votes)
+        self.assertTrue(model is None)
+
+        votes = [{
+            'username': 'iandioch',
+            'article_url': 'http://www.apple.com/customer-letter/',
+            'feed_url': 'https://news.ycombinator.com/rss',
+            'positive_opinion': False,
+            'vote_datetime': datetime.now()
+        }]
         model = build_model(user_data, votes)
         self.assertFalse(model is None)
 
