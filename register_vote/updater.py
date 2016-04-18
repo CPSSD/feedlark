@@ -27,60 +27,6 @@ def update_topic_counts(old_topics, changes, is_positive):
     return old_topics
 
 
-def update_model(user_data, article_data, is_positive):
-    """update the actual model in the user db with the new data"""
-    model = None
-    log(0, "Getting pickled model")
-    if "model" not in user_data:
-        log(1, "No model included in user data, creating new one.")
-        model = linear_model.SGDClassifier(loss='log')
-    else:
-        try:
-            pickled_model = user_data["model"]
-            model = pickle.loads(pickled_model)
-        except Exception as e:
-            log(2, "Error depickling model: " + str(e))
-            model = linear_model.SGDClassifier(loss='log')
-
-    log(0, "Training model with new data")
-
-    # a comparison of how close the articles are in terms of topic
-    # taken from the worker in /aggregator
-    topic_crossover = 0 
-    log(0, str(user_data['words']))
-    log(0, str(article_data['topics']))
-    score_request = bson.BSON.encode({
-        'key': key,
-        'article_words': article_data['topics'],
-        'user_words': user_data['words'],
-        })
-    score_response = gearman_client.submit_job('score', str(score_request))
-    score_data = bson.BSON(score_response.result).decode()
-    if score_data['status'] == 'ok':
-        topic_crossover = score_data['score']
-    else:
-        log(2, "Error getting crossover score: " + str(score_data['description']))
-
-    # get the number of millis in difference
-    age = (datetime.now() - article_data['pub_date']).total_seconds()*1000 
-    inputs = [topic_crossover, age]
-    # if the user likes an article, give it a class of '1'
-    # if the user dislikes an article, give it a class of '-1'
-    output = 1 if is_positive else -1
-    log(0, str(inputs) + " " + str(output))
-    try:
-        model.partial_fit([inputs], [output], classes=[0, 1])
-    except Exception as e:
-        log(2, "Could not train model: " + str(e))
-
-    log(0, "Repickling model")
-    try:
-        user_data['model'] = pickle.dumps(model)
-    except Exception as e:
-        log(2, "Error pickling model: " + str(e))
-    return user_data
-
-
 def add_update_to_db(data):
     """
     log the given user opinion to the vote db collection
