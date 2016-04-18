@@ -126,7 +126,8 @@ db.user.insert([{
     "username": "iandioch",
     "email": "noah@feedlark.com",
     "password": "$2a$10$oU2WWLC8339f4F.A.bb4/.4hpDH9mZZMkdSZtGUckS7LBC8nGOFsG",
-    "subscribed_feeds": ["https://news.ycombinator.com/rss"]
+    "subscribed_feeds": ["https://news.ycombinator.com/rss"],
+    "words": {"butter": 2, "milk": 13, "antidisestablishmentarianism": -33}
 }, {
     "username": "sully",
     "email": "ross@feedlark.com",

@@ -78,7 +78,7 @@ def get_votes_for_user(username):
         return None
     if 'docs' not in result or len(result['docs']) == 0:
         log(1, "No docs returned for user {}".format(username))
-        return None
+        return []
     return result['docs']
 
 def get_feed_items(feed_url, item_urls):
@@ -121,7 +121,7 @@ def get_topic_crossover(user_data, article_data):
         "user_words": user_data['words']
     })
     gearman_response = gearman_client.submit_job('score', str(req_data))
-    result = bson.BSON(gearman_response).decode()
+    result = bson.BSON(gearman_response.result).decode()
     if result['status'] != 'ok':
         log(2, 'Error getting topic crossover score')
         log(2, result['description'])
@@ -142,7 +142,6 @@ def build_model(user_data, votes):
     if len(votes) == 0:
         return None
     log(0, 'Building model for user {} with {} votes'.format(user_data['username'], len(votes)))
-    log(0, str(votes))
     for vote in votes:
         feed_url = vote['feed_url']
         article_url = vote['article_url']
@@ -155,9 +154,11 @@ def build_model(user_data, votes):
 
         item_opinion[article_url] = 1 if vote['positive_opinion'] else -1
 
-    log(0, '{}\n{}\n{}'.format(feed_items, item_opinion, item_vote_datetime))
-    x = []
-    y = []
+    # have to init the model with the two classes
+    # cannot be guaranteed the user has both upvoted and downvoted articles
+    # so create two classes with extreme inputs
+    x = [[0, 20000000], [100, 0]]
+    y = [-1, 1]
 
     model = linear_model.SGDClassifier(loss="log", n_iter=5)
 
@@ -168,9 +169,10 @@ def build_model(user_data, votes):
             inputs.append(get_topic_crossover(user_data, item))
             # inputs[1] should be the diff between
             # the vote datetime and the article datetime
-            inputs.append(item_vote_datetime[item['link']] - item['pub_date'])
+            time_diff = item_vote_datetime[item['link']] - item['pub_date']
+            inputs.append(time_diff.total_seconds())
             x.append(inputs)
-            y.append(item_opinion[item])
+            y.append(item_opinion[item['link']])
 
     if len(x) != len(y):
         log(2, 'Mismatch in input and output length:')
