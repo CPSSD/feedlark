@@ -13,8 +13,12 @@ const updater = require("./updater");
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
   if (req.session.username) {
-    res.locals.session = req.session;
-    next();
+    if (process.env.ENVIRONMENT == "PRODUCTION" && typeof req.session.verified != "boolean") {
+      res.redirect(302, "/user/verify");
+    } else {
+      res.locals.session = req.session;
+      next();
+    }
   } else {
     res.status(403).end();
   }
@@ -42,6 +46,15 @@ router.get("/user/login", (req, res) => {
   res.render("login");
 });
 
+// Verification action
+router.get("/user/verify/:token", userController.verify);
+
+// Verification asker
+router.get("/user/verify", (req, res) => {
+  res.locals.session = req.session;
+  res.render("verify_ask");
+});
+
 // Profile
 router.get("/user", isAuthed, userController.profile);
 
@@ -66,8 +79,12 @@ router.get("/feeds", isAuthed, feedController.index);
 // Stream & Landing page
 router.get("/", (req, res, next) => {
   if (req.session.username) {
-    res.locals.session = req.session;
-    next();
+    if (process.env.ENVIRONMENT == "PRODUCTION" && typeof req.session.verified != "boolean") {
+      res.redirect(302, "/user/verify");
+    } else {
+      res.locals.session = req.session;
+      next();
+    }
   } else {
     res.render('index').end();
   }

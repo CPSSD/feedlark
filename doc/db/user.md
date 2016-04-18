@@ -18,6 +18,10 @@ The `model` field holds a pickled scikit-learn `SGDClassifier`, ie. the
 classification model of that user. It is compiled from the data in the other
 fields, and is updated by the `update-user-model` Gearman worker.
 
+When the user initially signs up, `verified` will be a token used to
+verify the address from the link in the email. It will be set to `true`
+permanently after verification.
+
 Example Document
 ----------------
 
@@ -27,6 +31,7 @@ Example Document
 	"_id": ObjectId("5099803df3f4948bd2f98391"),
 	"username": "iandioch",
 	"email": "noah@feedlark.com",
+	"verified": true,
 	"password": "$2a$08$ThzPc3zm84JPb6LmvcfCkuXkwyh8H.Mn1VC4EKu9guksI9lbdb7Fa",
 	"subscribed_feeds": ["news.ycombinator.com/rss", "pssd.computing.dcu.ie/rss.xml"],
 	"words": {"butter":2, "milk":13, "antidisestablishmentarianism":-33},

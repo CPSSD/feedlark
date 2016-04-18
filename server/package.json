@@ -17,6 +17,7 @@
     "debug": "~2.2.0",
     "ejs": "~2.3.3",
     "express": "~4.13.1",
+    "express-mailer": "^0.3.0",
     "express-minify": "^0.2.0",
     "express-session": "~1.13.0",
     "gearman": "^1.0.1",
