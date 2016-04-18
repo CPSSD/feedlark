@@ -110,6 +110,33 @@ def get_feed_data(feed_url):
         return None
     return result["docs"][0]
 
+def vote_already_exists(username, article_url):
+    '''
+    Check if the user with the given username
+    has already voted on the specified article.
+    Returns True or False
+    '''
+    req_data = bson.BSON.encode({
+        "key": key,
+        "database": "feedlark",
+        "collection": "vote",
+        "query": {
+            "$and": [{
+                    "article_url": article_url,
+                    },{
+                    "username": username
+                    }
+                ]
+            },
+        "projection": {}
+        })
+    get_response = gearman_client.submit_job('db-get', str(req_data))
+    result = bson.BSON(get_response.result).decode()
+    if result['status'] != 'ok':
+        log(2, 'Error getting votes for user {} for article {}'.format(username, article_url))
+        return False
+    return 'docs' in result and len(result['docs']) > 0
+
 
 def register_vote(worker, job):
     """
@@ -129,6 +156,13 @@ def register_vote(worker, job):
                 })
             return str(response)
 
+    if vote_already_exists(job_input['username'], job_input['article_url']):
+        log(1, 'User already voted on this article')
+        response = bson.BSON.encode({
+            'status': 'error',
+            'description': 'User already voted on this article'
+            })
+        return str(response)
     # log the vote
     job_input['vote_datetime'] = datetime.now()
     add_update_to_db(job_input)
