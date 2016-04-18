@@ -4,3 +4,5 @@ server/screenlog.0
 *.pyc
 script/python/env
 script/update_token.key
+script/mail_auth.js
+visualisations/popular_feeds/*.txt

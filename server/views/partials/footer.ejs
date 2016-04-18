@@ -9,11 +9,14 @@
 
   <!-- Selections & ajax link-->
   <script type="text/javascript">
-  $(document).ready(_ => {
-    $("select").material_select();
+  function change_page(page) {
+    $("[name='page']").val(page);
+    $("form").submit();
+  }
 
+  $(document).ready(function() {
     <% if (typeof page_length != "undefined") { %>
-    $("#page_length").change(_ => {
+    $("#page_length").change(function() {
       window.location.href = "/stream/" + $("#page_length").val() + "/<%= page - 1 > 0? page - 1 : 0 %>";
     });
     <% } %>

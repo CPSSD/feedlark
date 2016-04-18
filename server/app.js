@@ -3,15 +3,24 @@ const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const mongoURL =  require("./middleware/db").mongoURL;
+const mongoURL =  require('./middleware/db').mongoURL;
 const compression = require('compression');
 const minify = require('express-minify');
+const mailer = require('express-mailer');
 const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// mailing setup
+mailer.extend(app, {
+  from: 'no-reply@feedlark.com',
+  host: 'localhost',
+  secureConnection: false,
+  port: 25,
+  transportMethod: 'SMTP'
+});
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -64,6 +73,5 @@ if (process.env.ENVIRONMENT != "PRODUCTION" ) {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
 });
-
 
 module.exports = app;

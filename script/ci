@@ -8,3 +8,4 @@
 ./script/test/article_getter
 ./script/test/update_opinion
 ./script/test/visualisations
+./script/test/cli

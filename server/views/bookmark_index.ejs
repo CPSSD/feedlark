@@ -1,0 +1,102 @@
+<% include partials/header.ejs %>
+    <div class="container">
+      <div class="row">
+        <div class="col s6 offset-s3">
+          <h3 class="center-align">Your Bookmarks</h3>
+        </div>
+      </div>
+
+      <form class="row" method="GET" action="/bookmarks">
+        <input type="hidden" name="page" value="0">
+        <div class="input-field col s3">
+          <select name="page_length">
+            <option<%= page_length == 5 ? ' selected' : '' %>>5</option>
+            <option<%= page_length == 10? ' selected' : '' %>>10</option>
+            <option<%= page_length == 20? ' selected' : '' %>>20</option>
+            <option<%= page_length == 50? ' selected' : '' %>>50</option>
+          </select>
+          <label for="page_length">Items per page</label>
+        </div>
+        <div class="input-field col s3">
+          <input name="keywords" placeholder="Enter Key Words" type="text" class="validate" value="<%= keywords %>">
+          <label for="keywords">Key Words</label>
+        </div>
+        <div class="input-field col s3">
+          <select name="source">
+            <option value=""<%= source.length < 1? ' selected' : '' %>>Any</option>
+            <%
+              for (var i = 0; i < subscribed_feeds.length; i++) {
+                var source_name_re = /https?:\/\/([^\/]+)/g;
+                var source_name = source_name_re.exec(subscribed_feeds[i])[1];
+            %>
+            <option value="<%= subscribed_feeds[i] %>"<%= source == subscribed_feeds[i]? ' selected' : '' %>><%= source_name %></option>
+            <% } %>
+          </select>
+          <label for="source">Source</label>
+        </div>
+        <div class="input-field col s3">
+          <button class="btn waves-effect waves-light" type="submit">
+            Filter <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </form>
+
+      <ul class="collection">
+        <% if (typeof bookmarks == "undefined" || bookmarks.length < 1) { %>
+        <li class="collection-item">
+          <% if (keywords.length < 1 && source.length < 1) { %>
+          <p class="center-align">We have no bookmarks for you yet! Make sure you
+            bookmark some of your favourite articles<br></p>
+          <% } else { %>
+          <p class="center-align">No matches</p>
+          <% } %>
+        </div>
+        <%
+        } else {
+          for (var i = 0; i < bookmarks.length; i++) {
+            var url = bookmarks[i].feed.match(/https?:\/\/[^\/]+/g)[0];
+            var source_name_re = /https?:\/\/([^\/]+)/g;
+            var link_name_re = /(https?:\/\/[^\/]+)/g;
+            var source_name = source_name_re.exec(bookmarks[i].feed)[1];
+            var link_name = link_name_re.exec(bookmarks[i].link)[1];
+        %>
+        <li class="collection-item avatar stream-link">
+          <div class="row feed-row">
+            <div class="feed-item col s10" data-url="<%= bookmarks[i].link %>">
+              <img src="<%= link_name %>/favicon.ico" onerror="this.src='/favicon.ico';" alt="favicon" class="circle">
+              <span class="title"><%= bookmarks[i].name %></span>
+              <p>
+                Published: <%= bookmarks[i].date %> <br />
+                From: <span class="source"><%= source_name %></span>
+              </p>
+              <noscript>
+                <a href="<%= bookmarks[i].link %>" target="_blank">Click here to view</a>
+              </noscript>
+            </div>
+            <div class="secondary-content col s1">
+              <a class="ajax-link" data-route="/bookmarks/remove"
+                                   data-url="<%= bookmarks[i].link %>"
+                                   data-feed="<%= bookmarks[i].feed %>"
+                                   style="cursor: pointer;"
+                                   onclick="this.closest('li').remove()">
+                                   <i class="material-icons">delete</i>
+              </a>
+			  <a href="<%= bookmarks[i].link %>"><i class="material-icons">send</i></a>
+            </div>
+          </div>
+        </li>
+
+        <% } } %>
+      </ul>
+
+      <div class="row">
+        <div class="col s12 center-align">
+          <% if (page > 0) { %>
+            <a class="btn-large wave-effect waves-light" onclick="change_page(<%= page-1 %>);">Prev page</a>
+          <% } %>
+          <% if (next_page > 0) { %>
+            <a class="btn-large wave-effect waves-light" onclick="change_page(<%= next_page%>);">Next page</a>
+          <% } %>
+        </div>
+    </div>
+<% include partials/footer.ejs %>
