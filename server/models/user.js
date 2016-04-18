@@ -52,7 +52,10 @@ module.exports = {
     }, _ => dbFuncs.insert(db, "g2g", {
       username: username,
       feeds: []
-    }, cb))));
+    }, _ => dbFuncs.insert(db, "bookmark", {
+      username: username,
+      bookmarks: []
+  }, cb)))));
   },
 
   verify: (token, cb) => {

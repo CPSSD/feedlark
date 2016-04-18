@@ -7,6 +7,7 @@ const router = require("express").Router();
 const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
+const bookmarkController = require("../controllers/bookmarks");
 const updater = require("./updater");
 
 // Checks if the client is authenticated
@@ -54,8 +55,6 @@ router.get("/user/verify", (req, res) => { res.render("verify_ask"); });
 // Profile
 router.get("/user", isAuthed, userController.profile);
 
-// Feeds pages
-
 // Show interest
 router.post("/feeds/like", isAuthed, feedController.like);
 
@@ -83,6 +82,15 @@ router.get("/", (req, res, next) => {
     res.render('index').end();
   }
 }, streamController.index);
+
+// Display Bookmarks
+router.get("/bookmarks", isAuthed, bookmarkController.bookmarks);
+
+// Add Bookmark
+router.post("/bookmarks/add", isAuthed, bookmarkController.add);
+
+// Delete Bookmark
+router.post("/bookmarks/remove", isAuthed, bookmarkController.remove);
 
 // Tokens (for API stuff!)
 router.get("/token/add", isAuthed, userController.addToken);
