@@ -2,8 +2,24 @@
 
 import pickle 
 import gearman
+from datetime import datetime
 from sklearn import linear_model
-from kw_score import log
+
+def log(*message, **kwargs):
+    '''
+    Logs to stdout
+
+    Pass in parameters as you would the python3 print function.
+    Includes the optional 'level' keyword argument, defaults to 0.
+    '''
+    level = kwargs['level'] if 'level' in kwargs else 0
+    levels = ['INFO:', 'WARNING:', 'ERROR:']
+
+    message_str = ''.join(map(str, message))
+    time = str(datetime.now()).replace('-', '/')[:-7]
+
+    print time, levels[level], message_str
+
 
 class Classification:
     model = None
@@ -38,7 +54,7 @@ class Classification:
     
     def train(self, x, y):
         # not called except in testing, the training actually happens in /refresh_model
-        log('Training model with input {} and output {}'.format(x, y))
+        log('Training model')
         self.model.fit(x, y)
     
 if __name__ == '__main__':
