@@ -52,8 +52,8 @@ module.exports = {
 
     // captcha setup
     const tokens = {secret_key: "nope", site_key: "bees"}
-    if (fs.exists("../script/captcha_tokens.js")) {
-      tokens = require('../script/captcha_tokens');
+    if (fs.exists("../../script/captcha_tokens.js")) {
+      tokens = require('../../script/captcha_tokens');
     }
     recaptcha.init(tokens.site_key, tokens.secret_key);
 
