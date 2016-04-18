@@ -95,7 +95,7 @@ module.exports = {
                 "email_verify",
                 {
                   to: email,
-                  subject: "Activate your account",
+                  subject: "Feedlark - Activate your account",
                   token: token
                 },
                 err => {
