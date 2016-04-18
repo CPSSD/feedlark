@@ -26,6 +26,7 @@ def get_user_data(username):
     result = bson.BSON(get_response.result).decode()
     if result['status'] != 'ok':
         log(2, "Error getting db entry for user {}".format(username))
+        log(2, result['description'])
         return None
     if "docs" not in result or len(result['docs']) == 0:
         log(1, "No docs returned for user {}".format(username))
@@ -52,9 +53,13 @@ def update_user_data(username, data):
     result = bson.BSON(update_response.result).decode()
     if result['status'] != 'ok':
         log(2, 'Error updating db entry for user {}'.format(username))
+        log(2, result['description'])
         return
 
 def get_votes_for_user(username):
+    '''
+    Get all the votes that this user has cast on articles
+    '''
     req_data = bson.BSON.encode({
         "key": key,
         "database": "feedlark",
@@ -68,6 +73,7 @@ def get_votes_for_user(username):
     result = bson.BSON(get_response).decode()
     if result['status'] != 'ok':
         log(2, "Error getting votes for user {}".format(username))
+        log(2, result['description'])
         return None
     if 'docs' not in result:
         log(1, "No docs returned for user {}".format(username))
@@ -94,6 +100,7 @@ def get_feed_items(feed_url, item_urls):
     result = bson.BSON(get_response).decode()
     if result['status'] != 'ok':
         log(2, 'Error getting feed {}'.format(feed_url))
+        log(2, result['description'])
         return None
     if 'docs' not in result:
         log(1, 'No docs returned for feed {}'.format(feed_url))
@@ -107,7 +114,19 @@ def get_topic_crossover(user_data, article_data):
     Given the user data and article data,
     returns the crossover according to the 'score' gearman worker
     '''
-    return 1
+    req_data = bson.BSON.encode({
+        "key": key,
+        "article_words": article_data['topics'],
+        "user_words": user_data['words']
+    })
+    gearman_response = gearman_client.submit_job('score', str(req_data))
+    result = bson.BSON(gearman_response).decode()
+    if result['status'] != 'ok':
+        log(2, 'Error getting topic crossover score')
+        log(2, result['description'])
+        return None
+    ans = result['score']
+    return ans
 
 def build_model(user_data, votes):
     '''
@@ -118,13 +137,17 @@ def build_model(user_data, votes):
     # taken from that feed to create the votes
     feed_items = {}
     item_opinion = {}
+    item_vote_datetime = {}
     for vote in votes:
         feed_url = vote['feed_url']
         article_url = vote['article_url']
+        item_vote_datetime[article_url] = vote['vote_datetime']
+
         if vote['feed_url'] in feed_items:
             feed_items[feed_url].append(article_url)
         else:
             feed_items[feed_url] = [article_url]
+
         item_opinion[article_url] = 1 if vote['positive_opinion'] else -1
 
     x = []
@@ -134,7 +157,10 @@ def build_model(user_data, votes):
         for item in get_feed_items(feed, feed_items[feed]):
             inputs = []
             # inputs[0] should be the topic crossover
-            # inputs[1] should be the datetime diff
+            inputs.append(get_topic_crossover(user_data, item['topics']))
+            # inputs[1] should be the diff between
+            # the vote datetime and the article datetime
+            inputs.append(item_vote_datetime[item['link']] - item['pub_date'])
             x.append(inputs)
             y.append(item_opinion[item])
 
