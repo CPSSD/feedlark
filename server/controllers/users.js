@@ -40,7 +40,7 @@ module.exports = {
           req.session.subscribed_feeds = user.subscribed_feeds;
           req.session.verified = user.verified;
           req.session.msg = "Successfully logged in.";
-          return res.redirect(302, "/user");
+          return res.redirect(302, "/");
         });
     });
   },
