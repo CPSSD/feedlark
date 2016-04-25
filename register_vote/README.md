@@ -18,10 +18,11 @@ This is the gearman worker that is called whenever a user likes or dislikes an a
 Usage
 -----
 
-The worker is called `update-user-model`, and takes the following Gearman data:
+The worker is called `register-vote`, and takes the following Gearman data:
 
 ```js
 {
+    "key": "secret_key_abc",
 	"username": "iandioch",
 	"feed_url": "http://news.ycombinator.com/rss",
 	"article_url": "http://example.com/article",

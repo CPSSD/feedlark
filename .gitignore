@@ -3,3 +3,7 @@ log/
 server/screenlog.0
 *.pyc
 script/python/env
+script/update_token.key
+script/mail_auth.js
+script/captcha_tokens.js
+visualisations/popular_feeds/*.txt

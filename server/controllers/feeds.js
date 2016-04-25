@@ -10,6 +10,18 @@ const feedModel = require("../models/feed");
 const _ = require("lodash");
 const gearman = require("../middleware/gearman");
 
+function valid_interest_arguments(req, res, cb) {
+  res.type(".txt");
+  const feed = req.body.feed;
+  const url = req.body.url;
+  if (! (_.isString(feed) || _.isString(url)) ) {
+    return res.status(403).send("Invalid URL provided, oops!");
+  }
+  else {
+    cb(feed, url);
+  }
+}
+
 module.exports = {
 
   index: (req, res) => {
@@ -35,7 +47,10 @@ module.exports = {
       // Add to current user
       userModel.addFeed(db, req.session.username, url, subscribed_feeds => {
         // Call gearman
-        gearman.startJob('update-single-feed', url, undefined, () => {});
+        var request_data = {
+          'url': url,
+        };
+        gearman.startJob('update-single-feed', request_data, undefined, () => {});
 
         // Return to feed manager page
         req.session.msg = "Successfully added feed!";
@@ -63,5 +78,43 @@ module.exports = {
       req.session.subscribed_feeds = subscribed_feeds;
       return res.redirect(302, "/feeds");
     });
+  },
+
+  like: (req, res) => {
+    try {
+      valid_interest_arguments(req, res, (feed, url) => {
+        var jobData = {
+          "username": req.session.username,
+          "feed_url":  feed,
+          "article_url": url,
+          "positive_opinion": true
+        };
+        gearman.startJob('register-vote', jobData, undefined, () => {
+          return res.status(200).send("Liked");
+        });
+      });
+    }
+    catch(err) {
+      console.log(err);
+    }
+  },
+
+  dislike: (req, res) => {
+    try {
+      valid_interest_arguments(req, res, (feed, url) => {
+        var jobData = {
+          "username": req.session.username,
+          "feed_url": feed,
+          "article_url": url,
+          "positive_opinion": false
+        };
+        gearman.startJob('register-vote', jobData, undefined, () => {
+          return res.status(200).send("Disliked");
+          });
+      });
+    }
+    catch(err) {
+      console.log(err);
+    }
   }
 };

@@ -11,11 +11,34 @@ Dependencies
 - Feedlark Getter
 - spacy
 
-What is this?
+aggregator.py
 -------------
 
 This is the code that ties the three Feedlark databases together, it coalesces `feed` and `user` and places the data in `g2g`.
-The machine learning components will be put here eventually to decide the order of the items but for now they are sorted chronologically.
+The machine learning components will be put here eventually to decide the order of the items but for now they sorted by a combination of date and keyword crossover.
+
+The `aggregate` worker takes BSON encoded data in the form:
+
+```js
+{
+    'key': 'secret_key_abc',
+}
+```
+
+And returns
+```js
+{
+    'status': 'ok',
+}
+```
+
+or
+```js
+{
+    'status': 'error',
+    'description': 'Super helpful error message'
+}
+```
 
 kw_score.py
 -----------
@@ -30,6 +53,7 @@ The `score` and `fast_score` Gearman workers take BSON encoded data in the form:
 
 ```js
 {
+    'key': 'secret_key_abc',
 	'article_words': {'word1':0.3, 'word2':0.1, 'wordn':0.4},
 	'user_words': {'space':44, 'truckin':12, 'gardening':-10},
 }

@@ -68,6 +68,7 @@ def main():
     num_requested_topics = int(sys.argv[1])
     gearman_client = gearman.GearmanClient(['localhost:4730'])
     result = bson.BSON.decode(bson.BSON(gearman_client.submit_job('db-get', str(bson.BSON.encode({
+        'key': getenv('SECRETKEY'),
         'database':'feedlark',
         'collection':'user',
         'query':{},

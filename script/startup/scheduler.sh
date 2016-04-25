@@ -1,4 +1,4 @@
 #!/bin/bash
-
+# should be run by start_internal, otherwise this relative path is wrong.
 source /home/python/bin/activate
-python /vagrant/scheduler/scheduler.py
+python ../../scheduler/scheduler.py

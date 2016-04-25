@@ -29,9 +29,9 @@
   </head>
 
   <body>
-    <nav>
-      <div class="nav-wrapper light-blue">
-        <a href="/" class="brand-logo">Feedlark</a>
+    <nav class="light-blue">
+      <div class="nav-wrapper container light-blue">
+        <a href="/" class="brand-logo">Feedlark Beta</a>
         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
 
          <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -42,11 +42,13 @@
             <ul id="dropdown1" class="dropdown-content">
               <li><a href="/user">Profile</a></li>
               <li><a href="/feeds">My Feeds</a></li>
+              <li><a href="/bookmarks">Bookmarks</a></li>
               <li class="divider"></li>
               <li><a href="/user/logout">Logout</a></li>
             </ul>
           </li>
           <% } else { %>
+          <li><a href="/user/signup">Signup</a></li>
           <li><a href="/user/login">Login</a></li>
           <% } %>
          </ul>
@@ -59,6 +61,7 @@
           <li class="divider"></li>
           <li><a href="/user/logout">Logout</a></li>
           <% } else { %>
+          <li><a href="/user/signup">Signup</a></li>
           <li><a href="/user/login">Login</a></li>
           <% } %>
         </ul>

@@ -16,7 +16,8 @@ Vagrant.configure(2) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network "forwarded_port", guest: 27017, host: 27017
+  # Forward: MongoDB port
+  config.vm.network "forwarded_port", guest: 9001, host: 9001
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -37,7 +38,7 @@ Vagrant.configure(2) do |config|
   # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |vb|
-     vb.memory = "2048"
+     vb.memory = "3072"
      vb.cpus = "2"
      vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   end
@@ -59,9 +60,7 @@ Vagrant.configure(2) do |config|
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-
-  # Install all the packages required
+  # documentation for more information about their specific syntax and use.  # Install all the packages required
   config.vm.provision "shell", path: "script/vagrant/get_packages.sh"
 
   #Setup the server
@@ -70,10 +69,9 @@ Vagrant.configure(2) do |config|
   #Setup go
   config.vm.provision "shell", path: "script/vagrant/go_install.sh"
 
-  #Setup mongo
-  config.vm.provision "shell", path: "script/vagrant/mongo_install.sh"
-
   # Setup Python
   config.vm.provision "shell", path: "script/python/install.sh"
+
+  config.vm.provision "shell", path: "script/mongodb/install.sh"
 
 end

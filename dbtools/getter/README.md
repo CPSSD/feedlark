@@ -19,6 +19,7 @@ From the [Pymongo docs](http://api.mongodb.org/python/current/api/pymongo/collec
 
 ```js
 {
+    "key": "ke$ha_4_life",
     "database": "feedlark",
     "collection": "user",
     "query": {

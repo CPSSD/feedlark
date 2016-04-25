@@ -7,15 +7,20 @@ const router = require("express").Router();
 const userController = require("../controllers/users");
 const feedController = require("../controllers/feeds");
 const streamController = require("../controllers/streams");
-
+const bookmarkController = require("../controllers/bookmarks");
+const updater = require("./updater");
 
 // Checks if the client is authenticated
 function isAuthed(req, res, next) {
   if (req.session.username) {
-    res.locals.session = req.session;
-    next();
+    if (process.env.ENVIRONMENT == "PRODUCTION" && typeof req.session.verified != "boolean") {
+      res.redirect(302, "/user/verify");
+    } else {
+      res.locals.session = req.session;
+      next();
+    }
   } else {
-    res.status(403).end();
+    res.redirect(302, "/forbidden");
   }
 }
 
@@ -25,10 +30,7 @@ function isAuthed(req, res, next) {
 router.all("/user/logout", userController.logout);
 
 // Signup
-router.get("/user/signup", (req, res) => { res.render("signup"); });
-
-// Signup processing
-router.post("/user/signup", userController.signup);
+router.all("/user/signup", userController.signup);
 
 // Login processing
 router.post("/user/login", userController.login);
@@ -41,10 +43,23 @@ router.get("/user/login", (req, res) => {
   res.render("login");
 });
 
+// Verification action
+router.get("/user/verify/:token", userController.verify);
+
+// Verification asker
+router.get("/user/verify", (req, res) => {
+  res.locals.session = req.session;
+  res.render("verify_ask");
+});
+
 // Profile
 router.get("/user", isAuthed, userController.profile);
 
-// Feeds pages
+// Show interest
+router.post("/feeds/like", isAuthed, feedController.like);
+
+// Show disinterest buttons
+router.post("/feeds/dislike", isAuthed, feedController.dislike);
 
 // Add
 router.get("/feeds/add", isAuthed, (req, res) => { res.render("feeds_add"); });
@@ -61,12 +76,25 @@ router.get("/feeds", isAuthed, feedController.index);
 // Stream & Landing page
 router.get("/", (req, res, next) => {
   if (req.session.username) {
-    res.locals.session = req.session;
-    next();
+    if (process.env.ENVIRONMENT == "PRODUCTION" && typeof req.session.verified != "boolean") {
+      res.redirect(302, "/user/verify");
+    } else {
+      res.locals.session = req.session;
+      next();
+    }
   } else {
-    res.render('index').end();
+    res.status(200).render('index');
   }
 }, streamController.index);
+
+// Display Bookmarks
+router.get("/bookmarks", isAuthed, bookmarkController.bookmarks);
+
+// Add Bookmark
+router.post("/bookmarks/add", isAuthed, bookmarkController.add);
+
+// Delete Bookmark
+router.post("/bookmarks/remove", isAuthed, bookmarkController.remove);
 
 // Tokens (for API stuff!)
 router.get("/token/add", isAuthed, userController.addToken);
@@ -76,5 +104,13 @@ router.get("/token/list", isAuthed, userController.listTokens);
 // Plaintext Endpoint
 router.get("/plaintext", userController.validToken, streamController.plaintext);
 
+// Repo updater
+router.post("/pull/:token", updater.check, updater.run);
+
+// 403 page
+router.get("/forbidden", (req, res) => {
+  res.locals.session = req.session;
+  res.render("403");
+});
 
 module.exports = router;

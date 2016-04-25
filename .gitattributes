@@ -1,4 +1,8 @@
-* text eol=lf
-*.png -crlf
-/server/assets/** binary
+* text=auto
 
+*.py text
+*.js text
+
+*.png binary
+*.jpg binary
+*.ico binary

@@ -55,6 +55,16 @@ member. It also **must** past the build.
 Preferably a few team members should okay the pull request before it gets
 merged.
 
+### Labelling Pull Requests
+
+The following labels should be used to indicate the status of a PR:
+
+- `[PR] Needs Work`: The PR has been reviewed, and the reviewer has left comments on work to be done.
+- `[PR] WIP`: The Pull Requester has acknowledged the issues and is working on them.
+- `[PR] Test Ready`: The branch is ready for testing and is mergeable if it passes.
+
+All new PR's are assumed to be "Test Ready", and thus this label should be applied when they are created.
+
 Updating Documentation
 ----------------------
 
