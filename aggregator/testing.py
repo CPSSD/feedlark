@@ -1,8 +1,10 @@
 import unittest
 import gearman
 import bson
+from random import random
 from aggregator import Aggregator  # Runs aggregator.py
 from kw_score import fast_score, score
+from predict import Classification
 
 
 class TestAggregation(unittest.TestCase):
@@ -105,6 +107,28 @@ class TestAggregation(unittest.TestCase):
         trip_to_canada = score(a_words2, u_words)
 
         self.assertTrue(sticky_marxism < trip_to_canada)
+
+    def test_classification(self):
+        c = Classification()
+        x = []
+        y = []
+        print 'Training test model'
+        print (random()*3, random()*3, -random())
+        for i in xrange(1000):
+            x.append([random()*3, random()*3, -random()])
+            y.append(1)
+        print (random()*5 + 2, random()*2 - 1.5, random())
+        for i in xrange(1000):
+            x.append([random()*5 + 2, random()*2 - 1.5, random()])
+            y.append(-1)
+        c.train(x, y)
+        p = c.predict([[2.1, 2.1, -0.30]])
+        print 'testing:', p
+        #self.assertTrue(p[0] > 0.5)
+
+        q = c.predict([[3.2, 0.0, 0.3]])
+        print 'testing:', q
+        self.assertTrue(q[0] < 0.5)
 
 
 if __name__ == '__main__':

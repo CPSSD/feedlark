@@ -6,6 +6,7 @@
 ./script/test/aggregator
 ./script/test/topics
 ./script/test/article_getter
-./script/test/update_opinion
+./script/test/register_vote
 ./script/test/visualisations
+./script/test/refresh_model
 ./script/test/cli
