@@ -55,14 +55,16 @@ def main():
 
     # map each article url to 1 or -1, if the user liked or disliked it
     article_opinions = {}
-    article_datetimes = {}
+    vote_datetimes = {}
     for article in articles:
-        if not ('article_url' in article and 'positive_opinion' in article):
+        if not ('article_url' in article and 'positive_opinion' in article and 'vote_datetime' in article):
+            print 'Error'
+            print 'Vote is missing some fields: {}'.format(article)
             continue
         url = article['article_url']
         vote = 1 if article['positive_opinion'] else -1
         article_opinions[url] = vote
-        article_datetimes[url] = article['vote_datetime']
+        vote_datetimes[url] = article['vote_datetime']
 
     # split the articles into the feeds they belong to, to minimise db lookups
     feeds = {}
@@ -125,7 +127,8 @@ def main():
                 continue
             words = item['topics']
             topic_crossover = kw_score.score(words, user_words)
-            x = [topic_crossover, vote_datetimes[item['link']]-item['pub_date']]
+            time_diff = vote_datetimes[item['link']] - item['pub_date']
+            x = [topic_crossover, time_diff.total_seconds()]
             y = article_opinions[item['link']]
             data_x.append(x)
             data_y.append(y)
@@ -142,12 +145,12 @@ def main():
     print num_train, 'data points in training set'
     train_x = data_x[:num_train]
     train_y = data_y[:num_train]
-    print train_x
-    print train_y
+
     test_x = data_x[num_train:]
     test_y = data_y[num_train:]
+    print len(test_x), 'data points in test set'
 
-    model = linear_model.SGDClassifier(loss='log', num_iter=5)
+    model = linear_model.SGDClassifier(loss='log', n_iter=5)
     model.fit(train_x, train_y)
     score = model.score(test_x, test_y)
     print 'Score =', score
