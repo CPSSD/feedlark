@@ -56,10 +56,13 @@ router.get("/user/verify", (req, res) => {
 router.get("/user", isAuthed, userController.profile);
 
 // Profile tokens
-router.get("/user/tokens", isAuthed, userController.profile_tokens);
+router.get("/user/tokens", isAuthed, userController.profileTokens);
 
 // Profile settings
-router.get("/user/settings", isAuthed, userController.profile_settings);
+router.post("/user/change/password", isAuthed, userController.changePassword);
+
+// Profile settings
+router.post("/user/change/email", isAuthed, userController.changeEmail);
 
 // Show interest
 router.post("/feeds/like", isAuthed, feedController.like);
