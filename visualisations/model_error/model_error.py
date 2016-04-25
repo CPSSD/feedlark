@@ -5,7 +5,6 @@ import pickle
 import os
 from sklearn import linear_model
 
-# import ../../aggregator/kw_score.py
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'aggregator'))
 import kw_score
 
@@ -33,13 +32,17 @@ def main():
         return
     username = get_username_from_input(sys.argv)
 
+    print 'Getting model error of {}'.format(username)
+    print 'Loading user\'s votes from database'
+
     # get the user's votes on articles
     db_result = db_get('vote', {
         'username': username
     },{
         'article_url': 1,
         'feed_url': 1,
-        'positive_opinion': 1
+        'positive_opinion': 1,
+        'vote_datetime': 1
     })
     if db_result['status'] != 'ok':
         print 'Error'
@@ -50,14 +53,16 @@ def main():
 
     print len(articles), 'article opinions found in vote db for given user'
 
-    # map each article url to 1 or 0, if the user liked or disliked it
+    # map each article url to 1 or -1, if the user liked or disliked it
     article_opinions = {}
+    article_datetimes = {}
     for article in articles:
         if not ('article_url' in article and 'positive_opinion' in article):
             continue
         url = article['article_url']
-        vote = 1 if article['positive_opinion'] else 0
+        vote = 1 if article['positive_opinion'] else -1
         article_opinions[url] = vote
+        article_datetimes[url] = article['vote_datetime']
 
     # split the articles into the feeds they belong to, to minimise db lookups
     feeds = {}
@@ -68,7 +73,6 @@ def main():
             feeds[article['feed_url']] = [article['article_url']]
 
     # get a set of the unique article urls
-    #article_url_set = set([a['article_url'] for a in articles])
     article_url_set = set(article_opinions.keys())
     print len(article_url_set), 'unique articles in set'
 
@@ -96,8 +100,8 @@ def main():
     user_words = user_data['words']
 
     # the inputs and outputs we have for the prediction
-    data_x = [[10.0], [0.0]]
-    data_y = [1, 0]
+    data_x = [[10.0, 1], [0.0, 100000]]
+    data_y = [1, -1]
 
     for feed in feeds:
         db_result = db_get('feed', {
@@ -120,8 +124,8 @@ def main():
             if item['link'] not in article_url_set:
                 continue
             words = item['topics']
-            topic_crossover = kw_score.fast_score(words, user_words)
-            x = [topic_crossover]
+            topic_crossover = kw_score.score(words, user_words)
+            x = [topic_crossover, vote_datetimes[item['link']]-item['pub_date']]
             y = article_opinions[item['link']]
             data_x.append(x)
             data_y.append(y)
@@ -143,7 +147,7 @@ def main():
     test_x = data_x[num_train:]
     test_y = data_y[num_train:]
 
-    model = linear_model.SGDClassifier(loss='log')
+    model = linear_model.SGDClassifier(loss='log', num_iter=5)
     model.fit(train_x, train_y)
     score = model.score(test_x, test_y)
     print 'Score =', score
