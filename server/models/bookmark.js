@@ -65,7 +65,16 @@ module.exports = {
   },
 
   getBookmarks: (username,cb) => {
-    dbFuncs.transaction(db => dbFuncs.findOne(db, "bookmark", {username: username}, data => cb(data.bookmarks)));
-  }
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "bookmark", {username: username}, data => {
 
+      if (!data){
+        dbFuncs.transaction(db => dbFuncs.insert(db, "bookmark", {
+          username: username,
+          bookmarks: []
+        }, cb));
+    } else {
+        cb(data.bookmarks)
+    }
+    }));
+  }
 };
