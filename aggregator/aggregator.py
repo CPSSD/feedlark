@@ -2,6 +2,7 @@ from datetime import datetime
 import gearman
 import bson
 from os import getenv
+from predict import Classification
 
 
 def log(*message, **kwargs):
@@ -152,7 +153,7 @@ class Aggregator:
                 continue
 
             try:
-                log("Normalising dates")
+                log("Calculating dates")
                 oldest = min(user_g2g['feeds'], key=lambda x: x['pub_date'])
                 oldest = float(oldest['pub_date'].strftime('%s'))
                 newest = max(user_g2g['feeds'], key=lambda x: x['pub_date'])
@@ -162,17 +163,40 @@ class Aggregator:
                 for item in user_g2g['feeds']:
                     item_seconds = float(item['pub_date'].strftime('%s'))
                     item['norm_date'] = (item_seconds-oldest)/(newest-oldest)
+                    item['datetime_diff'] = (datetime.now() - item['pub_date']).total_seconds()
                     normalised_items.append(item)
                 user_g2g['feeds'] = normalised_items
             except:
                 log('Error processing dates (bad date formats?)', level=1)
                 continue
 
-            log("Sorting items")
-            user_g2g['feeds'] = sorted(
-                user_g2g['feeds'],
-                key=lambda x: x['norm_date']+x['word_crossover'],
-                reverse=True)
+            if 'model' in user_data:
+                # sort the user's feed based on their ML model
+                classifier = Classifier()
+                classifier.load_model(user_data['model'])
+                log("Model loaded, sorting items")
+                # give the inputs [crossover, date diff] to the classifier
+                sorter = lambda x: classifier.predict([
+                    x['word_crossover'],
+                    x['datetime_diff']])
+                user_g2g['feeds'] = sorted(
+                    user_g2g['feeds'],
+                    key = sorter,
+                    reverse=True)
+            else:
+                # there has to be a method to sort their items if they have no ML model
+                # as the machine learning is being done in batches, and the user should
+                # not have to wait a long time before their feed is visible
+                log("No model for user: " + str(user['username']) + \
+                    ", sorting items using non-ML method", level=1)
+                user_g2g['feeds'] = sorted(
+                    user_g2g['feeds'],
+                    key=lambda x: x['norm_date']+x['word_crossover'],
+                    reverse=True)
+            for item in user_g2g['feeds']:
+                del item['norm_date']
+                del item["word_crossover"]
+                del item["datetime_diff"]
             log("Putting items in 'g2g' database")
             self.put_g2g(user['username'], user_g2g)
             log("Completed")
@@ -186,6 +210,6 @@ if __name__ == '__main__':
     gm_worker = gearman.GearmanWorker(['localhost:4730'])
     gm_worker.set_client_id('aggregator')
     gm_worker.register_task('aggregate', agg.aggregate)
-    log("Reistered 'aggregate' task")
+    log("Registered 'aggregate' task")
 
     gm_worker.work()

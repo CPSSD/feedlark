@@ -55,6 +55,15 @@ router.get("/user/verify", (req, res) => {
 // Profile
 router.get("/user", isAuthed, userController.profile);
 
+// Profile tokens
+router.get("/user/tokens", isAuthed, userController.profileTokens);
+
+// Profile settings
+router.post("/user/change/password", isAuthed, userController.changePassword);
+
+// Profile settings
+router.post("/user/change/email", isAuthed, userController.changeEmail);
+
 // Show interest
 router.post("/feeds/like", isAuthed, feedController.like);
 
@@ -106,6 +115,14 @@ router.get("/plaintext", userController.validToken, streamController.plaintext);
 
 // Repo updater
 router.post("/pull/:token", updater.check, updater.run);
+
+// Routes for ToS and Privacy Policy
+router.get("/terms", (req, res) => {
+  return res.status(200).render("terms_of_service");
+});
+router.get("/privacy", (req, res) => {
+  return res.status(200).render("privacy_policy");
+});
 
 // 403 page
 router.get("/forbidden", (req, res) => {

@@ -139,10 +139,126 @@ module.exports = {
     });
   },
 
+  // Allow for password change
+  changePassword: (req, res) => {
+
+    // Load request vars & verify
+    var username = req.session.username;
+    var newPassword = req.body.newPassword;
+    var oldPassword1 = req.body.oldPassword1;
+    var newPassword2 = req.body.newPassword2;
+
+    // Check validity of passwords
+    if (newPassword.length < 8){
+      req.session.msg = "New password is too short.";
+      return res.redirect(302, "/user");
+    }
+    if (!_.isString(newPassword2) || !_.isString(oldPassword1) || !_.isString(newPassword)) {
+      req.session.msg = "One of your Passwords is not a string";
+      return res.redirect(302, "/user");
+    }
+    if (newPassword2 != newPassword) {
+      req.session.msg = "Your new passwords did not match";
+      return res.redirect(302, "/user");
+    }
+
+    // Get the user's details from the DB
+    userModel.findByUsername(username, user => {
+
+      // Is the user name valid? (DB query returns nothing if not)
+      if (typeof user == "undefined") {
+        req.session.msg = "Invalid username.";
+        return res.redirect(302, "/user");
+      }
+
+      // Check their password
+      bcrypt.compare(oldPassword1, user.password, (err, valid) => {
+        if (!valid) {
+          req.session.msg = "Your old password is incorrect.";
+          return res.redirect(302, "/user");
+        }
+        // Change the password in the db
+        userModel.updatePassword(user, newPassword, _ => {
+          req.session.msg = "Successfully changed your password";
+          return res.redirect(302, "/user");
+        });
+      });
+    });
+  },
+
+  // Allow for password change
+  changeEmail: (req, res) => {
+
+    // Load request vars & verify
+    var username = req.session.username;
+    var newEmail = req.body.newEmail;
+    var oldEmail = req.body.oldEmail;
+
+    // Check validity of passwords
+    if (newEmail.length < 5){
+      req.session.msg = "Email address is too short.";
+      return res.redirect(302, "/user");
+    }
+    if (!_.isString(newEmail)) {
+      req.session.msg = "Your email is not a string";
+      return res.redirect(302, "/user");
+    }
+
+    // Get the user's details from the DB
+    userModel.findByUsername(username, user => {
+
+      // Is the user name valid? (DB query returns nothing if not)
+      if (typeof user == "undefined") {
+        req.session.msg = "Invalid username.";
+        return res.redirect(302, "/user");
+      }
+      if (user.email != oldEmail) {
+        req.session.msg = "Incorrect current email.";
+        return res.redirect(302, "/user");
+      }
+      crypto.randomBytes(32, (err, buf) => {
+        if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
+        var token = buf.toString("hex");
+
+        if (process.env.ENVIRONMENT == "PRODUCTION") {
+          res.mailer.send(
+            "email_verify",
+            {
+              to: newEmail,
+              subject: "Feedlark - Update your Email Address",
+              token: token
+            },
+            err => {
+              if (err) return res.status(500).render("signup", {err: "Failed to send activation email: " + err, captcha: captcha_html});
+            }
+          );
+        } else {
+          req.session.username = username;
+          req.session.verified = true;
+        }
+
+
+        userModel.updateEmail(user.username, newEmail, token, _ => {
+          req.session.msg = "Successfully changed your email. Please check it for the verification email.";
+          return res.redirect(302, "/user");
+        });
+      });
+    });
+  },
+
   // Render the user profile
   profile: (req, res) => {
     userModel.findByUsername(req.session.username, user => {
       res.status(200).render("profile", {
+        user: user
+      });
+    });
+  },
+
+  // Render the user profile tokens view
+  profileTokens: (req, res) => {
+    userModel.findByUsername(req.session.username, user => {
+      res.status(200).render("profile_tokens", {
         user: user
       });
     });
@@ -154,15 +270,15 @@ module.exports = {
 
     // Get the user's details from the DB
     crypto.randomBytes(32, (err, buf) => {
-      if (err) return res.status(400).render("/user", {err: "Oops, something broke."});
+      if (err) return res.status(400).render("/user/tokens", {err: "Oops, something broke."});
       const token = buf.toString('hex');
       userModel.addToken(username, token, status => {
 
         if (typeof status == "undefined" || status == "err") {
-          return res.redirect(400 , "/user");
+          return res.redirect(400 , "/user/tokens");
         }
         else {
-          return res.redirect(302, "/user");
+          return res.redirect(302, "/user/tokens");
         }
       });
     });
@@ -173,7 +289,7 @@ module.exports = {
     const token = req.query.token;
     // TODO: add per token permissions
     userModel.removeToken(username, token, (data) => {
-      return res.redirect(302, "/user");
+      return res.redirect(302, "/user/tokens");
     });
   },
 

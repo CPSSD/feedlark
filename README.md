@@ -131,9 +131,13 @@ This is where we keep the server, which routes HTTP and renders responses.
 
 This contains the tool to parse an article and pick out the topics it relates to.
 
-#### `./update_opinion`
+#### `./register_vote`
 
-This contains the tool that is called whenever a user votes on an article. It updates the list of topics they have opinions on in the database, and updates that user's machine learning model with the new data.
+This contains the tool that is called whenever a user votes on an article. It updates the list of topics they have opinions on in the database, and adds a document to the `vote` collection in the database.
+
+#### `./refresh_model`
+
+This contains a worker to refresh the machine learning model of a particular user, by taking all of their votes from the `vote` collection and training the model with them, then putting a pickled copy of that model into that user's document in the `user` collection.
 
 #### `./visualisations`
 

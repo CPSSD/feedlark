@@ -34,5 +34,16 @@ class TestOpinionUpdater(unittest.TestCase):
         data = get_feed_data('ftp://example.ml/feed.yaml')
         self.assertTrue(data is None)        
 
+    def test_vote_already_exists(self):
+        init_gearman_client()
+        exists = vote_already_exists('iandioch', 'http://www.apple.com/customer-letter/')
+        self.assertTrue(exists)
+        exists = vote_already_exists('iandioch', 'ftp://communism.example/syrup')
+        self.assertFalse(exists)
+        exists = vote_already_exists('sully', 'http://www.apple.com/customer-letter/')
+        self.assertFalse(exists)
+        exists = vote_already_exists('sully', 'http://spritesmods.com/?art=tamasingularity&amp;f=rss')
+        self.assertTrue(exists)
+
 if __name__ == '__main__':
     unittest.main()
