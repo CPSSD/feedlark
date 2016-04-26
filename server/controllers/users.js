@@ -411,7 +411,7 @@ module.exports = {
                   res.mailer.send(
                     "email_summary",
                     {
-                      to: email,
+                      to: user.email,
                       subject: "Feedlark - Your Daily Roundup",
                       feeds: cherrypicked_feeds
                     },
