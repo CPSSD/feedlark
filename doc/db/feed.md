@@ -2,7 +2,7 @@
 
 The Feed database is the database which holds the url of the website as the key, the rss/atom data and the article data.
 
-It will interface with the Scraper, Article getter, Topic modeller and the feed aggregator.
+It will interface with the scraper, article_getter, topics and the aggregator modules.
 
 ## Example Document:
 ```js
