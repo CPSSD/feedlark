@@ -111,6 +111,9 @@ router.post("/pull/:token", updater.check, updater.run);
 router.get("/terms", (req, res) => {
   return res.status(200).render("terms_of_service");
 });
+router.get("/privacy", (req, res) => {
+  return res.status(200).render("privacy_policy");
+});
 
 // 403 page
 router.get("/forbidden", (req, res) => {
