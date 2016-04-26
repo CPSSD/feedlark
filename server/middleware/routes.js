@@ -56,7 +56,7 @@ router.get("/user/verify", (req, res) => {
 router.get("/user", isAuthed, userController.profile);
 
 // Summary sender
-router.get("/user/summaries/:token", userController.sendSummaries);
+router.get("/user/summaries/:key", userController.sendSummaries);
 
 // Profile tokens
 router.get("/user/tokens", isAuthed, userController.profileTokens);

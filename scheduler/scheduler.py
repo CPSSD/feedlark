@@ -3,6 +3,7 @@ import bson
 import datetime
 import time
 import os
+import urllib2
 
 
 def log(level, message):
@@ -29,6 +30,10 @@ while True:
     #Once scraper is done aggregate
     log(0, "Aggregating...")
     gm_client.submit_job('aggregate',str(request))
+
+    #Now send out summary emails
+    log(0, "Sending summary emails")
+    urllib2.urlopen("http://localhost:3000/user/summaries/" + key).close()
 
     log(0, "Sleeping for {} seconds".format(delay))
     time.sleep(delay)
