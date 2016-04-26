@@ -193,6 +193,10 @@ class Aggregator:
                     user_g2g['feeds'],
                     key=lambda x: x['norm_date']+x['word_crossover'],
                     reverse=True)
+            for item in user_g2g['feeds']:
+                del item['norm_date']
+                del item["word_crossover"]
+                del item["datetime_diff"]
             log("Putting items in 'g2g' database")
             self.put_g2g(user['username'], user_g2g)
             log("Completed")

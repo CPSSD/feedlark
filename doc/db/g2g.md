@@ -20,13 +20,13 @@ Example Document
             "feed" : "https://news.ycombinator.com/rss",
             "name" : "Bare Bones Back end",
             "link" : "https://webkit.org/docs/b3/",
-            "pub_date" : "time.struct_time(tm_year=2016, tm_mon=2, tm_mday=14, tm_hour=21, tm_min=10, tm_sec=2, tm_wday=6, tm_yday=45, tm_isdst=0)"
+            "pub_date" :  ISODate("2016-04-25T15:36:57Z")
         },
         {
             "feed" : "https://news.ycombinator.com/rss",
             "name" : "India bans discriminatory pricing based on source/destination/app/content",
             "link" : "http://blog.savetheinternet.in/statement-on-trai-order-on-diff-pricing/",
-            "pub_date" : "time.struct_time(tm_year=2016, tm_mon=2, tm_mday=14, tm_hour=21, tm_min=10, tm_sec=2, tm_wday=6, tm_yday=45, tm_isdst=0)"
+            "pub_date" :  ISODate("2016-04-25T15:36:57Z")
         }
     ]
 }
