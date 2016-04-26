@@ -66,8 +66,7 @@ module.exports = {
     }, cb)));
   },
 
-  updateEmail: (user, newEmail, token, cb) => {
-    var username = user.username;
+  updateEmail: (username, newEmail, token, cb) => {
     // Encrypt the password first
     dbFuncs.transaction(db => dbFuncs.update(db, "user", {username: username}, {
       email: newEmail,

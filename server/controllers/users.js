@@ -179,7 +179,7 @@ module.exports = {
         userModel.updatePassword(user, newPassword, _ => {
           req.session.msg = "Successfully changed your password";
           return res.redirect(302, "/user");
-        })
+        });
       });
     });
   },
@@ -210,6 +210,10 @@ module.exports = {
         req.session.msg = "Invalid username.";
         return res.redirect(302, "/user");
       }
+      if (user.email != oldEmail) {
+        req.session.msg = "Incorrect current email.";
+        return res.redirect(302, "/user");
+      }
       crypto.randomBytes(32, (err, buf) => {
         if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
         var token = buf.toString("hex");
@@ -236,12 +240,11 @@ module.exports = {
         }
 
 
-        userModel.updateEmail(user, newEmail, token, _ => {
+        userModel.updateEmail(user.username, newEmail, token, _ => {
           req.session.msg = "Successfully changed your email. Please check it for the verification email.";
           return res.redirect(302, "/user");
-        })
-
-      })
+        });
+      });
     });
   },
 
@@ -326,5 +329,4 @@ module.exports = {
       }
     });
   }
-
 };
