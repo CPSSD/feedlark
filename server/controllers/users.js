@@ -12,6 +12,7 @@ const bcrypt = require("bcrypt-nodejs");
 const dbFuncs = require("../middleware/db");
 const userModel = require("../models/user");
 const streamModel = require("../models/stream");
+const token_file = "../script/update_token.key";
 const recaptcha = require("express-recaptcha");
 var tokens = {secret_key: "nope", site_key: "bees"}
 if (fs.existsSync("../script/captcha_tokens.js")) {
@@ -246,6 +247,24 @@ module.exports = {
     });
   },
 
+  changeSummaryInterval: (req, res) => {
+    // Changes to the options here need to be reflected on the profile page
+    // Values are in hours
+    var valid_intervals = {"off": 0, "daily": 24, "weekly": 168, "monthly": 5040};
+
+    // Validation
+    if (!req.body.summaryInterval || !valid_intervals[req.body.summaryInterval]) {
+      req.session.msg = "Invalid summary interval.";
+      return res.redirect(302, "/user");
+    }
+
+    // Update; error handling done in db middleware
+    userModel.updateSummaryInterval(req.session.username, valid_intervals[req.body.summaryInterval], _ => {
+      req.session.msg = "Successfully changed your summary interval.";
+      return res.redirect(302, "/user");
+    });
+  },
+
   // Render the user profile
   profile: (req, res) => {
     userModel.findByUsername(req.session.username, user => {
@@ -329,82 +348,83 @@ module.exports = {
   },
 
   sendSummaries: (req, res) => {
+    // Authenticate
+    fs.readFile(token_file, (err, token) => {
 
-    // One transaction to rule them all
-    dbFuncs.transaction(db => {
-      userModel.getSummaryUsers(db, users => {
+      if (err) return res.status(500).send("Failed to load token file");
 
-        if (users.length == 0) return res.status(304).send("No users");
+      // Check the token
+      if (req.params.token != token) {
+        return res.status(403).send("Invalid token");
+      }
 
-        for (var i = 0; i < users.length; i++) {
-          var user = users[i];
+      // One transaction to rule them all
+      dbFuncs.transaction(db => {
+        userModel.getSummaryUsers(db, users => {
 
-          streamModel.getFeedsNoTransaction(db, user.username, feeds => {
+          if (users.length == 0) return res.status(200).send("No users");
 
-            // Assume the last summary was sent at (now - summaryInterval)
-            // Summary interval is in hours, time is created in milliseconds
-            var oldest_date = new Date(Date.now() - user.summaryInterval * 3600000);
+          for (var j = 0; j < users.length; j++) {
+            var user = users[j];
 
-            // Filter feeds accordingly
-            var filtered_feeds = feeds.filter((feed, index, src) => {
-              return feed.pub_date > oldest_date;
-            });
+            streamModel.getFeedsNoTransaction(db, user.username, feeds => {
 
-            if (filtered_feeds.length > 0) {
+              // Assume the last summary was sent at (now - summaryInterval)
+              // Summary interval is in hours, time is created in milliseconds
+              var oldest_date = new Date(Date.now() - user.summaryInterval * 3600000);
 
-              // Pick the best feeds to send
-              // Prioritizes one from each feed source
-              var cherrypicked_feeds = [];
-              var sources_covered = [];
-              for (i = 0; i < filtered_feeds.length; i++) {
-                var feed = filtered_feeds[i];
-
-                // Put articles from new sources at the top
-                if (sources_covered.indexOf(feed.feed) == -1) {
-                  cherrypicked_feeds.unshift(feed);
-                  sources_covered.push(feed.feed);
-
-                // Otherwise append them to cherrypicked_feeds
-                } else {
-                  cherrypicked_feeds.push(feed);
-                }
-              }
-
-              // Only send 6
-              // while (cherrypicked_feeds.length > 6) cherrypicked_feeds.pop();
-
-              // Update the nextSummary value of this user
-              dbFuncs.update(db, "user", {username: user.username}, {nextSummary: new Date(Date.now() + user.summaryInterval * 3600000)}, _ => {
-
-                res.render(
-                  "email_summary",
-                  {
-                    to: email,
-                    subject: "Feedlark - Your Daily Roundup",
-                    feeds: cherrypicked_feeds
-                  }
-                );
-
-                // Don't send the email if we're not in production
-                if (process.env.ENVIRONMENT != "PRODUCTION") return res.send("Skipped " + i + "/" + users.length + ": Not in production.");
-
-                // Send email
-                // res.mailer.send(
-                //   "email_summary",
-                //   {
-                //     to: email,
-                //     subject: "Feedlark - Your Daily Roundup",
-                //     feeds: cherrypicked_feeds
-                //   },
-                //   err => {
-                //     if (err) return res.send("Failed to send email " + i + "/" + users.length);
-                //     return res.send("Email sent " + i + "/" + users.length);
-                //   }
-                // );
+              // Filter feeds accordingly
+              var filtered_feeds = feeds.filter((feed, index, src) => {
+                return feed.pub_date > oldest_date;
               });
-            }
-          });
-        }
+
+              if (filtered_feeds.length > 0) {
+
+                // Pick the best feeds to send
+                // Prioritizes one from each feed source
+                var cherrypicked_feeds = [];
+                var sources_covered = [];
+                for (i = 0; i < filtered_feeds.length; i++) {
+                  var feed = filtered_feeds[i];
+
+                  // Put articles from new sources at the top
+                  if (sources_covered.indexOf(feed.feed) == -1) {
+                    cherrypicked_feeds.unshift(feed);
+                    sources_covered.push(feed.feed);
+
+                  // Otherwise append them to cherrypicked_feeds
+                  } else {
+                    cherrypicked_feeds.push(feed);
+                  }
+                }
+
+                // Only send 6
+                while (cherrypicked_feeds.length > 6) cherrypicked_feeds.pop();
+
+                // Update the nextSummary value of this user
+                dbFuncs.update(db, "user", {username: user.username}, {nextSummary: new Date(Date.now() + user.summaryInterval * 3600000)}, _ => {
+
+                  // Don't send the email if we're not in production
+                  if (process.env.ENVIRONMENT != "PRODUCTION") return res.send("Skipped " + j + "/" + users.length + ": Not in production.");
+
+                  // Send email
+                  res.mailer.send(
+                    "email_summary",
+                    {
+                      to: email,
+                      subject: "Feedlark - Your Daily Roundup",
+                      feeds: cherrypicked_feeds
+                    },
+                    err => {
+                      if (err) return res.send("Failed to send email " + j + "/" + users.length);
+                      return res.send("Email sent " + j + "/" + users.length);
+                    }
+                  );
+                });
+              }
+            });
+          }
+        });
       });
     });
   }
