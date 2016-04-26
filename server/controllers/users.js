@@ -249,6 +249,7 @@ module.exports = {
 
   changeSummaryInterval: (req, res) => {
     // Changes to the options here need to be reflected on the profile page
+    // Also down below in the sendSummaries function
     // Values are in hours
     var valid_intervals = {"off": 0, "daily": 24, "weekly": 168, "monthly": 5040};
 
@@ -362,6 +363,8 @@ module.exports = {
       dbFuncs.transaction(db => {
         userModel.getSummaryUsers(db, users => {
 
+          var interval_eng = {24: "Daily", 168: "Weekly", 5040: "Monthly"};
+
           if (users.length == 0) return res.status(200).send("No users");
 
           for (var j = 0; j < users.length; j++) {
@@ -412,7 +415,7 @@ module.exports = {
                     "email_summary",
                     {
                       to: user.email,
-                      subject: "Feedlark - Your Daily Roundup",
+                      subject: "Feedlark - Your " + interval_eng[user.summaryInterval] + " Roundup",
                       feeds: cherrypicked_feeds
                     },
                     err => {
