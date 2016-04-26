@@ -89,7 +89,7 @@ module.exports = {
           "article_url": url,
           "positive_opinion": true
         };
-        gearman.startJob('update-user-model', jobData, undefined, () => {
+        gearman.startJob('register-vote', jobData, undefined, () => {
           return res.status(200).send("Liked");
         });
       });
@@ -108,7 +108,7 @@ module.exports = {
           "article_url": url,
           "positive_opinion": false
         };
-        gearman.startJob('update-user-model', jobData, undefined, () => {
+        gearman.startJob('register-vote', jobData, undefined, () => {
           return res.status(200).send("Disliked");
           });
       });

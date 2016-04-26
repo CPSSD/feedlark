@@ -6,6 +6,7 @@ db.feed.drop()
 db.user.drop()
 db.g2g.drop()
 db.bookmark.drop()
+db.vote.drop()
 
 db.feed.insert([{
     "url": "https://news.ycombinator.com/rss",
@@ -126,7 +127,8 @@ db.user.insert([{
     "username": "iandioch",
     "email": "noah@feedlark.com",
     "password": "$2a$10$oU2WWLC8339f4F.A.bb4/.4hpDH9mZZMkdSZtGUckS7LBC8nGOFsG",
-    "subscribed_feeds": ["https://news.ycombinator.com/rss"]
+    "subscribed_feeds": ["https://news.ycombinator.com/rss"],
+    "words": {"butter": 2, "milk": 13, "antidisestablishmentarianism": -33}
 }, {
     "username": "sully",
     "email": "ross@feedlark.com",
@@ -218,6 +220,26 @@ db.bookmark.insert([{
 }, {
     "username": "theotherguys",
     "bookmarks": []
+}]);
+
+db.vote.insert([{
+    "username": "iandioch",
+    "article_url": "http://www.apple.com/customer-letter/",
+    "feed_url": "https://news.ycombinator.com/rss",
+    "positive_opinion": false,
+    "vote_datetime": ISODate("2014-11-22T23:00:00Z")
+}, {
+    "username": "iandioch",
+    "article_url": "http://spritesmods.com/?art=tamasingularity&amp;f=rss",
+    "feed_url": "http://spritesmods.com/rss.php",
+    "positive_opinion": true,
+    "vote_datetime": ISODate("2015-11-22T23:00:00Z"),
+}, {
+    "username": "sully",
+    "article_url": "http://spritesmods.com/?art=tamasingularity&amp;f=rss",
+    "feed_url": "http://spritesmods.com/rss.php",
+    "positive_opinion": false,
+    "vote_datetime": ISODate("2015-12-22T23:10:00Z"),
 }]);
 
 
