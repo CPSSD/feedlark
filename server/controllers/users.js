@@ -405,7 +405,9 @@ module.exports = {
                 while (cherrypicked_feeds.length > 6) cherrypicked_feeds.pop();
 
                 // Update the nextSummary value of this user
-                dbFuncs.update(db, "user", {username: user.username}, {nextSummary: new Date(Date.now() + user.summaryInterval * 3600000)}, _ => {
+                // Offset by two hours so that they don't progressively become out of sync
+                // Also means that clock changes don't mess it up
+                dbFuncs.update(db, "user", {username: user.username}, {nextSummary: new Date(Date.now() + (user.summaryInterval - 2) * 3600000)}, _ => {
 
                   // Don't send the email if we're not in production
                   if (process.env.ENVIRONMENT != "PRODUCTION") return res.send("Skipped " + j + "/" + users.length + ": Not in production.");
