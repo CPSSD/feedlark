@@ -223,15 +223,11 @@ module.exports = {
             "email_verify",
             {
               to: newEmail,
-              subject: "Feedlark - Activate your account",
+              subject: "Feedlark - Update your Email Address",
               token: token
             },
             err => {
               if (err) return res.status(500).render("signup", {err: "Failed to send activation email: " + err, captcha: captcha_html});
-
-              // Send to verify ask page
-              req.session.username = username;
-              req.session.verified = token;
             }
           );
         } else {
