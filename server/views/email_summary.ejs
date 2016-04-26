@@ -7,6 +7,9 @@
     <h1 style="margin: 0; line-height: 2em; background-color: #03a9f4; color: white; text-align: center;">Feedlark</h1>
     <div>
       <h2>Greetings user!</h2>
+    <% if (!feeds || feeds.length == 0) { %>
+      <p>Sorry, we have no new articles for you today.</p>
+    <% } else { %>
       <p>Here's a breakdown of what's new from your feeds.</p>
 
     <%
@@ -30,8 +33,12 @@
         </a>
       </div>
 
-    <% } %>
-
+    <% } } %>
+      <p>Want more? Visit <a href="http://www.feedlark.com/login">your Feedlark account!</a></p>
+    </div>
+    <div>
+      <p>If you wish to stop receiving these emails, <a href="http://www.feedlark.com/login">login to feedlark.com</a>,
+      go to your profile page, and set your summary interval to "off"</p>
     </div>
   </body>
 </html>
