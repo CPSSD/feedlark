@@ -11,7 +11,7 @@ const crypto = require("crypto");
 const bcrypt = require("bcrypt-nodejs");
 const userModel = require("../models/user");
 const recaptcha = require("express-recaptcha");
-var tokens = {secret_key: "nope", site_key: "bees"}
+var tokens = {secret_key: "nope", site_key: "bees"};
 if (fs.existsSync("../script/captcha_tokens.js")) {
   tokens = require("../../script/captcha_tokens");
 }
@@ -330,7 +330,7 @@ module.exports = {
     const username = req.query.username;
     var page_length = _.toSafeInteger(req.query.page_length);
     if (page_length <= 0) {
-      return userModel.getConfig(username, "page_length") || 20;
+      return userModel.getDefault(username, "page_length") || 20;
     }
     return page_length;
   }

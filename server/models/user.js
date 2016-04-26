@@ -50,12 +50,12 @@ module.exports = {
 
     // Also create the blank entry in g2g
     }, _ => dbFuncs.insert(db, "g2g", {
-      username: username,
-      feeds: []
-    }, _ => dbFuncs.insert(db, "bookmark", {
-      username: username,
-      bookmarks: []
-  }, cb)))));
+        username: username,
+        feeds: []
+      }, _ => dbFuncs.insert(db, "bookmark", {
+          username: username,
+          bookmarks: []
+        }, cb)))));
   },
 
   updatePassword: (user, password, cb) => {
@@ -162,9 +162,29 @@ module.exports = {
     }));
   },
 
-  getConfig: (username, option_name) => {
-    //do magical db thingsreturn
-    return 20; // woo!s
+  getDefault: (username, option_name) => {
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
+      if (user) {
+        if (user.defaults) {
+          return user.defaults.option_name;
+        }
+      }
+      return null;
+    }));
+  },
+
+  setDefault: (username, option_name, new_option, cb) => {
+    // NOTE: No option checking, once this is called it's done.
+    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
+      user.defaults[option_name] = new_option;
+      dbFuncs.update(
+        db,
+        "user",
+        {username: username},
+        {defaults: user.defaults},
+        cb
+      );
+    }));
   }
 
 };

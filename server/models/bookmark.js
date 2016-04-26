@@ -50,11 +50,11 @@ module.exports = {
   removeBookmark: (username, url, cb) => {
 
     dbFuncs.transaction(db => dbFuncs.findOne(db, "bookmark", {username: username}, user => {
-
+      var index;
       // Check if the user is already subscribed to this feed
       for (var i = 0; i <= user.bookmarks.length; i++) {
         if (user.bookmarks[i].link == url){
-          var index = i;
+          index = i;
           break;
         } else if (i == user.bookmarks.length -1){
           return cb();
