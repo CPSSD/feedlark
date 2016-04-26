@@ -9,7 +9,9 @@ const fs = require("fs");
 const _ = require("lodash");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt-nodejs");
+const dbFuncs = require("../middleware/db");
 const userModel = require("../models/user");
+const streamModel = require("../models/stream");
 const recaptcha = require("express-recaptcha");
 var tokens = {secret_key: "nope", site_key: "bees"}
 if (fs.existsSync("../script/captcha_tokens.js")) {
@@ -208,6 +210,86 @@ module.exports = {
         res.status(403).end();
       }
     });
-  }
+  },
 
+  sendSummaries: (req, res) => {
+
+    // One transaction to rule them all
+    dbFuncs.transaction(db => {
+      userModel.getSummaryUsers(db, users => {
+
+        if (users.length == 0) return res.status(304).send("No users");
+
+        for (var i = 0; i < users.length; i++) {
+          var user = users[i];
+
+          streamModel.getFeedsNoTransaction(db, user.username, feeds => {
+
+            // Assume the last summary was sent at (now - summaryInterval)
+            // Summary interval is in hours, time is created in milliseconds
+            var oldest_date = new Date(Date.now() - user.summaryInterval * 3600000);
+
+            // Filter feeds accordingly
+            var filtered_feeds = feeds.filter((feed, index, src) => {
+              return feed.pub_date > oldest_date;
+            });
+
+            if (filtered_feeds.length > 0) {
+
+              // Pick the best feeds to send
+              // Prioritizes one from each feed source
+              var cherrypicked_feeds = [];
+              var sources_covered = [];
+              for (i = 0; i < filtered_feeds.length; i++) {
+                var feed = filtered_feeds[i];
+
+                // Put articles from new sources at the top
+                if (sources_covered.indexOf(feed.feed) == -1) {
+                  cherrypicked_feeds.unshift(feed);
+                  sources_covered.push(feed.feed);
+
+                // Otherwise append them to cherrypicked_feeds
+                } else {
+                  cherrypicked_feeds.push(feed);
+                }
+              }
+
+              // Only send 6
+              // while (cherrypicked_feeds.length > 6) cherrypicked_feeds.pop();
+
+              // Update the nextSummary value of this user
+              dbFuncs.update(db, "user", {username: user.username}, {nextSummary: new Date(Date.now() + user.summaryInterval * 3600000)}, _ => {
+
+                res.render(
+                  "email_summary",
+                  {
+                    to: email,
+                    subject: "Feedlark - Your Daily Roundup",
+                    feeds: cherrypicked_feeds
+                  }
+                );
+
+                // Don't send the email if we're not in production
+                if (process.env.ENVIRONMENT != "PRODUCTION") return res.send("Skipped " + i + "/" + users.length + ": Not in production.");
+
+                // Send email
+                // res.mailer.send(
+                //   "email_summary",
+                //   {
+                //     to: email,
+                //     subject: "Feedlark - Your Daily Roundup",
+                //     feeds: cherrypicked_feeds
+                //   },
+                //   err => {
+                //     if (err) return res.send("Failed to send email " + i + "/" + users.length);
+                //     return res.send("Email sent " + i + "/" + users.length);
+                //   }
+                // );
+              });
+            }
+          });
+        }
+      });
+    });
+  }
 };

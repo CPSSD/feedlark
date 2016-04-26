@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html lang="en" style="margin: 0; padding: 0; border: 0;">
+  <!-- HTML Emails don't have head tags -->
+  <!-- All styling must be done in-line -->
+  <body>
+    <h1 style="margin: 0; line-height: 2em; background-color: #03a9f4; color: white; text-align: center;">Feedlark</h1>
+    <div>
+      <h2>Greetings user!</h2>
+      <p>Here's a breakdown of what's new from your feeds.</p>
+
+    <%
+      for (var i = 0; i < feeds.length; i++) {
+        var date = new Date(feeds[i].pub_date);
+        var formatted_date = date.toISOString().substr(0, 10);
+        var url = feeds[i].feed.match(/https?:\/\/[^\/]+/g)[0];
+        var source_name_re = /https?:\/\/([^\/]+)/g;
+        var link_name_re = /(https?:\/\/[^\/]+)/g;
+        var source_name = source_name_re.exec(feeds[i].feed)[1];
+        var link_name = link_name_re.exec(feeds[i].link)[1];
+    %>
+
+      <div style="width: 100%; border: 2px solid lightgray; margin-bottom: 2px;">
+        <a href="<%= feeds[i].link %>" target="_blank">
+          <h3 style="color: black;"><%= feeds[i].name %></h3>
+          <p style="color: gray;">
+            Published: <%= formatted_date %> <br />
+            From: <%= source_name %>
+          </p>
+        </a>
+      </div>
+
+    <% } %>
+
+    </div>
+  </body>
+</html>

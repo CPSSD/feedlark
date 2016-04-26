@@ -146,4 +146,8 @@ module.exports = {
     }));
   },
 
+  // Returns a list of users that need a summary sent to them
+  getSummaryUsers: (db, cb) => {
+    dbFuncs.find(db, "user", {summaryInterval: {"$gt": 0}, nextSummary: {"$lte": new Date()}}, cb);
+  }
 };
