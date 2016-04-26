@@ -2,7 +2,7 @@
 
 The Feed database is the database which holds the url of the website as the key, the rss/atom data and the article data.
 
-It will interface with the Scraper, Catagoriser, Secretary and the feed aggregator.
+It will interface with the Scraper, Article getter, Topic modeller and the feed aggregator.
 
 ## Example Document:
 ```js
@@ -11,14 +11,14 @@ It will interface with the Scraper, Catagoriser, Secretary and the feed aggregat
   "items": [
       {
         "name": "How Feedlark made the first nullion",
-        "pub_date": "time.struct_time(tm_year=2016, tm_mon=2, tm_mday=14, tm_hour=21, tm_min=10, tm_sec=2, tm_wday=6, tm_yday=45, tm_isdst=0)",
+        "pub_date": ISODate("2016-04-25T15:35:44Z"),
         "link": "https://www.rte.ie/feedlark",
         "arictle_text": "Lotta compliments to founders.",
         "topics":{"money":0.2, "power":0.15, "feedlark":0.4},
       },
       {
         "name": "How Lua ruined the world",
-        "pub_date": "time.struct_time(tm_year=2016, tm_mon=2, tm_mday=14, tm_hour=21, tm_min=10, tm_sec=2, tm_wday=6, tm_yday=45, tm_isdst=0)",
+        "pub_date": ISODate("2016-04-25T15:35:44Z"),
         "link": "https://www.doomsdayclock.com/lua",
         "article_text": "Good old fashioned Lua bashing.",
         "topics":{"lua":0.4, "programming":0.2, "world":0.1, "metatables":0.2},
@@ -27,7 +27,7 @@ It will interface with the Scraper, Catagoriser, Secretary and the feed aggregat
 
 }
 
-{ 
+{
   "url": "https://news.ycombinator.com/rss",
   "items": [
       {
