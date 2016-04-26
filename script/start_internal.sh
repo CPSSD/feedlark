@@ -26,9 +26,9 @@ cd backend-scraper
 screen -dmLS backend-scraper /bin/bash ../../script/startup/scraper.sh
 cd ..
 
-mkdir -p backend-update-opinion
-cd backend-update-opinion
-screen -dmLS backend-update-opinion /bin/bash ../../script/startup/updater.sh
+mkdir -p backend-register-vote
+cd backend-register-vote
+screen -dmLS backend-register-vote /bin/bash ../../script/startup/updater.sh
 cd ..
 
 mkdir -p backend-topics
@@ -49,6 +49,11 @@ cd ..
 mkdir -p backend-score
 cd backend-score
 screen -dmLS backend-score /bin/bash ../../script/startup/score.sh
+cd ..
+
+mkdir -p backend-refresh-model
+cd backend-refresh-model
+screen -dmLS backend-refresh-model /bin/bash ../../script/startup/refresh_model.sh
 cd ..
 
 echo "Starting frontend elements in screen sessions"
