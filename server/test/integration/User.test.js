@@ -109,6 +109,15 @@ describe('UserModel', _ => {
         .get('/user')
         .expect(200, done);
     });
+    it('User can change default page length', done => {
+      agent
+        .post('/user/change/page-length')
+        .type('form')
+        .send({
+          'pageLength': "50"
+        })
+        .expect(302, done);
+    });
     it('User can log out', done => {
       agent
         .get('/user/logout')

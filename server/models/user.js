@@ -6,6 +6,7 @@
  */
 
 const dbFuncs = require("../middleware/db");
+const _ = require("lodash");
 
 function encrypt(password, cb) {
   var bcrypt = require("bcrypt-nodejs");
@@ -19,6 +20,7 @@ function encrypt(password, cb) {
 }
 
 module.exports = {
+  defaultPageLength: 20,
 
   // Gets user details
   findByEmail: (email, cb) => {
@@ -50,12 +52,12 @@ module.exports = {
 
     // Also create the blank entry in g2g
     }, _ => dbFuncs.insert(db, "g2g", {
-      username: username,
-      feeds: []
-    }, _ => dbFuncs.insert(db, "bookmark", {
-      username: username,
-      bookmarks: []
-  }, cb)))));
+        username: username,
+        feeds: []
+      }, _ => dbFuncs.insert(db, "bookmark", {
+          username: username,
+          bookmarks: []
+        }, cb)))));
   },
 
   updatePassword: (user, password, cb) => {
@@ -166,6 +168,21 @@ module.exports = {
         cb
       );
     }));
+  },
+
+  setPageLength: (username, page_length, cb) => {
+    /// NOTE trusts the programmer not to be bad.
+    //  knowing how stupid I am, probably should add checks here
+    //  it is tested elsewhere though for correctness :)
+    dbFuncs.transaction(db => {
+      dbFuncs.update(
+        db,
+        "user",
+        {username: username},
+        {page_length: page_length},
+        cb
+      );
+    });
   },
 
   // Returns a list of users that need a summary sent to them

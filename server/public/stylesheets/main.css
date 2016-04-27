@@ -32,3 +32,11 @@ html, body {
   padding-bottom: 0px !important;
   margin-bottom: 0px !important;
 }
+
+.setting-nav {
+  height: 100%;
+}
+
+.setting-btn {
+  width: 100%;
+}

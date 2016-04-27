@@ -71,5 +71,14 @@ module.exports = {
 
       return cb();
     });
+  },
+
+  upsert: (db, collection, selector, cb) => {
+    db.collection(collection).upsert(selector, {$set: data}, (err, data) => {
+
+      if (err) throw err;
+
+      return cb();
+    });
   }
 };

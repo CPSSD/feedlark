@@ -98,6 +98,7 @@ module.exports = {
 
           // Set session vars and redirect
           req.session.username = user.username;
+          req.session.page_length = user.page_length || userModel.defaultPageLength;
           req.session.subscribed_feeds = user.subscribed_feeds;
           req.session.verified = user.verified;
           req.session.msg = "Successfully logged in.";
@@ -198,6 +199,29 @@ module.exports = {
     });
   },
 
+  changePageLength: (req, res) => {
+    var username = req.session.username;
+    var page_length = _.toSafeInteger(req.body.page_length);
+
+    if (!(page_length == 5 || page_length == 10 || page_length == 20 || page_length == 50)) {
+      req.session.msg = "Invalid page length";
+      return res.redirect(302, "/user");
+    }
+
+    userModel.findByUsername(username, user => {
+      if (typeof user == "undefined") {
+        req.session.msg = "Invalid username";
+        return res.redirect(302, "/user");
+      }
+
+      userModel.setPageLength(username, page_length, _ => {
+        req.session.msg = "Successfully changed your defaults";
+        req.session.page_length = page_length;
+        return res.redirect(302, "/user");
+      });
+    });
+  },
+
   // Allow for password change
   changePassword: (req, res) => {
 
@@ -251,7 +275,6 @@ module.exports = {
     // Load request vars & verify
     var username = req.session.username;
     var newEmail = req.body.newEmail;
-    var oldEmail = req.body.oldEmail;
 
     // Check validity of passwords
     if (newEmail.length < 5){
@@ -271,10 +294,7 @@ module.exports = {
         req.session.msg = "Invalid username.";
         return res.redirect(302, "/user");
       }
-      if (user.email != oldEmail) {
-        req.session.msg = "Incorrect current email.";
-        return res.redirect(302, "/user");
-      }
+
       crypto.randomBytes(32, (err, buf) => {
         if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
         var token = buf.toString("hex");
