@@ -69,9 +69,13 @@ router.get("/user/tokens", isAuthed, userController.profileTokens);
 router.post("/user/change/password", isAuthed, userController.changePassword);
 router.post("/user/change/email", isAuthed, userController.changeEmail);
 router.post("/user/change/page-length", isAuthed, userController.changePageLength);
+// Summary sender
+router.get("/user/summaries/:key", userController.sendSummaries);
 
 // ## /feeds
 
+// ### Profile settings
+router.post("/user/change/summaryinterval", isAuthed, userController.changeSummaryInterval);
 // ### Show interest
 router.post("/feeds/like", isAuthed, feedController.like);
 // ### Show disinterest buttons

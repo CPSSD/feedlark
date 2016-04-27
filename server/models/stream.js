@@ -11,5 +11,9 @@ const dbFuncs = require("../middleware/db");
 module.exports = {
   getFeeds: (username, cb) => {
     dbFuncs.transaction(db => dbFuncs.findOne(db, "g2g", {username: username}, data => cb(data.feeds)));
+  },
+
+  getFeedsNoTransaction: (db, username, cb) => {
+    dbFuncs.findOne(db, "g2g", {username: username}, data => cb(data.feeds));
   }
 };

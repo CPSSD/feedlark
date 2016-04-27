@@ -20,6 +20,19 @@ module.exports = {
     });
   },
 
+  find: (db, collection, selector, cb) => {
+
+    db.collection(collection).find(selector).toArray((err, data) => {
+
+      if (err) {
+        console.log("oops");
+        throw err;
+      }
+
+      return cb(data);
+    });
+  },
+
   findOne: (db, collection, selector, cb) => {
 
     // Mongo's findOne is deprecated. Recommended to use find().limit(1)

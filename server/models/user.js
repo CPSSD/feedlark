@@ -68,10 +68,16 @@ module.exports = {
   },
 
   updateEmail: (username, newEmail, token, cb) => {
-    // Encrypt the password first
     dbFuncs.transaction(db => dbFuncs.update(db, "user", {username: username}, {
       email: newEmail,
       verified: token
+    }, cb));
+  },
+
+  updateSummaryInterval: (username, newSummaryInterval, cb) => {
+    dbFuncs.transaction(db => dbFuncs.update(db, "user", {username: username}, {
+      summaryInterval: newSummaryInterval,
+      nextSummary: new Date(Date.now() + newSummaryInterval * 3600000)
     }, cb));
   },
 
@@ -191,6 +197,10 @@ module.exports = {
         cb
       );
     });
-  }
+  },
 
+  // Returns a list of users that need a summary sent to them
+  getSummaryUsers: (db, cb) => {
+    dbFuncs.find(db, "user", {summaryInterval: {"$gt": 0}, nextSummary: {"$lte": new Date()}}, cb);
+  }
 };
