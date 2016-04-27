@@ -1,5 +1,5 @@
-Feedlark:tm: Scraper
-================
+Model Error Calculator
+======================
 
 This module gets the error of a given user's prediction model.
 
