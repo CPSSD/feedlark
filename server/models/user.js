@@ -166,25 +166,25 @@ module.exports = {
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
       if (user) {
         if (user.defaults) {
-          return user.defaults.option_name;
+          return user.defaults[option_name];
         }
       }
       return null;
     }));
   },
 
-  setDefault: (username, option_name, new_option, cb) => {
-    // NOTE: No option checking, once this is called it's done.
-    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
-      user.defaults[option_name] = new_option;
+  setDefaults: (username, new_defaults, cb) => {
+    /// NOTE trusts the programmer not to be bad.
+    //  knowing how stupid I am, probably should add checks here 
+    dbFuncs.transaction(db => {
       dbFuncs.update(
         db,
         "user",
         {username: username},
-        {defaults: user.defaults},
+        {defaults: new_defaults},
         cb
       );
-    }));
+    });
   }
 
 };

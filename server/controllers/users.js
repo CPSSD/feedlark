@@ -137,6 +137,31 @@ module.exports = {
     });
   },
 
+  changeDefaults: (req, res) => {
+    var username = req.session.username;
+    var page_length = _.toSafeInteger(req.body.pageLength);
+    if (page_length < 0 || page_length > 100) {
+      req.session.msg = "Invalid page length";
+      return res.redirect(400, "/user");
+    }
+
+    var defaults_object = {
+      'page_length': page_length
+    };
+
+    userModel.findByUsername(username, user => {
+      if (typeof user == "undefined") {
+        req.session.msg = "Invalid username";
+        return res.redirect(400, "/user");
+      }
+
+      userModel.setDefaults(user, defaults_object, _ => {
+        req.session.msg = "Successfully changed your defaults";
+        return res.redirect(200, "/user");
+      });
+    });
+  },
+
   // Allow for password change
   changePassword: (req, res) => {
 
