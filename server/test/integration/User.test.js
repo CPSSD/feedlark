@@ -111,21 +111,12 @@ describe('UserModel', _ => {
     });
     it('User can change default page length', done => {
       agent
-        .post('/user/change/defaults')
+        .post('/user/change/page-length')
         .type('form')
         .send({
-          'pageLength': "23"
+          'pageLength': "50"
         })
-        .expect(200, done);
-    });
-    it('User can not set invalid default page length', done => {
-      agent
-        .post('/user/change/defaults')
-        .type('form')
-        .send({
-          'pageLength': "400"
-        })
-        .expect(400, done);
+        .expect(302, done);
     });
     it('User can log out', done => {
       agent

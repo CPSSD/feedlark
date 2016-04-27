@@ -6,6 +6,7 @@
  */
 
 const dbFuncs = require("../middleware/db");
+const _ = require("lodash");
 
 function encrypt(password, cb) {
   var bcrypt = require("bcrypt-nodejs");
@@ -162,26 +163,31 @@ module.exports = {
     }));
   },
 
-  getDefault: (username, option_name) => {
+  getPageLength: (req, res, cb) => {
+    const username = req.session.username;
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length > 0) {
+      return cb(page_length)
+    }
     dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
-      if (user) {
-        if (user.defaults) {
-          return user.defaults[option_name];
-        }
+      page_length = _.toSafeInteger(user.page_length)
+      if (page_length > 0) {
+        return cb(page_length)
       }
-      return null;
+      return cb(20) // NOTE: DEFAULT
     }));
   },
 
-  setDefaults: (username, new_defaults, cb) => {
+  setPageLength: (username, page_length, cb) => {
     /// NOTE trusts the programmer not to be bad.
-    //  knowing how stupid I am, probably should add checks here 
+    //  knowing how stupid I am, probably should add checks here
+    //  it is tested elsewhere though for correctness :)
     dbFuncs.transaction(db => {
       dbFuncs.update(
         db,
         "user",
         {username: username},
-        {defaults: new_defaults},
+        {page_length: page_length},
         cb
       );
     });

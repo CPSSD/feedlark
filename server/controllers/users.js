@@ -137,27 +137,24 @@ module.exports = {
     });
   },
 
-  changeDefaults: (req, res) => {
+  changePageLength: (req, res) => {
     var username = req.session.username;
-    var page_length = _.toSafeInteger(req.body.pageLength);
-    if (page_length < 0 || page_length > 100) {
-      req.session.msg = "Invalid page length";
-      return res.redirect(400, "/user");
-    }
+    var page_length = _.toSafeInteger(req.body.page_length);
 
-    var defaults_object = {
-      'page_length': page_length
-    };
+    if (!(page_length == 5 || page_length == 10 | page_length == 20 | page_length == 50)) {
+      req.session.msg = "Invalid page length";
+      return res.redirect(302, "/user");
+    }
 
     userModel.findByUsername(username, user => {
       if (typeof user == "undefined") {
         req.session.msg = "Invalid username";
-        return res.redirect(400, "/user");
+        return res.redirect(302, "/user");
       }
 
-      userModel.setDefaults(user, defaults_object, _ => {
+      userModel.setPageLength(username, page_length, _ => {
         req.session.msg = "Successfully changed your defaults";
-        return res.redirect(200, "/user");
+        return res.redirect(302, "/user");
       });
     });
   },
@@ -215,7 +212,6 @@ module.exports = {
     // Load request vars & verify
     var username = req.session.username;
     var newEmail = req.body.newEmail;
-    var oldEmail = req.body.oldEmail;
 
     // Check validity of passwords
     if (newEmail.length < 5){
@@ -235,10 +231,7 @@ module.exports = {
         req.session.msg = "Invalid username.";
         return res.redirect(302, "/user");
       }
-      if (user.email != oldEmail) {
-        req.session.msg = "Incorrect current email.";
-        return res.redirect(302, "/user");
-      }
+
       crypto.randomBytes(32, (err, buf) => {
         if (err) return res.status(500).render("signup", {err: "Failed to generate verification token:" + err, captcha: captcha_html});
         var token = buf.toString("hex");
@@ -272,8 +265,11 @@ module.exports = {
   // Render the user profile
   profile: (req, res) => {
     userModel.findByUsername(req.session.username, user => {
-      res.status(200).render("profile", {
-        user: user
+      userModel.getPageLength(req, res, page_length => {
+        res.status(200).render("profile", {
+          user: user,
+          page_length: page_length
+        });
       });
     });
   },
@@ -351,12 +347,4 @@ module.exports = {
     });
   },
 
-  getPageLength: (req, res) => {
-    const username = req.query.username;
-    var page_length = _.toSafeInteger(req.query.page_length);
-    if (page_length <= 0) {
-      return userModel.getDefault(username, "page_length") || 20;
-    }
-    return page_length;
-  }
 };

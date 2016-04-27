@@ -12,15 +12,11 @@
 
 
         <form method="POST" action="/user/change/email">
-          <div class="input-field col s12 m4">
-            <input id="oldEmail" name="oldEmail" type="email" class="validate" required>
-            <label for="oldPassword1">Enter old email</label>
-          </div>
-          <div class="input-field col s12 m4">
+          <div class="input-field col s12 m6">
             <input id="newEmail" name="newEmail" type="email" class="validate" required>
             <label for="oldPassword2">Enter new email</label>
           </div>
-          <div class="input-field col s12 m4">
+          <div class="input-field col s12 m6">
             <button class="btn waves-effect waves-light" type="submit" name="changePassword">Change Email
               <i class="material-icons right">send</i>
             </button>
@@ -54,10 +50,16 @@
             <h5>User Defaults</h5>
         </div>
 
-        <form class="col s12" method="POST" action="/user/change/defaults">
+        <form class="col s12" method="POST" id="page_length" action="/user/change/page-length">
           <h6> Page Length </h6>
           <div class="input-field col s12 m6">
-            <input value="20" id="pageLength" name="pageLength" type="number" class="validate">
+            <select name="page_length" form="page_length">
+              <option<%= page_length == 5 ? ' selected' : '' %>>5</option>
+              <option<%= page_length == 10? ' selected' : '' %>>10</option>
+              <option<%= page_length == 20? ' selected' : '' %>>20</option>
+              <option<%= page_length == 50? ' selected' : '' %>>50</option>
+            </select>
+            <label for="page_length">Items per page</label>
           </div>
           <div class="input-field col s12 m6">
             <button class="btn waves-effect waves-light" type="submit" name="send">Save Options

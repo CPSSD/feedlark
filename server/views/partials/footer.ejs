@@ -15,10 +15,10 @@
   }
 
   $(document).ready(function() {
-    <% if (typeof page_length != "undefined") { %>
-    $("#page_length").change(function() {
-      window.location.href = "/stream/" + $("#page_length").val() + "/<%= page - 1 > 0? page - 1 : 0 %>";
-    });
+    <% if (typeof page_length != "undefined" && typeof page != "undefined") { %>
+      $("#page_length").change(function() {
+        window.location.href = "/stream/" + $("#page_length").val() + "/<%= page - 1 > 0? page - 1 : 0 %>";
+      });
     <% } %>
   });
   </script>

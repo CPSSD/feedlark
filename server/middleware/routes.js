@@ -68,7 +68,7 @@ router.get("/user/tokens", isAuthed, userController.profileTokens);
 // Profile settings
 router.post("/user/change/password", isAuthed, userController.changePassword);
 router.post("/user/change/email", isAuthed, userController.changeEmail);
-router.post("/user/change/defaults", isAuthed, userController.changeDefaults);
+router.post("/user/change/page-length", isAuthed, userController.changePageLength);
 
 // ## /feeds
 

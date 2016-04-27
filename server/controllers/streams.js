@@ -7,49 +7,50 @@
 
 const getFeeds = require("../models/stream").getFeeds;
 const user = require("../controllers/users");
+const userModel = require("../models/user");
 const _ = require("lodash");
 
 // Stream listing
 module.exports = {
   index: (req, res) => {
 
-    // Get & verify the page length & number
+    var page_length = userModel.getPageLength(req, res, page_length => {
 
-    var page_length = user.getPageLength(req, res);
-    var page = _.toSafeInteger(req.query.page); // defaults to 0 if undefined
+      var page = _.toSafeInteger(req.query.page); // defaults to 0 if undefined
 
-    // Sort out the filters
-    var keywords = [];
-    if (typeof req.query.keywords != "undefined" && req.query.keywords.length > 1) {
-      keywords = req.query.keywords.split(" ").map(val => val.toLowerCase());
-    }
+      // Sort out the filters
+      var keywords = [];
+      if (typeof req.query.keywords != "undefined" && req.query.keywords.length > 1) {
+        keywords = req.query.keywords.split(" ").map(val => val.toLowerCase());
+      }
 
-    getFeeds(req.session.username, feeds => {
+      getFeeds(req.session.username, feeds => {
 
-      // Filter the feeds
-      var filtered_feeds = feeds.filter((feed, index, src) => {
-        // Match with the filters
-        return (typeof req.query.source == "undefined" || req.query.source.length < 1 || feed.feed == req.query.source) &&
-               (keywords.length < 1 || keywords.every(val => feed.name.toLowerCase().includes(val)));
-      });
+        // Filter the feeds
+        var filtered_feeds = feeds.filter((feed, index, src) => {
+          // Match with the filters
+          return (typeof req.query.source == "undefined" || req.query.source.length < 1 || feed.feed == req.query.source) &&
+                 (keywords.length < 1 || keywords.every(val => feed.name.toLowerCase().includes(val)));
+        });
 
-      // Make sure the page number is less than the max available feeds
-      while (page > filtered_feeds / page_length) page -= 1;
+        // Make sure the page number is less than the max available feeds
+        while (page > filtered_feeds / page_length) page -= 1;
 
-      // Take a page worth of feeds
-      var pageinated_feeds = _.slice(filtered_feeds, page*page_length, (page+1)*page_length);
+        // Take a page worth of feeds
+        var pageinated_feeds = _.slice(filtered_feeds, page*page_length, (page+1)*page_length);
 
-      var next_page = page + 1;
-      if (next_page * page_length > filtered_feeds.length) next_page = 0;
+        var next_page = page + 1;
+        if (next_page * page_length > filtered_feeds.length) next_page = 0;
 
-      res.status(200).render("stream_index", {
-        feeds: pageinated_feeds,
-        page: page,
-        next_page: next_page,
-        page_length: page_length,
-        subscribed_feeds: req.session.subscribed_feeds || {},
-        keywords: req.query.keywords || "",
-        source: req.query.source || ""
+        res.status(200).render("stream_index", {
+          feeds: pageinated_feeds,
+          page: page,
+          next_page: next_page,
+          page_length: page_length,
+          subscribed_feeds: req.session.subscribed_feeds || {},
+          keywords: req.query.keywords || "",
+          source: req.query.source || ""
+        });
       });
     });
   },
@@ -57,19 +58,20 @@ module.exports = {
   plaintext: (req, res) => {
     res.type('.txt');
 
-    var page_length = user.getPageLength(req, res);
-    var page = _.toSafeInteger(req.query.page);
-    var username = req.query.username;
-    getFeeds(username, feeds => {
-      var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
-      var next_page = page + 1;
-      if ((page + 1) * page_length > feeds.length) next_page = 0;
+    var page_length = userModel.getPageLength(req, res, page_length => {
+      var page = _.toSafeInteger(req.query.page);
+      var username = req.query.username;
+      getFeeds(username, feeds => {
+        var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
+        var next_page = page + 1;
+        if ((page + 1) * page_length > feeds.length) next_page = 0;
 
-      res.status(200).render("stream_plaintext", {
-        feeds: pageinated_feeds,
-        page: page,
-        next_page: next_page,
-        page_length: page_length
+        res.status(200).render("stream_plaintext", {
+          feeds: pageinated_feeds,
+          page: page,
+          next_page: next_page,
+          page_length: page_length
+        });
       });
     });
   }
