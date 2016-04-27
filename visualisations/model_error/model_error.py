@@ -127,12 +127,14 @@ def main():
                 continue
             print 'adding', item['link']
             if 'topics' not in item:
-                print 'no topics for given item, skipping'
+                print 'Error'
+                print 'No topics for given item, skipping'
                 continue
             words = item['topics']
             topic_crossover = kw_score.score(words, user_words)
             if 'pub_date' not in item:
-                print 'no pub_date for given item, skipping'
+                print 'Error'
+                print 'No pub_date for given item, skipping'
                 continue
             time_diff = vote_datetimes[item['link']] - item['pub_date']
             x = [topic_crossover, time_diff.total_seconds()]
