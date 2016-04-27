@@ -27,7 +27,7 @@ module.exports = {
 
     bookmarkModel.getBookmarks(req.session.username, bookmarks => {
       if (!bookmarks){
-        bookmarks = []
+        bookmarks = [];
       }
       // Filter the bookmarks
       var filtered_bookmarks = bookmarks.filter((feed, index, src) => {

@@ -82,7 +82,7 @@ module.exports = {
           bookmarks: []
         }, cb));
     } else {
-        cb(data.bookmarks)
+        cb(data.bookmarks);
     }
     }));
   }
