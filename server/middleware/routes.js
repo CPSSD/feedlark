@@ -55,6 +55,9 @@ router.get("/user/verify", (req, res) => {
 // Profile
 router.get("/user", isAuthed, userController.profile);
 
+// Summary sender
+router.get("/user/summaries/:key", userController.sendSummaries);
+
 // Profile tokens
 router.get("/user/tokens", isAuthed, userController.profileTokens);
 
@@ -63,6 +66,9 @@ router.post("/user/change/password", isAuthed, userController.changePassword);
 
 // Profile settings
 router.post("/user/change/email", isAuthed, userController.changeEmail);
+
+// Profile settings
+router.post("/user/change/summaryinterval", isAuthed, userController.changeSummaryInterval);
 
 // Show interest
 router.post("/feeds/like", isAuthed, feedController.like);
