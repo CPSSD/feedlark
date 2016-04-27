@@ -147,6 +147,11 @@ def main():
 
     print data_x
     print data_y
+    
+    if len(data_x) < 3:
+        print 'Error'
+        print 'Not enough data points'
+        return
 
     print 'Training model with 90% of data, testing with 10%'
     num_train = len(data_x)*9/10
