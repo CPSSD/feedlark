@@ -141,4 +141,4 @@ This contains a worker to refresh the machine learning model of a particular use
 
 #### `./visualisations`
 
-This folder stores the programs that are intended to parse the data in the database and provide meaningfull statistics on things such as what are the most subscribed feeds and what topics a particular user is most interested in.
+This contains the tools that are used to visualise the data in the databases in a more friendly and useful way; to parse the data, and to provide meaningful statistics, such as what are the most subscribed feeds, and what topics is a particular user most interested in.

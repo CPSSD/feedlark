@@ -6,5 +6,8 @@ cd visualisations
 cd all_topics
 python testing.py
 cd ..
+cd model_error
+python testing.py
+cd ..
 
 cd ..
