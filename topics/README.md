@@ -33,7 +33,7 @@ All of these procedures are included in the Vagrantfile.
 Usage
 -----
 
-The tool takes in Gearman data in the following format:
+The worker is called `get-topics`, and it takes in Gearman data in the following format:
 
 ```js
 {
