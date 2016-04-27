@@ -98,6 +98,7 @@ module.exports = {
 
           // Set session vars and redirect
           req.session.username = user.username;
+          req.session.page_length = user.page_length || userModel.defaultPageLength;
           req.session.subscribed_feeds = user.subscribed_feeds;
           req.session.verified = user.verified;
           req.session.msg = "Successfully logged in.";
@@ -215,6 +216,7 @@ module.exports = {
 
       userModel.setPageLength(username, page_length, _ => {
         req.session.msg = "Successfully changed your defaults";
+        req.session.page_length = page_length;
         return res.redirect(302, "/user");
       });
     });
@@ -345,11 +347,8 @@ module.exports = {
   // Render the user profile
   profile: (req, res) => {
     userModel.findByUsername(req.session.username, user => {
-      userModel.getPageLength(req, res, page_length => {
-        res.status(200).render("profile", {
-          user: user,
-          page_length: page_length
-        });
+      res.status(200).render("profile", {
+        user: user
       });
     });
   },

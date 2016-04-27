@@ -20,6 +20,7 @@ function encrypt(password, cb) {
 }
 
 module.exports = {
+  defaultPageLength: 20,
 
   // Gets user details
   findByEmail: (email, cb) => {
@@ -166,21 +167,6 @@ module.exports = {
         {tokens: user.tokens},
         cb
       );
-    }));
-  },
-
-  getPageLength: (req, res, cb) => {
-    const username = req.session.username;
-    var page_length = _.toSafeInteger(req.query.page_length);
-    if (page_length > 0) {
-      return cb(page_length)
-    }
-    dbFuncs.transaction(db => dbFuncs.findOne(db, "user", {username: username}, user => {
-      page_length = _.toSafeInteger(user.page_length)
-      if (page_length > 0) {
-        return cb(page_length)
-      }
-      return cb(20) // NOTE: DEFAULT
     }));
   },
 

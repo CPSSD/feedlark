@@ -53,19 +53,21 @@
           <h6> Page Length </h6>
           <div class="input-field col s12 m6">
             <select name="page_length" form="page_length">
-              <option<%= page_length == 5 ? ' selected' : '' %>>5</option>
-              <option<%= page_length == 10? ' selected' : '' %>>10</option>
-              <option<%= page_length == 20? ' selected' : '' %>>20</option>
-              <option<%= page_length == 50? ' selected' : '' %>>50</option>
+              <option<%= user.page_length == 5 ? ' selected' : '' %>>5</option>
+              <option<%= user.page_length == 10? ' selected' : '' %>>10</option>
+              <option<%= user.page_length == 20? ' selected' : '' %>>20</option>
+              <option<%= user.page_length == 50? ' selected' : '' %>>50</option>
             </select>
             <label for="page_length">Items per page</label>
           </div>
           <div class="input-field col s12 m6">
             <button class="btn waves-effect waves-light" type="submit" name="send">Save Options
+          </div>
+        </form>
 
 
-        <h5>Change summary interval:</h5>
         <form class="col s12" method="POST" action="/user/change/summaryinterval">
+          <h5>Change email summary interval:</h5>
           <div class="input-field col s2">
           <!-- Changes to the options here need to be reflected in the users controller -->
             <select id="summaryInterval" name="summaryInterval" class="validate" required>
