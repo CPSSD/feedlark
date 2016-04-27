@@ -203,7 +203,7 @@ module.exports = {
     var username = req.session.username;
     var page_length = _.toSafeInteger(req.body.page_length);
 
-    if (!(page_length == 5 || page_length == 10 | page_length == 20 | page_length == 50)) {
+    if (!(page_length == 5 || page_length == 10 || page_length == 20 || page_length == 50)) {
       req.session.msg = "Invalid page length";
       return res.redirect(302, "/user");
     }

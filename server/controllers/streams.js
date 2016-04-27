@@ -14,8 +14,13 @@ const _ = require("lodash");
 module.exports = {
   index: (req, res) => {
 
+    // This Lo-Dash function is lovely
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length <= 0) {
+      page_length = req.session.page_length; // Use the user's default instead
+    }
+
     var page = _.toSafeInteger(req.query.page); // defaults to 0 if undefined
-    var page_length = req.session.page_length;
     // Sort out the filters
     var keywords = [];
     if (typeof req.query.keywords != "undefined" && req.query.keywords.length > 1) {
@@ -56,9 +61,13 @@ module.exports = {
   plaintext: (req, res) => {
     res.type('.txt');
 
+    // This Lo-Dash function is lovely
+    var page_length = _.toSafeInteger(req.query.page_length);
+    if (page_length <= 0) {
+      page_length = req.session.page_length; // Use the user's default instead
+    }
 
     var page = _.toSafeInteger(req.query.page);
-    var page_length = req.session.page_length;
     var username = req.query.username;
     getFeeds(username, feeds => {
       var pageinated_feeds = _.slice(feeds, page*page_length, (page+1)*page_length);
