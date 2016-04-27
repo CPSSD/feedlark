@@ -125,14 +125,20 @@ def main():
         for item in items:
             if item['link'] not in article_url_set:
                 continue
+            print 'adding', item['link']
+            if 'topics' not in item:
+                print 'no topics for given item, skipping'
+                continue
             words = item['topics']
             topic_crossover = kw_score.score(words, user_words)
+            if 'pub_date' not in item:
+                print 'no pub_date for given item, skipping'
+                continue
             time_diff = vote_datetimes[item['link']] - item['pub_date']
             x = [topic_crossover, time_diff.total_seconds()]
             y = article_opinions[item['link']]
             data_x.append(x)
             data_y.append(y)
-            print item['link'], 'added'
 
         print 'Articles from feed', feed, 'added to data'
          
