@@ -32,6 +32,9 @@ def db_get(collection, query, projection):
         'query': query,
         'projection': projection
     }
+    key = os.getenv('SECRETKEY')
+    if key is not None:
+        db_req['key'] = key
     str_bson_db_req = str(bson.BSON.encode(db_req))
     raw_db_result = gearman_client.submit_job('db-get', str_bson_db_req).result
     db_result = bson.BSON.decode(bson.BSON(raw_db_result))
