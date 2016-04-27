@@ -3,6 +3,8 @@ Feedlark:tm: Scraper
 
 This module gets the error of a given user's prediction model.
 
+It uses the '2-fold cross-validation' method, as described [here](https://en.wikipedia.org/wiki/Cross-validation_%28statistics%29#2-fold_cross-validation)
+
 Dependencies
 ------------
 
