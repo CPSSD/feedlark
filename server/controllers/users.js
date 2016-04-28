@@ -18,64 +18,12 @@ if (fs.existsSync("../script/captcha_tokens.js")) {
   tokens = require("../../script/captcha_tokens");
 }
 
-// Used in sendSummaries
-function processSummaryData(user, feeds) {
+// Changes to the options here need to be reflected on the profile page
+// Values are in hours
+const valid_intervals = {"off": 0, "daily": 24, "weekly": 168, "monthly": 720};
 
-  // Assume the last summary was sent at (now - summaryInterval)
-  // Summary interval is in hours, time is created in milliseconds
-  var oldest_date = new Date(Date.now() - user.summaryInterval * 3600000);
-
-  // Filter feeds accordingly
-  var filtered_feeds = feeds.filter((feed, index, src) => {
-    return feed.pub_date > oldest_date;
-  });
-
-  if (filtered_feeds.length > 0) {
-
-    // Pick the best feeds to send
-    // Prioritizes one from each feed source
-    var cherrypicked_feeds = [];
-    var sources_covered = [];
-    for (i = 0; i < filtered_feeds.length; i++) {
-      var feed = filtered_feeds[i];
-
-      // Put articles from new sources at the top
-      if (sources_covered.indexOf(feed.feed) == -1) {
-        cherrypicked_feeds.unshift(feed);
-        sources_covered.push(feed.feed);
-
-      // Otherwise append them to cherrypicked_feeds
-      } else {
-        cherrypicked_feeds.push(feed);
-      }
-    }
-
-    // Only send 6
-    while (cherrypicked_feeds.length > 6) cherrypicked_feeds.pop();
-
-    // Update the nextSummary value of this user
-    // Offset by two minutes so that they don't progressively become out of sync
-    dbFuncs.update(db, "user", {username: user.username}, {nextSummary: new Date(Date.now() - 120000 + (user.summaryInterval) * 3600000)}, _ => {
-
-      // Don't send the email if we're not in production
-      if (process.env.ENVIRONMENT != "PRODUCTION") return res.send("Skipped " + j + "/" + users.length + ": Not in production.\n");
-
-      // Send email
-      res.mailer.send(
-        "email_summary",
-        {
-          to: user.email,
-          subject: "Feedlark - Your " + interval_eng[user.summaryInterval] + " Roundup",
-          feeds: cherrypicked_feeds
-        },
-        err => {
-          if (err) return res.send("Failed to send email " + j + "/" + users.length + "\n");
-          return res.send("Email sent " + j + "/" + users.length + "\n");
-        }
-      );
-    });
-  }
-}
+// Reversing object for email subject line
+const interval_eng = _.invert(valid_intervals);
 
 module.exports = {
   // Login processing
@@ -326,10 +274,6 @@ module.exports = {
   },
 
   changeSummaryInterval: (req, res) => {
-    // Changes to the options here need to be reflected on the profile page
-    // Also down below in the sendSummaries function
-    // Values are in hours
-    var valid_intervals = {"off": 0, "daily": 24, "weekly": 168, "monthly": 5040};
 
     // Validation
     if (!req.body.summaryInterval || !valid_intervals[req.body.summaryInterval]) {
@@ -437,15 +381,68 @@ module.exports = {
     dbFuncs.transaction(db => {
       userModel.getSummaryUsers(db, users => {
 
-        var interval_eng = {24: "Daily", 168: "Weekly", 5040: "Monthly"};
+        if (!users.length) return res.status(200).send("No users");
 
-        if (users.length === 0) return res.status(200).send("No users");
+        _.forEach(users, user => {
 
-        for (var j = 0; j < users.length; j++) {
-          var user = users[j];
+          streamModel.getFeedsNoTransaction(db, user.username, feeds => {
 
-          streamModel.getFeedsNoTransaction(db, user.username, feeds => processSummaryData(user, feeds));
-        }
+            // Assume the last summary was sent at (now - summaryInterval)
+            // Summary interval is in hours, time is created in milliseconds
+            var oldest_date = new Date(Date.now() - user.summaryInterval * 3600000);
+
+            // Filter feeds accordingly
+            var filtered_feeds = feeds.filter((feed, index, src) => {
+              return feed.pub_date > oldest_date;
+            });
+
+            if (filtered_feeds.length > 0) {
+
+              // Pick the best feeds to send
+              // Prioritizes one from each feed source
+              var cherrypicked_feeds = [];
+              var sources_covered = [];
+              for (i = 0; i < filtered_feeds.length; i++) {
+                var feed = filtered_feeds[i];
+
+                // Put articles from new sources at the top
+                if (sources_covered.indexOf(feed.feed) == -1) {
+                  cherrypicked_feeds.unshift(feed);
+                  sources_covered.push(feed.feed);
+
+                // Otherwise append them to cherrypicked_feeds
+                } else {
+                  cherrypicked_feeds.push(feed);
+                }
+              }
+
+              // Only send 6
+              while (cherrypicked_feeds.length > 6) cherrypicked_feeds.pop();
+
+              // Update the nextSummary value of this user
+              // Offset by two minutes so that they don't progressively become out of sync
+              dbFuncs.update(db, "user", {username: user.username}, {nextSummary: new Date(Date.now() - 120000 + (user.summaryInterval) * 3600000)}, _ => {
+
+                // Don't send the email if we're not in production
+                if (process.env.ENVIRONMENT != "PRODUCTION") return res.send("Skipped " + j + "/" + users.length + ": Not in production.\n");
+
+                // Send email
+                res.mailer.send(
+                  "email_summary",
+                  {
+                    to: user.email,
+                    subject: "Feedlark - Your " + interval_eng[user.summaryInterval] + " roundup",
+                    feeds: cherrypicked_feeds
+                  },
+                  err => {
+                    if (err) return res.send("Failed to send email to " + user.username + "\n");
+                    return res.send("Email sent " + user.username + "\n");
+                  }
+                );
+              });
+            }
+          });
+        });
       });
     });
   }
