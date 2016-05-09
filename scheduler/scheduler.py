@@ -33,7 +33,7 @@ while True:
 
     #Now send out summary emails
     log(0, "Sending summary emails")
-    urllib2.urlopen("http://localhost:3000/user/summaries/" + key).close()
+    urllib2.urlopen("http://localhost:3000/user/summaries/" + (key or "")).close()
 
     log(0, "Sleeping for {} seconds".format(delay))
     time.sleep(delay)
