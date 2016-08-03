@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2016 Computational Problem Solving & Software Development, DCU
+Copyright (c) 2016 Aaron Delaney, Noah Donnelly, Cian Ruane, Lucas Savva, Ross O'sullivan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
