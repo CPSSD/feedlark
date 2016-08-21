@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/CPSSD/feedlark.png?label=ready&title=Ready)](https://waffle.io/CPSSD/feedlark)
 Feedlark
 ========
 
